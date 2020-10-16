@@ -3,4 +3,5 @@ lab2
 *.txt
 .gdbinit
 ../.vscode/
+<<<<<<< HEAD
 ../.idea/
