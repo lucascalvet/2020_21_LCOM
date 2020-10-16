@@ -1,0 +1,6 @@
+*.o
+lab2
+*.txt
+.gdbinit
+../.vscode/
+../.idea/
