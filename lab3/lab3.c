@@ -75,14 +75,8 @@ int(kbd_test_poll)() {
   uint8_t sta = 0;
 
   count = 0;
-
-  /*keyboard_writing_cmd(KBC_CMD_BUF, KBC_READ_CMD, 3);
-  printf("after kbc write");
-
-  if(util_sys_inb(KBC_ST_REG, &sta) != OK)
-    return 1;
-  */
-  printf("before while");
+  
+  //printf("before while");
 
   while (data != ESC){
     printf("In while");
