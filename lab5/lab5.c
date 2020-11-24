@@ -1,10 +1,9 @@
 // IMPORTANT: you must include the following line in all your C files
 #include <lcom/lcf.h>
-
 #include <lcom/lab5.h>
-
 #include <stdint.h>
 #include <stdio.h>
+#include "video_gr.h"
 
 // Any header files included below this line should have been created by you
 
@@ -40,15 +39,19 @@ int(video_test_init)(uint16_t mode, uint8_t delay) {
 }
 
 int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
-                          uint16_t width, uint16_t height, uint32_t color) {
-  /* To be completed */
-  printf("%s(0x%03X, %u, %u, %u, %u, 0x%08x): under construction\n",
-         __func__, mode, x, y, width, height, color);
+                          uint16_t width, uint16_t height, uint32_t color) {  //should exit with esc (integrate keyboard code)
+  vg_init(mode);
 
-  return 1;
+  if(vg_draw_rectangle(x, y, width, height, color) == 1) return 1;
+
+  //sleep(5); //just for testing purpose should integrate keyboard code
+  if(kbd_interrupt_esc() == 1) return 1;
+  
+  if(vg_exit() != OK) return 1;
+  return 0;
 }
 
-int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
+int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) { //should exit with esc (integrate keyboard code)
   /* To be completed */
   printf("%s(0x%03x, %u, 0x%08x, %d): under construction\n", __func__,
          mode, no_rectangles, first, step);
@@ -56,7 +59,7 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
   return 1;
 }
 
-int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
+int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) { //should exit with esc (integrate keyboard code) 
   /* To be completed */
   printf("%s(%8p, %u, %u): under construction\n", __func__, xpm, x, y);
 
@@ -64,7 +67,7 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 }
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
-                     int16_t speed, uint8_t fr_rate) {
+                     int16_t speed, uint8_t fr_rate) {  //exit criteria (final x and y or esc) possible use functions pointers too
   /* To be completed */
   printf("%s(%8p, %u, %u, %u, %u, %d, %u): under construction\n",
          __func__, xpm, xi, yi, xf, yf, speed, fr_rate);
@@ -72,7 +75,7 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
   return 1;
 }
 
-int(video_test_controller)() {
+int(video_test_controller)() { 
   /* To be completed */
   printf("%s(): under construction\n", __func__);
 
