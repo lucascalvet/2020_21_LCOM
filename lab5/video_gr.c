@@ -7,9 +7,13 @@
 
 static void *video_mem; 
  
-static unsigned h_res;	         /* Horizontal resolution in pixels */
-static unsigned v_res;	         /* Vertical resolution in pixels */
-static unsigned bits_per_pixel;  /* Number of VRAM bits per pixel */ 
+static unsigned h_res;	         // Horizontal resolution in pixels
+static unsigned v_res;	         // Vertical resolution in pixels
+static unsigned bits_per_pixel;  // Number of VRAM bits per pixel 
+uint8_t red_mask_size = 0;
+uint8_t green_mask_size = 0;
+uint8_t blue_mask_size = 0;
+uint8_t red_field_position = 0, green_field_position = 0, blue_field_position = 0;
 
 void * (vg_init)(uint16_t mode){
 
@@ -20,7 +24,7 @@ void * (vg_init)(uint16_t mode){
   unsigned int vram_size;  /* VRAM's size, but you can use the frame-buffer size, instead */
   int r;				    
 
-  /* Use VBE function 0x01 to initialize vram_base and vram_size */
+  // Use VBE function 0x01 to initialize vram_base and vram_size 
   vbe_mode_info_t info;
   vbe_get_mode_info(mode, &info);
   vram_base = info.PhysBasePtr;
@@ -30,26 +34,29 @@ void * (vg_init)(uint16_t mode){
   h_res = info.XResolution;
   v_res = info.YResolution;
   bits_per_pixel = info.BitsPerPixel;
+  red_mask_size = info.RedMaskSize;
+  green_mask_size = info.RedMaskSize;
+  blue_mask_size = info.BlueMaskSize;
+  red_field_position = info.RedFieldPosition;
+  green_field_position = info.GreenFieldPosition;
+  blue_field_position = info.BlueFieldPosition;
 
-  /* Allow memory mapping */
-
+  //Allow memory mapping
   mr.mr_base = (phys_bytes) vram_base;	
   mr.mr_limit = mr.mr_base + vram_size;  
 
   if( OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
     panic("sys_privctl (ADD_MEM) failed: %d\n", r);
-/* Map memory */
 
+  //Map memory
   video_mem = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
 
   reg86_t reg86;
   memset(&reg86, 0, sizeof(reg86));
-  reg86.ax = 0x4F02; // VBE call, function 02 -- set VBE mode
-  reg86.bx = 1<<14 | mode; // set bit 14: linear framebuffer
+  reg86.ax = VBE_SET_MODE; // VBE call, function 02 -- set VBE mode
+  reg86.bx = 1 << 14 | mode; // set bit 14: linear framebuffer
   reg86.intno = VBE_INTERRUPT_INSTRUCTION;  // interrupt instruction, in real mode, and the function parameters are passed in the CPU registers.
-  //reg86.ah = VBE_AH;  //thus distinguishing it from the standard VGA BIOS functions
-  //reg86.al = VBE_SET_MODE;  //VBE function being called is specified in the AL register
-  //reg86.bx = mode;   //Bit 14 of the BX register should be set, in order to set the linear frame buffer model ?
+
   if(sys_int86(&reg86) != OK) {
     printf("\tvg_init(): sys_int86() failed \n");
     return NULL;
@@ -79,7 +86,6 @@ int (vg_exit)(void){
 }
 */
 
-
 void (draw_pixel)(uint16_t x, uint16_t y, uint32_t color){
 
   char* pointer = video_mem; //pointer to video memory adress 
@@ -108,7 +114,7 @@ void (draw_line)(uint16_t init_x, uint16_t init_y, uint16_t final_x, uint16_t fi
 
 int (vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color){
   for(int i = 0; i < len; i++){
-    if(x + i  > len) return 1;
+    ///if(x + i  > len) return 1;
     draw_pixel(x + i, y, color);
   }
   return 0;
@@ -119,6 +125,32 @@ int (vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
     if(vg_draw_hline(x, y + i, width, color) == 1) return 1;
   }
 
+  return 0;
+}
+
+int (draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t no_rectangles) { //pattern of matrix of n x n rectangles
+  int width = h_res / no_rectangles;
+  int height = v_res / no_rectangles;
+  int color = 0; 
+
+  int x = 0, y = 0;
+  for(int row = 0; row < no_rectangles; row++){
+    for(int col = 0; col < no_rectangles; col++){
+
+      if(mode == 0x105){  //if color is indexed
+        color = (first + (row * no_rectangles + col) * step) % (1 << bits_per_pixel);
+      }
+      else{ //if color is direct
+        uint8_t red = ((first >> red_field_position) & ((1 << red_mask_size) - 1) + col * step) % (1 << red_mask_size);
+        uint8_t green = ((first >> green_field_position) & ((1 << green_mask_size) - 1) + row * step) % (1 << green_mask_size);
+        uint8_t blue = ((first >> blue_field_position) & ((1 << blue_mask_size) - 1) + (col + row) * step) % (1 << blue_mask_size);
+
+        color =  red | green << green_field_position | blue << blue_field_position;
+      }
+      
+      vg_draw_rectangle(x + (width * col), y + (height * row), width, height, color);
+    }
+  }
   return 0;
 }
 

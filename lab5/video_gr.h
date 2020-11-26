@@ -1,9 +1,8 @@
 #define VBE_AH 0x4F
-#define VBE_SET_MODE 0x02
+#define VBE_SET_MODE 0x4F02
 #define VBE_INTERRUPT_INSTRUCTION 0x10  //standard Instruction BIOS interface
 #define VBE_SET_VIDEO_MODE 0x00
 #define VBE_TEXT_MODE 0x03   //text mode is a standard CGA mode
-
 //initializes the vbe with given mode
 void * (vg_init)(uint16_t mode);
 
@@ -20,6 +19,9 @@ void (draw_line)(uint16_t init_x, uint16_t init_y, uint16_t final_x, uint16_t fi
 
 //waits for esc
 int(kbd_interrupt_esc)();
+
+//draws a pattern with rectangles
+int (draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t no_rectangles);
 
 //creates a sprite object
 void (create_sprite)();
