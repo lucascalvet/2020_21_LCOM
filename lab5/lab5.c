@@ -1,9 +1,9 @@
 // IMPORTANT: you must include the following line in all your C files
-#include <lcom/lcf.h>
+#include "video_gr.h"
 #include <lcom/lab5.h>
+#include <lcom/lcf.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "video_gr.h"
 //#include "pixmap.h"
 
 //#include <xpm.h>
@@ -37,20 +37,23 @@ int main(int argc, char *argv[]) {
 int(video_test_init)(uint16_t mode, uint8_t delay) {
   vg_init(mode);
   sleep(delay);
-  if(vg_exit() != OK) return 1;
+  if (vg_exit() != OK)
+    return 1;
   return 0;
 }
 
 int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
-                          uint16_t width, uint16_t height, uint32_t color) {  //should exit with esc (integrate keyboard code)
+                          uint16_t width, uint16_t height, uint32_t color) { //should exit with esc (integrate keyboard code)
   vg_init(mode);
 
-  if(vg_draw_rectangle(x, y, width, height, color) == 1) return 1;
+  if (vg_draw_rectangle(x, y, width, height, color) == 1)
+    return 1;
 
-  //sleep(5); //just for testing purpose should integrate keyboard code
-  if(kbd_interrupt_esc() == 1) return 1;
-  
-  if(vg_exit() != OK) return 1;
+  if (kbd_interrupt_esc() == 1)
+    return 1;
+
+  if (vg_exit() != OK)
+    return 1;
   return 0;
 }
 
@@ -59,15 +62,16 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
 
   //draw_rectangle_pattern
   draw_rectangle_pattern(first, step, mode, no_rectangles);
-  
+
   kbd_interrupt_esc();
-  
-  if(vg_exit() != OK) return 1;
+
+  if (vg_exit() != OK)
+    return 1;
   return 0;
 }
 
-int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) { //should exit with esc (integrate keyboard code) 
-  vg_init(0x105); //changes vbe to video mode
+int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) { //should exit with esc (integrate keyboard code)
+  vg_init(0x105);                                            //changes vbe to video mode
 
   xpm_image_t img;
   uint8_t *map;
@@ -77,8 +81,8 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) { //should exit with 
   //draw pixmap here
   int map_index = 0;
 
-  for(int row = 0; row < img.height; row++){
-    for(int col = 0; col < img.width; col++){
+  for (int row = 0; row < img.height; row++) {
+    for (int col = 0; col < img.width; col++) {
       draw_pixel(x + col, y + row, map[map_index]);
       map_index++;
     }
@@ -86,22 +90,17 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) { //should exit with 
 
   kbd_interrupt_esc();
 
-  if(vg_exit() != OK) return 1;
+  if (vg_exit() != OK)
+    return 1;
   return 0;
 }
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
-                     int16_t speed, uint8_t fr_rate) {  //exit criteria (final x and y or esc) possible use functions pointers too
-  /* To be completed */
-  printf("%s(%8p, %u, %u, %u, %u, %d, %u): under construction\n",
-         __func__, xpm, xi, yi, xf, yf, speed, fr_rate);
+                     int16_t speed, uint8_t fr_rate) { //exit criteria (final x and y or esc) possible use functions pointers too
 
-  return 1;
+  return 0;
 }
 
-int(video_test_controller)() { 
-  /* To be completed */
-  printf("%s(): under construction\n", __func__);
-
-  return 1;
+int(video_test_controller)() {
+  return 0;
 }
