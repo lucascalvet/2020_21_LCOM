@@ -43,7 +43,7 @@ int(video_test_init)(uint16_t mode, uint8_t delay) {
 }
 
 int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
-                          uint16_t width, uint16_t height, uint32_t color) { //should exit with esc (integrate keyboard code)
+                          uint16_t width, uint16_t height, uint32_t color) {
   vg_init(mode);
 
   if (vg_draw_rectangle(x, y, width, height, color) == 1)
@@ -57,10 +57,9 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
   return 0;
 }
 
-int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) { //should exit with esc (integrate keyboard code)
+int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
   vg_init(mode);
 
-  //draw_rectangle_pattern
   draw_rectangle_pattern(first, step, mode, no_rectangles);
 
   kbd_interrupt_esc();
@@ -70,17 +69,18 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
   return 0;
 }
 
-int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) { //should exit with esc (integrate keyboard code)
-  vg_init(0x105);                                            //changes vbe to video mode
+int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
+  vg_init(0x105);                                            
 
   xpm_image_t img;
   uint8_t *map;
-  // get the pixmap from the XPM
+
+  //gets the pixmap from the XPM
   map = xpm_load(xpm, XPM_INDEXED, &img);
 
-  //draw pixmap here
   int map_index = 0;
 
+  //draws pixmap
   for (int row = 0; row < img.height; row++) {
     for (int col = 0; col < img.width; col++) {
       draw_pixel(x + col, y + row, map[map_index]);
@@ -102,5 +102,23 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
 }
 
 int(video_test_controller)() {
+  //test to get_vbe_current_mode()
+  /*
+  vg_init(0x105);
+
+  unsigned short cur = get_vbe_current_mode(); 
+
+  vg_exit();
+
+  printf("Current mode: %x ", cur);
+  */
+
+  //actual video_test_controller function
+  vg_vbe_contr_info_t controller_info;
+
+  get_vbe_controller_info(&controller_info);
+
+  vg_display_vbe_contr_info(&controller_info);  //prints controller information to the screen
+
   return 0;
 }

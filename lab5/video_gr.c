@@ -1,47 +1,156 @@
 #include "video_gr.h"
-#include "i8042.h"
-#include "keyboard.h"
-#include <lcom/lcf.h>
-#include <minix/driver.h>
-#include <sys/mman.h>
 
-static void *video_mem;
-
-static unsigned h_res;          // Horizontal resolution in pixels
-static unsigned v_res;          // Vertical resolution in pixels
-static unsigned bits_per_pixel; // Number of VRAM bits per pixel
+static void *video_mem;         //virtual vram address
+static unsigned h_res;          //horizontal resolution in pixels
+static unsigned v_res;          //vertical resolution in pixels
+static unsigned bits_per_pixel; //number of VRAM bits per pixel
 uint8_t red_mask_size = 0;
 uint8_t green_mask_size = 0;
 uint8_t blue_mask_size = 0;
 uint8_t red_field_position = 0, green_field_position = 0, blue_field_position = 0;
 
 /**
+ * @brief print errors that may happen in sys_int86 call 
+ * @param reg86 the reg86_t struct that contains the register values
+ * @return none
+ */
+void(sys_int86_print_errors)(reg86_t reg86){
+  if(reg86.ah == 0x01){
+    printf("Function call failed!\n");
+  }
+  if(reg86.ah == 0x02){
+    printf("Function is not supported in the current hardware configuration!\n");
+  }
+  if(reg86.ah == 0x03){
+    printf("Function call invalid in current video mode!\n");
+  }
+  if(reg86.al != 0x4F){
+    printf("Function not supported!\n");
+  }
+}
+
+/**
+ * @brief gets the information about vbe mode given
+ * @param mode the mode to get information of
+ * @param mode_info the vbe_mode_info_t struct to fill with mode info
+ * @return none
+ */
+void(get_vbe_mode_info)(uint16_t mode, vbe_mode_info_t *mode_info) {
+  mmap_t mmap; //memory info of vbe_mode_info_t struct info
+
+  lm_alloc(sizeof(vbe_mode_info_t), &mmap);
+
+  reg86_t reg86;
+  memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
+
+  reg86.intno = VBE_INTERRUPT_INSTRUCTION;
+  reg86.ax = VBE_GET_MODE_INFO_FUNCTION;
+  reg86.cx = mode;
+  reg86.es = PB2BASE(mmap.phys); //passing base info struct address
+  reg86.di = PB2OFF(mmap.phys);  //passsing adress offset of info struct
+
+  //making kernell call in real mode (momentaneous switch from minix protected mode)
+  if (sys_int86(&reg86) != OK) {
+    printf("\tget_vbe_mode_infoget_vbe_mode_info(): sys_int86() failed \n");
+  }
+
+  sys_int86_print_errors(reg86);
+
+  *mode_info = *((vbe_mode_info_t *) mmap.virt); //assigning the info pointer to the one retrieve by kernell call (as well as doing the necessary cast)
+
+  lm_free(&mmap);
+}
+
+/**
+ * @brief gets the vbe current mode
+ * @return the current vbe mode in hexadecimal
+ */
+int (get_vbe_current_mode)(){
+  unsigned short current_mode = 0; //to old the current mode returned in bx register
+
+  reg86_t reg86;
+  memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
+
+  reg86.intno = VBE_INTERRUPT_INSTRUCTION;
+  reg86.ax = VBE_GET_CURRENT_MODE_FUNCTION;
+
+  //making kernell call in real mode (momentaneous switch from minix protected mode)
+  if (sys_int86(&reg86) != OK) {
+    printf("\tget_vbe_current_mode(): sys_int86() failed \n");
+  }
+
+  sys_int86_print_errors(reg86);
+
+  current_mode = reg86.bx;
+
+  return current_mode;
+}
+
+/**
+ * @brief gets VBE controller information
+ * @param controller_info struct that will have the controller information
+ * @return none
+ */
+void(get_vbe_controller_info)(vg_vbe_contr_info_t *controller_info){
+  mmap_t mmap; //memory info of vg_vbe_contr_info_t struct info
+
+  lm_alloc(sizeof(vg_vbe_contr_info_t), &mmap);
+
+  reg86_t reg86;
+  memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
+
+  reg86.intno = VBE_INTERRUPT_INSTRUCTION;
+  reg86.ax = VBE_GET_CONTROLLER_INFO_FUNCTION;
+  reg86.es = PB2BASE(mmap.phys); //passing base info struct address
+  reg86.di = PB2OFF(mmap.phys);  //passsing adress offset of info struct
+
+  //making kernell call in real mode (momentaneous switch from minix protected mode)
+  if (sys_int86(&reg86) != OK) {
+    printf("\tget_vbe_controller_info(): sys_int86() failed \n");
+  }
+
+  sys_int86_print_errors(reg86);
+
+  *controller_info = *((vg_vbe_contr_info_t *) mmap.virt); //assigning the info pointer to the one retrieve by kernell call (as well as doing the necessary cast)
+
+  lm_free(&mmap);
+}
+
+/**
+ * @brief initializes static mode dependet variables with respetive values after a vbe get mode info call
+ * @param mode_info vbe_mode_info_t struct with vbe mode info
+ * @return none
+ */
+void(vbe_mode_info_variables_init)(vbe_mode_info_t *mode_info) {
+  h_res = mode_info->XResolution;
+  v_res = mode_info->YResolution;
+  bits_per_pixel = mode_info->BitsPerPixel;
+  red_mask_size = mode_info->RedMaskSize;
+  green_mask_size = mode_info->RedMaskSize;
+  blue_mask_size = mode_info->BlueMaskSize;
+  red_field_position = mode_info->RedFieldPosition;
+  green_field_position = mode_info->GreenFieldPosition;
+  blue_field_position = mode_info->BlueFieldPosition;
+}
+
+/**
   * @brief initiates the graphical controller with a video mode, using vbe 
   * @param mode the video mode to be set in the graphics controller
   * @return the VRAM's virtual address (of the first physical memory position) on which the physical address range was mapped
   */
-void*(vg_init)(uint16_t mode) {
+void *(vg_init)(uint16_t mode) {
 
   struct minix_mem_range mr;
   unsigned int vram_base; // VRAM's physical addresss
   unsigned int vram_size; // VRAM's size, but you can use the frame-buffer size, instead
   int r;
 
-  vbe_mode_info_t info;
-  vbe_get_mode_info(mode, &info);
-  vram_base = info.PhysBasePtr;
-  vram_size = info.XResolution * info.YResolution * info.BitsPerPixel / 8;
+  vbe_mode_info_t mode_info;
+  get_vbe_mode_info(mode, &mode_info);
+  vram_base = mode_info.PhysBasePtr;
+  vram_size = mode_info.XResolution * mode_info.YResolution * mode_info.BitsPerPixel / 8;
 
-  //TODO: change all this to a new get vbe mode function
-  h_res = info.XResolution;
-  v_res = info.YResolution;
-  bits_per_pixel = info.BitsPerPixel;
-  red_mask_size = info.RedMaskSize;
-  green_mask_size = info.RedMaskSize;
-  blue_mask_size = info.BlueMaskSize;
-  red_field_position = info.RedFieldPosition;
-  green_field_position = info.GreenFieldPosition;
-  blue_field_position = info.BlueFieldPosition;
+  vbe_mode_info_variables_init(&mode_info);
 
   //Allow memory mapping
   mr.mr_base = (phys_bytes) vram_base;
@@ -55,15 +164,18 @@ void*(vg_init)(uint16_t mode) {
 
   reg86_t reg86;
   memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
+
+  reg86.intno = VBE_INTERRUPT_INSTRUCTION;
   reg86.ax = VBE_SET_MODE_FUNCTION;
   reg86.bx = 1 << 14 | mode; //bit 14: linear frame buffer model set
-  reg86.intno = VBE_INTERRUPT_INSTRUCTION;
 
   //making kernell call in real mode (momentaneous switch from minix protected mode)
   if (sys_int86(&reg86) != OK) {
     printf("\tvg_init(): sys_int86() failed \n");
     return NULL;
   }
+
+  sys_int86_print_errors(reg86);
 
   if (video_mem == MAP_FAILED)
     panic("couldn't map video memory");
@@ -100,7 +212,6 @@ void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
  */
 int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
   for (int i = 0; i < len; i++) {
-    ///if(x + i  > len) return 1;
     draw_pixel(x + i, y, color);
   }
   return 0;
@@ -124,6 +235,14 @@ int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, 
   return 0;
 }
 
+/**
+ * @brief draws a pattern with rectangles in screen, matrix of [no_rectangles x no_rectangles] 
+ * @param first that specifies the first color
+ * @param step sepcifies color change step
+ * @param mode the vbe mode to be initialized with
+ * @param no_rectangles number of rectangles to draw in screen
+ * 
+ */
 int(draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t no_rectangles) { //pattern of matrix of n x n rectangles
   int width = h_res / no_rectangles;
   int height = v_res / no_rectangles;
@@ -152,7 +271,7 @@ int(draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t
 
 /**
  * @brief waits for user to input ESC key
- * @return 0 when no erros ocurred
+ * @return 0 when no erros ocurred, 1 otherwise
  * 
  */
 int(kbd_interrupt_esc)() {
