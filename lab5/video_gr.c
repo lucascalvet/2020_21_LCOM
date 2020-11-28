@@ -147,13 +147,14 @@ int (draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_
 
         color =  red | green << green_field_position | blue << blue_field_position;
       }
-      
+
       vg_draw_rectangle(x + (width * col), y + (height * row), width, height, color);
     }
   }
   return 0;
 }
 
+//sprites to create yet
 void (create_sprite)(){
 }
 
