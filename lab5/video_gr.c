@@ -1,6 +1,10 @@
 #include "video_gr.h"
+#include <lcom/lab5.h>
+#include <lcom/lcf.h>
+#include <stdint.h>
+#include <stdio.h>
 
-static void *video_mem;         //virtual vram address
+static char *video_mem;         //virtual vram address
 static unsigned h_res;          //horizontal resolution in pixels
 static unsigned v_res;          //vertical resolution in pixels
 static unsigned bits_per_pixel; //number of VRAM bits per pixel
@@ -10,21 +14,35 @@ uint8_t blue_mask_size = 0;
 uint8_t red_field_position = 0, green_field_position = 0, blue_field_position = 0;
 
 /**
+ * @brief converts number of bits to it's correspondant number of bytes
+ * @return the number of bytes
+ */
+int(bits_to_bytes)() {
+  unsigned int n_bytes = bits_per_pixel / 8;
+
+  if (bits_per_pixel % 8 != 0) { //when bits are not even the correct number of bytes is passed
+    n_bytes += 1;
+  }
+
+  return n_bytes;
+}
+
+/**
  * @brief print errors that may happen in sys_int86 call 
  * @param reg86 the reg86_t struct that contains the register values
  * @return none
  */
-void(sys_int86_print_errors)(reg86_t reg86){
-  if(reg86.ah == 0x01){
+void(sys_int86_print_errors)(const reg86_t reg86) {
+  if (reg86.ah == 0x01) {
     printf("Function call failed!\n");
   }
-  if(reg86.ah == 0x02){
+  if (reg86.ah == 0x02) {
     printf("Function is not supported in the current hardware configuration!\n");
   }
-  if(reg86.ah == 0x03){
+  if (reg86.ah == 0x03) {
     printf("Function call invalid in current video mode!\n");
   }
-  if(reg86.al != 0x4F){
+  if (reg86.al != 0x4F) {
     printf("Function not supported!\n");
   }
 }
@@ -65,7 +83,7 @@ void(get_vbe_mode_info)(uint16_t mode, vbe_mode_info_t *mode_info) {
  * @brief gets the vbe current mode
  * @return the current vbe mode in hexadecimal
  */
-int (get_vbe_current_mode)(){
+int(get_vbe_current_mode)() {
   unsigned short current_mode = 0; //to old the current mode returned in bx register
 
   reg86_t reg86;
@@ -91,7 +109,7 @@ int (get_vbe_current_mode)(){
  * @param controller_info struct that will have the controller information
  * @return none
  */
-void(get_vbe_controller_info)(vg_vbe_contr_info_t *controller_info){
+void(get_vbe_controller_info)(vg_vbe_contr_info_t *controller_info) {
   mmap_t mmap; //memory info of vg_vbe_contr_info_t struct info
 
   lm_alloc(sizeof(vg_vbe_contr_info_t), &mmap);
@@ -167,7 +185,7 @@ void *(vg_init)(uint16_t mode) {
 
   reg86.intno = VBE_INTERRUPT_INSTRUCTION;
   reg86.ax = VBE_SET_MODE_FUNCTION;
-  reg86.bx = 1 << 14 | mode; //bit 14: linear frame buffer model set
+  reg86.bx = VBE_LINEAR_ACTIVATE | mode; 
 
   //making kernell call in real mode (momentaneous switch from minix protected mode)
   if (sys_int86(&reg86) != OK) {
@@ -184,6 +202,25 @@ void *(vg_init)(uint16_t mode) {
 }
 
 /**
+ * @brief assembles color bytes of an map starting at given position, according to nº bytes per pixel, and changes to next position map_position
+ * @param map pointer to the pixmap with the pixel colors
+ * @param map_position pointer to the starting position of pixmap to assemble the color from
+ * @return the assembled color
+ */
+uint32_t(color_assembler)(const uint8_t *map, int *map_position) {
+  uint32_t color = 0;
+
+  for (int i = 0; i < bits_to_bytes(); i++) {
+    color <<= 8;
+    color |= map[*map_position + i];
+  }
+
+  *map_position += bits_to_bytes();
+
+  return color;
+}
+
+/**
  * @brief changes a pixel color in coordinates x and y of screen
  * @param x the x coordinate of screen from left to right
  * @param y the y coordinate of screen from top to bottom
@@ -195,7 +232,7 @@ void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
   char *pointer = video_mem; //pointer to video memory adress
 
-  pointer += x + h_res * y * (bits_per_pixel / 8); // gets correct position of memory map to change according to x, y and bits_per_pixel
+  pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change according to x, y and bytes per pixel
 
   if (x < h_res && y < v_res)
     *pointer = color; //if x and y exceeds the window size doesn't change anything
@@ -205,8 +242,6 @@ void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
  * @brief draws an horizontal line in screen
  * @param init_x the starting x coordinate of the line
  * @param init_y the starting x coordinate of the line
- * @param final_x the final x coordinate of the line
- * @param final_y the final x coordinate of the line
  * @param color the color of the line
  * @return 0 if everything ok, 1 otherwise
  */
@@ -227,9 +262,8 @@ int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
  * @return 0 if everything ok, 1 otherwise
  */
 int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
-  for (int i = 0; i < height; i++) {
-    if (vg_draw_hline(x, y + i, width, color) == 1)
-      return 1;
+  for (int i = y; i < y + height; i++) {
+    vg_draw_hline(x, i, width, color);
   }
 
   return 0;

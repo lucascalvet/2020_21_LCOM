@@ -1,14 +1,14 @@
 // IMPORTANT: you must include the following line in all your C files
 #include "video_gr.h"
+#include "sprite.h"
 #include <lcom/lab5.h>
 #include <lcom/lcf.h>
 #include <stdint.h>
 #include <stdio.h>
-//#include "pixmap.h"
-
-//#include <xpm.h>
 
 // Any header files included below this line should have been created by you
+//#include "video_gr.h"
+//#include "sprite.h"
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int(video_test_init)(uint16_t mode, uint8_t delay) {
+int(video_test_init)(uint16_t mode, uint8_t delay) { //Fully working all tests passed
   vg_init(mode);
   sleep(delay);
   if (vg_exit() != OK)
@@ -46,8 +46,7 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
                           uint16_t width, uint16_t height, uint32_t color) {
   vg_init(mode);
 
-  if (vg_draw_rectangle(x, y, width, height, color) == 1)
-    return 1;
+  vg_draw_rectangle(x, y, width, height, color);
 
   if (kbd_interrupt_esc() == 1)
     return 1;
@@ -70,21 +69,20 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
 }
 
 int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
-  vg_init(0x105);                                            
+  vg_init(VBE_INDEXED_1024_MODE);                                            
 
   xpm_image_t img;
   uint8_t *map;
 
   //gets the pixmap from the XPM
-  map = xpm_load(xpm, XPM_INDEXED, &img);
+  map = xpm_load(xpm, XPM_INDEXED, &img); //only working for indexed so colors only have 1 byte, therefore the color_assembler here it's not actually necessary
 
   int map_index = 0;
 
   //draws pixmap
-  for (int row = 0; row < img.height; row++) {
-    for (int col = 0; col < img.width; col++) {
-      draw_pixel(x + col, y + row, map[map_index]);
-      map_index++;
+  for (int row = 0; row < y + img.height; row++) {
+    for (int col = 0; col < x + img.width; col++) {
+      draw_pixel(x + col, y + row, color_assembler(map, &map_index));
     }
   }
 
@@ -97,7 +95,17 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
                      int16_t speed, uint8_t fr_rate) { //exit criteria (final x and y or esc) possible use functions pointers too
+  vg_init(VBE_INDEXED_1024_MODE);
 
+  //just a test to sprite file
+  Sprite *sp = create_sprite(xpm, 0, 0);
+
+  move_sprite(sp, 100, 100, 0, 1);
+
+  kbd_interrupt_esc();
+
+  if (vg_exit() != OK)
+    return 1;
   return 0;
 }
 
