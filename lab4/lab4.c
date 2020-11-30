@@ -6,8 +6,8 @@
 #include "mouse.h"
 
 uint8_t byte;
-uint8_t packe[3];
-int counter = 0;
+uint8_t packet[3];
+static int counter = 0;
 
 // Any header files included below this line should have been created by you
 
@@ -53,9 +53,6 @@ int (mouse_test_packet)(uint32_t cnt) {
     return -1;
 */
 
-  uint32_t *p = &cnt;
-  int *p2 = &counter;
-
   while (cnt > 0){ 
     if((r = driver_receive(ANY, &msg, &ipc_status)) != OK){
       printf("Driver_receive failed with: %d", r);
@@ -67,8 +64,8 @@ int (mouse_test_packet)(uint32_t cnt) {
           if (msg.m_notify.interrupts & irq_set) {
             //printf("cnt: %d\n", cnt);
             mouse_ih();
-            assemble_bytes(p2, packe);
-            build_packet(p2, packe, p);
+            assemble_bytes(&counter, packet);
+            build_packet(&counter, packet, &cnt);
           }
           break;
         default:
@@ -77,10 +74,10 @@ int (mouse_test_packet)(uint32_t cnt) {
     }
   }
   mouse_unsubscribe_int();
-
+ /*
   if(output_buff_flush() != OK)
     return -1;
-
+*/
   return 0;
 }
 

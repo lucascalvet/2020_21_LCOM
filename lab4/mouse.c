@@ -130,15 +130,18 @@ void (build_packet)(int *counter, uint8_t pac[3], uint32_t *cnt){  //builds the 
         msb_y >>= 7;
 
         uint16_t x, y;
-        uint16_t all_ones = -1; 
+        uint16_t mask = 0xff00; 
 
-        if(msb_x)
-            x = pac[1] & all_ones;
+        printf("Delta x (8bits): %x \n", pac[1]);
+        if(msb_x){
+            x = pac[1] | mask;
+            printf("Delta x (16bits): %x \n", x);
+        }
         else
             x = pac[1];
 
         if(msb_y)
-            y = pac[2] & all_ones;
+            y = pac[2] | mask;
         else
             y = pac[2];        
 
