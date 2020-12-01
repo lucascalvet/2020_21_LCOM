@@ -25,16 +25,8 @@ int(mouse_enable_data_report)();
 //disables mouse data reporting
 int(mouse_disable_data_report)();
 
-<<<<<<< HEAD
-int (enable_data_reporting)();
-
-int (disable_data_reporting)();
-
-void (assemble_bytes)(int *counter, uint8_t pac[3]);
-=======
 //build the mouse packet bytes
 void(build_packet)(int *counter, uint8_t packet[]);
->>>>>>> 96d8dac7cde79e76913f9ad138e10eb70644c91d
 
 //handles the mouse interrupts
 void(mouse_ih)();

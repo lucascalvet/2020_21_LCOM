@@ -2,7 +2,7 @@
 #include "ps2.h"
 #include "utils.h"
 
-int hook_id_mouse = 2;
+int hook_id_mouse;
 uint8_t data; //used to hold the data from interrupt handler
 
 /**
@@ -11,6 +11,7 @@ uint8_t data; //used to hold the data from interrupt handler
  * @return 0 if no erros ocurred, 1 otherwise
  */
 int(mouse_subscribe_int)(uint8_t *bit_no) {
+  hook_id_mouse = 2;
   *bit_no = hook_id_mouse;
 
   //uses IRQ_EXCLUSIVE to prevent minix interrupt handler
@@ -38,26 +39,26 @@ int(mouse_write_cmd)(uint8_t command) {
 
   uint8_t acknowledgment_data = 0;
 
-  kbc_write_cmd(KBC_WRITE_TO_MOUSE);
+  do {
+    kbc_write_cmd(KBC_WRITE_TO_MOUSE);
+    sys_outb(KBC_INPUT_BUF, command); //command (argument of KBC_WRITE_TO_MOUSE kbc command)
+    kbc_read_data(&acknowledgment_data);
 
-  sys_outb(KBC_INPUT_BUF, command); //command (argument of KBC_WRITE_TO_MOUSE kbc command)
-
-  kbc_read_data(&acknowledgment_data);
-
-  if (acknowledgment_data == MOUSE_ACK) {
-    if (command == PS2_ENABLE_DT_REP)
-      printf("Everything is Ok, mouse data report enabled!\n");
-    else if (command == PS2_DISABLE_DT_REP)
-      printf("Everything is OK, mouse data report disabled!\n");
-    else
-      printf("Everything is OK!\n");
-  }
-  else if (acknowledgment_data == MOUSE_NACK) {
-    printf("Invalid byte!\n");
-  }
-  else if (acknowledgment_data == MOUSE_ERROR) {
-    printf("Second consecutive invalid byte!\n");
-  }
+    if(acknowledgment_data == MOUSE_ACK){
+      if (command == PS2_ENABLE_DT_REP)
+        printf("Everything is Ok, mouse data report enabled!\n");
+      else if (command == PS2_DISABLE_DT_REP)
+        printf("Everything is OK, mouse data report disabled!\n");
+      else
+        printf("Everything is OK!\n");
+    }
+    else if (acknowledgment_data == MOUSE_NACK) {
+      printf("Invalid byte!\n");
+    }
+    else if (acknowledgment_data == MOUSE_ERROR) {
+      printf("Second consecutive invalid byte!\n");
+    }
+  } while (acknowledgment_data != MOUSE_ACK);
 
   return 0;
 }

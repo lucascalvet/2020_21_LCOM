@@ -1,17 +1,10 @@
-#include "mouse.h"
 #include <lcom/lcf.h>
 #include <stdint.h>
 #include <stdio.h>
-<<<<<<< HEAD
 #include "mouse.h"
 #include <lcom/timer.h>
 
-uint8_t byte;
-uint8_t packet[3];
-static int counter = 0;
-=======
->>>>>>> 96d8dac7cde79e76913f9ad138e10eb70644c91d
-
+int counter = 0;
 // Any header files included below this line should have been created by you
 
 int main(int argc, char *argv[]) {
@@ -42,23 +35,16 @@ int(mouse_test_packet)(uint32_t cnt) {
   int ipc_status, r;
   message msg;
   uint8_t bit_no = 2;
-
-<<<<<<< HEAD
-  mouse_subscribe_int(&bit_no);
-=======
+  printf("11111111\n\n");
   if(mouse_subscribe_int(&bit_no) != OK)
     return 1;
-
-  if(mouse_enable_data_report() != OK)
+  printf("2222\n\n");
+  if(mouse_enable_data_reporting() != OK)
     return 1;
->>>>>>> 96d8dac7cde79e76913f9ad138e10eb70644c91d
-
-  mouse_enable_data_reporting();
-  //enable_data_reporting();
-
+  printf("33\n\n");
   uint64_t irq_set = BIT(bit_no);
 
-  int counter = 0;
+  int mouse_counter = 0;
   uint8_t packet[3];
 
   while (cnt > 0) {
@@ -73,8 +59,8 @@ int(mouse_test_packet)(uint32_t cnt) {
         case HARDWARE:
           if (msg.m_notify.interrupts & irq_set) {
             mouse_ih();
-            build_packet(&counter, packet);
-            if(counter == 3)
+            build_packet(&mouse_counter, packet);
+            if(mouse_counter == 3)
               cnt--;
           }
           break;
@@ -83,37 +69,41 @@ int(mouse_test_packet)(uint32_t cnt) {
       }
     }
   }
-<<<<<<< HEAD
-  disable_data_reporting();
-  mouse_unsubscribe_int();
- /*
-  if(output_buff_flush() != OK)
-    return -1;
-*/
+  
+  //if(mouse_disable_data_report() != OK)
+   // return 1;
+
+  if(mouse_unsubscribe_int() != OK)
+    return 1;
+
+  if (output_buff_flush() != OK)
+    return 1;
   return 0;
 }
 
 int (mouse_test_async)(uint8_t idle_time) {
   int ipc_status;
   message msg;
-  uint8_t mouse_bit_no, timer_bit_no;
-  int r, freq = sys.hz();
-  uint32_t cnt = 0; //not needed, but is function argument
+  uint8_t mouse_bit_no, timer_bit_no, idle = idle_time;
+  int r, freq = sys_hz();
 
   mouse_enable_data_reporting();
 
   mouse_subscribe_int(&mouse_bit_no);
   timer_subscribe_int(&timer_bit_no);
 
-  uint64_t mouse_irq_set = BIT(bit_no);
-  uint64_t timer_irq_set = BIT(bit_no);
+  uint64_t mouse_irq_set = BIT(mouse_bit_no);
+  uint64_t timer_irq_set = BIT(timer_bit_no);
+
+  int mouse_counter = 0;
+  uint8_t packet[3];
 
 /*
   if(enable_data_reporting() != OK)
     return -1;
 */
 
-  while (cnt > 0){ 
+  while (idle > 0){ 
     if((r = driver_receive(ANY, &msg, &ipc_status)) != OK){
       printf("Driver_receive failed with: %d", r);
       continue;
@@ -122,16 +112,15 @@ int (mouse_test_async)(uint8_t idle_time) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:
           if (msg.m_notify.interrupts & mouse_irq_set) {
-            //printf("cnt: %d\n", cnt);
             mouse_ih();
-            assemble_bytes(&counter, packet);
-            build_packet(&counter, packet, &cnt);
+            build_packet(&mouse_counter, packet);
+            idle = idle_time;
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
             if(counter % freq == 0){
               timer_print_elapsed_time();
               counter = 0;
-              n--;
+              idle--;
             }
           }
           break;
@@ -141,30 +130,12 @@ int (mouse_test_async)(uint8_t idle_time) {
     }
   }
   mouse_unsubscribe_int();
+  timer_unsubscribe_int();
  /*
   if(output_buff_flush() != OK)
     return -1;
 */
   return 0;
-}
-=======
-
-  if(mouse_disable_data_report() != OK)
-    return 1;
->>>>>>> 96d8dac7cde79e76913f9ad138e10eb70644c91d
-
-  if(mouse_unsubscribe_int() != OK)
-    return 1;
-
-  if (output_buff_flush() != OK)
-
-  return 0;
-}
-
-int(mouse_test_async)(uint8_t idle_time) {
-  /* To be completed */
-  printf("%s(%u): under construction\n", __func__, idle_time);
-  return 1;
 }
 
 int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
