@@ -24,7 +24,7 @@ int (mouse_unsubscribe_int)(){
 int (kbc_writing_cmd)(int reg, int cmd, int tries){
     for(int i = 0; i < tries; i--) {  //loop while 8042 input buffer is not empty max [tries] times, then exit
         if(util_sys_inb(KBC_ST_REG, &st) != OK)
-            return -1;
+            return 1;
 
         if((st & KBC_ST_IBF) == 0) {
             sys_outb(reg, cmd);
@@ -32,7 +32,7 @@ int (kbc_writing_cmd)(int reg, int cmd, int tries){
         }
         //tickdelay(micros_to_ticks(DELAY_US)); 
     }
-    return 0;
+    return 1;
 }
 
 int (kbc_reading_cmd)(uint8_t st, int tries){
@@ -58,12 +58,12 @@ int (kbc_reading_cmd)(uint8_t st, int tries){
 int (mouse_write_cmd)(uint8_t cmd){
     if(kbc_writing_cmd(KBC_CMD_BUF, KBC_WRITE_TO_MOUSE, 3) != OK)
         return -1;
-    if(kbc_reading_cmd(st, 3) != OK)
-        return -1;
+    //if(kbc_reading_cmd(st, 3) != OK)
+        //return -1;
     if(kbc_writing_cmd(KBC_CMD_BUF, cmd, 3) != OK)
         return -1;
-    if(mouse_read_cmd(st) != OK)  //should discard the byte
-        return -1;
+    //if(mouse_read_cmd(st) != OK)  //should discard the byte
+        //return -1;
 
     return 0;
 }
@@ -80,9 +80,21 @@ int (mouse_read_cmd)(uint8_t st){
 }
 
 int (enable_data_reporting)(){
+    printf("ENABLING STREAM MODE \n");
+    if(mouse_write_cmd(PS2_SET_STREAM_MODE) != OK)
+        return -1;
+    printf("ENABLING DATA REPORTING \n");
     if(mouse_write_cmd(PS2_ENABLE_DT_REP) != OK)
         return -1;
+    printf("END \n");
+    return 0;
+}
 
+int (disable_data_reporting)(){
+    if(mouse_write_cmd(PS2_DISABLE_DT_REP) != OK)
+        return -1;
+    if(mouse_write_cmd(PS2_SET_REMOTE_MODE) != OK)
+        return -1;
     return 0;
 }
 
@@ -130,12 +142,10 @@ void (build_packet)(int *counter, uint8_t pac[3], uint32_t *cnt){  //builds the 
         msb_y >>= 7;
 
         uint16_t x, y;
-        uint16_t mask = 0xff00; 
+        uint16_t mask = 0xff00;
 
-        printf("Delta x (8bits): %x \n", pac[1]);
         if(msb_x){
             x = pac[1] | mask;
-            printf("Delta x (16bits): %x \n", x);
         }
         else
             x = pac[1];

@@ -16,7 +16,7 @@
 #define KBC_DISABLE_CMD    0xAD
 #define KBC_ENABLE_CMD     0xAE
 #define KBC_DISABLE_MOUSE  0xA7
-#define KBC_ENALBE_MOUSE   0xA8
+#define KBC_ENABLE_MOUSE   0xA8
 #define KBC_MOUSE_IF_CHECK 0xA9
 #define KBC_WRITE_TO_MOUSE 0xD4
 

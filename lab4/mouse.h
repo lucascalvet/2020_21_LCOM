@@ -17,6 +17,10 @@ void (mouse_ih)();
 
 int (output_buff_flush)();
 
+int (enable_data_reporting)();
+
+int (disable_data_reporting)();
+
 void (assemble_bytes)(int *counter, uint8_t pac[3]);
 
 void (build_packet)(int *counter, uint8_t pac[3], uint32_t *cnt);
