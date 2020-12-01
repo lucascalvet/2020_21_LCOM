@@ -58,6 +58,8 @@ void(get_vbe_mode_info)(uint16_t mode, vbe_mode_info_t *mode_info) {
 
   lm_alloc(sizeof(vbe_mode_info_t), &mmap);
 
+  //vbe_get_info(mmap.phys);
+
   reg86_t reg86;
   memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
 
@@ -113,6 +115,13 @@ void(get_vbe_controller_info)(vg_vbe_contr_info_t *controller_info) {
   mmap_t mmap; //memory info of vg_vbe_contr_info_t struct info
 
   lm_alloc(sizeof(vg_vbe_contr_info_t), &mmap);
+
+  controller_info->VBESignature[0] = 'V';
+  controller_info->VBESignature[1] = 'B';
+  controller_info->VBESignature[2] = 'E';
+  controller_info->VBESignature[3] = '2';
+
+  mmap.virt = controller_info;
 
   reg86_t reg86;
   memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
