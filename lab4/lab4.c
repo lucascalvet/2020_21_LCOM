@@ -48,6 +48,7 @@ int(mouse_test_packet)(uint32_t cnt) {
   while (cnt > 0) {
     
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != OK) {
+
       printf("Driver_receive failed with: %d", r);
       continue;
     }
@@ -57,7 +58,8 @@ int(mouse_test_packet)(uint32_t cnt) {
           if (msg.m_notify.interrupts & irq_set) {
             mouse_ih();
             build_packet(&counter, packet);
-            cnt--;
+            if(counter == 3)
+              cnt--;
           }
           break;
         default:
@@ -73,7 +75,6 @@ int(mouse_test_packet)(uint32_t cnt) {
     return 1;
 
   if (output_buff_flush() != OK)
-    return -1;
 
   return 0;
 }

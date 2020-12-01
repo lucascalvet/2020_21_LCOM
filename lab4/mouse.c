@@ -38,26 +38,26 @@ int(mouse_write_cmd)(uint8_t command) {
 
   uint8_t acknowledgment_data = 0;
 
-    kbc_write_cmd(KBC_WRITE_TO_MOUSE);
+  kbc_write_cmd(KBC_WRITE_TO_MOUSE);
 
-    sys_outb(KBC_INPUT_BUF, command); //command (argument of KBC_WRITE_TO_MOUSE kbc command)
+  sys_outb(KBC_INPUT_BUF, command); //command (argument of KBC_WRITE_TO_MOUSE kbc command)
 
-    kbc_read_data(&acknowledgment_data);
+  kbc_read_data(&acknowledgment_data);
 
-    if (acknowledgment_data == MOUSE_ACK) {
-      if(command == PS2_ENABLE_DT_REP)
-        printf("Everything is Ok, mouse data report enabled!\n");
-      else if(command == PS2_DISABLE_DT_REP)
-        printf("Everything is OK, mouse data report disabled!\n");
-      else
-         printf("Everything is OK!\n");
-    }
-    else if (acknowledgment_data == MOUSE_NACK) {
-      printf("Invalid byte!\n");
-    }
-    else if (acknowledgment_data == MOUSE_ERROR) {
-      printf("Second consecutive invalid byte!\n");
-    }
+  if (acknowledgment_data == MOUSE_ACK) {
+    if (command == PS2_ENABLE_DT_REP)
+      printf("Everything is Ok, mouse data report enabled!\n");
+    else if (command == PS2_DISABLE_DT_REP)
+      printf("Everything is OK, mouse data report disabled!\n");
+    else
+      printf("Everything is OK!\n");
+  }
+  else if (acknowledgment_data == MOUSE_NACK) {
+    printf("Invalid byte!\n");
+  }
+  else if (acknowledgment_data == MOUSE_ERROR) {
+    printf("Second consecutive invalid byte!\n");
+  }
 
   return 0;
 }
@@ -99,8 +99,6 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
     packet[2] = data;
   }
 
-  printf("%d", *counter);
-
   (*counter)++;
 
   if (*counter == 3) {
@@ -122,9 +120,26 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
     packet_struct.x_ov = x_ov;
     packet_struct.y_ov = y_ov;
 
+     int msb_x = packet[0] << 3;
+     msb_x >>= 7;
+
+     int msb_y = packet[0] << 2;
+     msb_y >>= 7;
+
     uint16_t x = 0, y = 0;
 
-    //convert from 2's complement to 16 bit normal
+    uint16_t mask = 0xff00;  //converting from 2's complement
+
+    if (msb_x) {
+      x = packet[1] | mask;
+    }
+    else
+      x = packet[1];
+
+    if (msb_y)
+      y = packet[2] | mask;
+    else
+      y = packet[2];
 
     packet_struct.delta_x = x;
     packet_struct.delta_y = y;
