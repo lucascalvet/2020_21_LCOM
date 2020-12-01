@@ -116,6 +116,6 @@ void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed) 
     sp->y += yspeed;
 
     draw_sprite(sp);
-    sleep(1);
+    //sleep(1);
   }
 }
