@@ -1,27 +1,34 @@
+/* defines functions that handles 
+with the mouse PS2, through KBC */
+
+#include <lcom/lcf.h>
+#include <stdint.h>
+#include <stdio.h>
+
+#include "kbc.h"
+
 #ifndef MOUSE_H
 #define MOUSE_H
 
-int (mouse_subscribe_int)(uint8_t *bit_no);
+//subscribes mouse interruptions
+int(mouse_subscribe_int)(uint8_t *bit_no);
 
-int (mouse_unsubscribe_int)();
+//unsunscribes mouse interruptions
+int(mouse_unsubscribe_int)();
 
-int (kbc_writing_cmd)(int reg, int cmd, int tries);
+//write command to mouse (after a KBC_WRITE_TO_MOUSE KBC command)
+int(mouse_write_cmd)(uint8_t command);
 
-int (kbc_reading_cmd)(uint8_t st, int tries);
+//enables mouse data reporting on mouse
+int(mouse_enable_data_report)();
 
-int (mouse_write_cmd)(uint8_t cmd);
+//disables mouse data reporting
+int(mouse_disable_data_report)();
 
-int (mouse_read_cmd)(uint8_t st);
+//build the mouse packet bytes
+void(build_packet)(int *counter, uint8_t packet[]);
 
-void (mouse_ih)();
+//handles the mouse interrupts
+void(mouse_ih)();
 
-int (output_buff_flush)();
-
-void (assemble_bytes)(int *counter, uint8_t pac[3]);
-
-void (build_packet)(int *counter, uint8_t pac[3], uint32_t *cnt);
-/*
-int (enable_data_reporting)();
-*/
-
-#endif
+#endif //MOUSE_H
