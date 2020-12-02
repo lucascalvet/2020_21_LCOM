@@ -100,9 +100,7 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
     packet[2] = data;
   }
 
-  (*counter)++;
-
-  if (*counter == 3) {
+  if (*counter == 2) {
     struct packet packet_struct;
 
     for (int i = 0; i < 3; i++) {
@@ -121,19 +119,16 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
     packet_struct.x_ov = x_ov;
     packet_struct.y_ov = y_ov;
 
-     int msb_x = packet[0] << 3;
-     msb_x >>= 7;
-
-     int msb_y = packet[0] << 2;
-     msb_y >>= 7;
-
+    uint8_t msb_x = packet[0] << 3;
+    msb_x >>= 7;
+    uint8_t msb_y = packet[0] << 2;
+    msb_y >>= 7;
     uint16_t x = 0, y = 0;
 
     uint16_t mask = 0xff00;  //converting from 2's complement
 
-    if (msb_x) {
+    if (msb_x)
       x = packet[1] | mask;
-    }
     else
       x = packet[1];
 
@@ -141,13 +136,10 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
       y = packet[2] | mask;
     else
       y = packet[2];
-
     packet_struct.delta_x = x;
     packet_struct.delta_y = y;
 
     mouse_print_packet(&packet_struct); //prints mouse packet
-
-    *counter = 0;
   }
 }
 
@@ -156,5 +148,6 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
  * @return none
  */
 void(mouse_ih)() {
-  kbc_read_data(&data);
+  util_sys_inb(KBC_OUT_BUF, &data);
+  //kbc_read_data(&data);
 }
