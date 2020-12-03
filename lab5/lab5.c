@@ -80,8 +80,8 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
   int map_index = 0;
 
   //draws pixmap
-  for (int row = 0; row < y + img.height; row++) {
-    for (int col = 0; col < x + img.width; col++) {
+  for (int row = 0; row < img.height; row++) {
+    for (int col = 0; col < img.width; col++) {
       draw_pixel(x + col, y + row, color_assembler(map, &map_index));
     }
   }

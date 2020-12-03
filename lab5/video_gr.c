@@ -243,8 +243,12 @@ void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change according to x, y and bytes per pixel
 
-  if (x < h_res && y < v_res)
-    *pointer = color; //if x and y exceeds the window size doesn't change anything
+  if (x < h_res && y < v_res){ //if x and y exceeds the window size doesn't change anything
+    for (int i = 0; i < bits_to_bytes(); i++){
+      *(pointer + i) = color;
+      color >>= 8;
+    }
+  }
 }
 
 /**
@@ -289,7 +293,7 @@ int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, 
 int(draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t no_rectangles) { //pattern of matrix of n x n rectangles
   int width = h_res / no_rectangles;
   int height = v_res / no_rectangles;
-  int color = 0;
+  uint32_t color = 0;
 
   int x = 0, y = 0;
   for (int row = 0; row < no_rectangles; row++) {
@@ -299,13 +303,12 @@ int(draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t
         color = (first + (row * no_rectangles + col) * step) % (1 << bits_per_pixel);
       }
       else { //if color is direct
-        uint8_t red = ((first >> red_field_position) & ((1 << red_mask_size) - 1) + col * step) % (1 << red_mask_size);
-        uint8_t green = ((first >> green_field_position) & ((1 << green_mask_size) - 1) + row * step) % (1 << green_mask_size);
+        uint8_t red = ((first >> red_field_position) + col * step) % (1 << red_mask_size);
+        uint8_t green = ((first >> green_field_position) + row * step) % (1 << green_mask_size);
         uint8_t blue = ((first >> blue_field_position) & ((1 << blue_mask_size) - 1) + (col + row) * step) % (1 << blue_mask_size);
 
-        color = red | green << green_field_position | blue << blue_field_position;
+        color = (red << red_field_position) | (green << green_field_position) | (blue << blue_field_position);
       }
-
       vg_draw_rectangle(x + (width * col), y + (height * row), width, height, color);
     }
   }
