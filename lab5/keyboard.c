@@ -7,11 +7,11 @@
 uint8_t bytes[2];
 uint8_t st;
 uint8_t temp;
-int hook_id_kbd = 1;
+int hook_id_kbd;
 
 int (keyboard_subscribe_int)(uint8_t *bit_no){
+    hook_id_kbd = 1;
     *bit_no = hook_id_kbd;
-
     if(sys_irqsetpolicy(KBC_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_kbd) != OK) 
         return 1;
     return 0;
@@ -63,7 +63,7 @@ void (kbc_ih)(){  //keyboard interrupt handler
     if(keyboard_reading_cmd(st, 3) == 0){
         
         uint8_t mk1 = data >> 7; //shitf value to stay with make
-
+        
         if(!mk1)
             make = true;
         else

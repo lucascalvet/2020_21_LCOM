@@ -1,8 +1,9 @@
 // IMPORTANT: you must include the following line in all your C files
+#include <lcom/lcf.h>
 #include "video_gr.h"
 #include "sprite.h"
+#include <lcom/timer.h>
 #include <lcom/lab5.h>
-#include <lcom/lcf.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -96,14 +97,45 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
                      int16_t speed, uint8_t fr_rate) { //exit criteria (final x and y or esc) possible use functions pointers too
   vg_init(VBE_INDEXED_1024_MODE);
+  int ipc_status;
+  message msg;
+  uint8_t kbd_bit_no, timer_bit_no;
+  int r;
+  if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
+  if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
+
+  uint64_t kbd_irq_set = BIT(kbd_bit_no);
+  uint64_t timer_irq_set = BIT(timer_bit_no);
+
+  while (data != ESC) {
+
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != OK) {
+      printf("driver_receive failed with: %d", r);
+      continue;
+    }
+    if (is_ipc_notify(ipc_status)) {
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE: /* hardware interrupt notification */
+          if (msg.m_notify.interrupts & kbd_irq_set) {
+            kbc_ih();
+          }
+          break;
+        default:
+          break; /* no other notifications expected: do nothing */
+      }
+    }
+  }
+
+  if (keyboard_unsubscribe_int() != OK) return 1;
+  if (timer_unsubscribe_int() != OK) return 1;
 
   //just a test to sprite file
-  Sprite *sp = create_sprite(xpm, 0, 0);
+  //Sprite *sp = create_sprite(xpm, 0, 0);
 
-  move_sprite(sp, 100, 100, 0, 1);
+  //move_sprite(sp, 100, 100, 0, 1);
 
-  kbd_interrupt_esc();
-
+  //kbd_interrupt_esc();
+  
   if (vg_exit() != OK)
     return 1;
   return 0;

@@ -5,6 +5,7 @@
 
 #include "sprite.h"
 #include "video_gr.h"
+#include <lcom/timer.h>
 
 /**
  * @brief creates a Sprite
