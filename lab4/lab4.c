@@ -35,10 +35,12 @@ int(mouse_test_packet)(uint32_t cnt) {
   int ipc_status, r;
   message msg;
   uint8_t bit_no;
+  if(mouse_enable_data_report() != OK)
+    return 1;
+
   if(mouse_subscribe_int(&bit_no) != OK)
     return 1;
-  if(mouse_enable_data_reporting() != OK)
-    return 1;
+
   uint64_t irq_set = BIT(bit_no);
 
   int mouse_counter = 0;
@@ -69,12 +71,14 @@ int(mouse_test_packet)(uint32_t cnt) {
       }
     }
   }
-  //if(mouse_disable_data_report() != OK)
-   // return 1;
+
   if(mouse_unsubscribe_int() != OK)
     return 1;
 
-  if (output_buff_flush() != OK)
+  if(mouse_disable_data_report() != OK)
+    return 1;
+
+  if(output_buff_flush() != OK)
     return 1;
   return 0;
 }
@@ -85,9 +89,14 @@ int (mouse_test_async)(uint8_t idle_time) {
   uint8_t mouse_bit_no, timer_bit_no, idle = idle_time;
   int r;
   uint32_t freq = sys_hz();
-  mouse_enable_data_reporting();
-  mouse_subscribe_int(&mouse_bit_no);
-  timer_subscribe_int(&timer_bit_no);
+  if(mouse_subscribe_int(&mouse_bit_no) != OK)
+    return 1;
+
+  if(timer_subscribe_int(&timer_bit_no) != OK)
+    return 1;
+
+  if(mouse_enable_data_report() != OK)
+    return 1;
 
   uint64_t mouse_irq_set = BIT(mouse_bit_no);
   uint64_t timer_irq_set = BIT(timer_bit_no);

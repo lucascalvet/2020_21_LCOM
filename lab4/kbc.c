@@ -9,12 +9,32 @@ int(kbc_write_cmd)(int command) {
 
   uint8_t status = 0; //to retrieve status register byte
 
-  util_sys_inb(KBC_STATUS_REG, &status);
-
-  for (int i = 0; i < 3; i++) { //loop while 8042 input buffer is not empty max [tries] times, then exit
-
-    if (status & !KBC_ST_IBF) { //only executes when input is free
+  for (int i = 0; i < NUM_TRIES; i++) { //loop while 8042 input buffer is not empty max [tries] times, then exit
+    util_sys_inb(KBC_STATUS_REG, &status);
+    
+    if (!(status & KBC_ST_IBF)) { //only executes when input is free
       sys_outb(KBC_CONTROL_REG, command);
+      return 0;
+    }
+    tickdelay(micros_to_ticks(DELAY_US));
+  }
+  return 1;
+}
+
+/**
+ * @brief writes argument to KBC input buffer 0x60
+ * @param arg specifies the argument to be sent to KBC
+ * @return 0 if no erros ocurred, 1 otherwise
+ */
+int(kbc_write_arg)(int arg) {
+
+  uint8_t status = 0; //to retrieve status register byte
+
+  for (int i = 0; i < NUM_TRIES; i++) { //loop while 8042 input buffer is not empty max [tries] times, then exit
+    util_sys_inb(KBC_STATUS_REG, &status);
+
+    if (!(status & KBC_ST_IBF)) { //only executes when input is free
+      sys_outb(KBC_INPUT_BUF, arg);
       return 0;
     }
     tickdelay(micros_to_ticks(DELAY_US));
@@ -31,20 +51,21 @@ int(kbc_read_data)(uint8_t *data) {
 
   uint8_t status = 0; //to retrieve status register byte
 
-  util_sys_inb(KBC_STATUS_REG, &status);
-      
-
-  for (int i = 0; i < 3; i++) {
-
+  for (int i = 0; i < NUM_TRIES; i++) {
+    util_sys_inb(KBC_STATUS_REG, &status);
+    //only if output buffer is full and has data to read
+    if (true) { //TODO: KBC_ST_OBF not raised when receiving aknowledgment, but receives ACK successfully, so I changed to always read the OUT_BUF...
+      util_sys_inb(KBC_OUT_BUF, data);
+      return 0;
+    }
+    
     if (status & (KBC_ST_PARITY | KBC_ST_TIMEOUT)) //checks for errors
       return 1;
-
-    if (status & KBC_ST_OBF) { //only if output buffer is full and has data to read
-      util_sys_inb(KBC_OUT_BUF, data);
-    }
-  }//tickdelay(micros_to_ticks(DELAY_US));
-    return 0;
+    
+    tickdelay(micros_to_ticks(DELAY_US));
   }
+  return 1;
+}
   
 
 /**

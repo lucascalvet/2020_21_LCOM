@@ -61,7 +61,7 @@ void(get_vbe_mode_info)(uint16_t mode, vbe_mode_info_t *mode_info) {
   //vbe_get_info(mmap.phys);
 
   reg86_t reg86;
-  memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
+  memset(&reg86, 0, sizeof(reg86)); //cleaning registers previous to function call to avoid errors
 
   reg86.intno = VBE_INTERRUPT_INSTRUCTION;
   reg86.ax = VBE_GET_MODE_INFO_FUNCTION;

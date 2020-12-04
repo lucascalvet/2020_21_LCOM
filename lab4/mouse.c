@@ -40,10 +40,13 @@ int(mouse_write_cmd)(uint8_t command) {
   uint8_t acknowledgment_data = 0;
 
   do {
-    kbc_write_cmd(KBC_WRITE_TO_MOUSE);
-    sys_outb(KBC_INPUT_BUF, command); //command (argument of KBC_WRITE_TO_MOUSE kbc command)
-    kbc_read_data(&acknowledgment_data);
-
+    if (kbc_write_cmd(KBC_WRITE_TO_MOUSE) != OK)
+      return 1;
+    if (kbc_write_arg(command) != OK)
+      return 1; //command (argument of KBC_WRITE_TO_MOUSE kbc command)
+    tickdelay(micros_to_ticks(DELAY_US));
+    if (kbc_read_data(&acknowledgment_data) != OK)
+      return 1;
     if(acknowledgment_data == MOUSE_ACK){
       if (command == PS2_ENABLE_DT_REP)
         printf("Everything is Ok, mouse data report enabled!\n");
@@ -68,9 +71,8 @@ int(mouse_write_cmd)(uint8_t command) {
  * @return 0 if no erros ocurred, 1 otherwise
  */
 int(mouse_enable_data_report)() {
-  if (mouse_write_cmd(PS2_ENABLE_DT_REP) != OK)
-    return 1;
-  return OK;
+  //mouse_write_cmd(PS2_SET_STREAM_MODE);
+  return mouse_write_cmd(PS2_ENABLE_DT_REP);
 }
 
 /**
@@ -78,9 +80,7 @@ int(mouse_enable_data_report)() {
  * @return 0 if no erros ocurred, 1 otherwise
  */
 int(mouse_disable_data_report)() {
-  if (mouse_write_cmd(PS2_DISABLE_DT_REP) != OK)
-    return 1;
-  return OK;
+  return mouse_write_cmd(PS2_DISABLE_DT_REP);
 }
 
 /**
