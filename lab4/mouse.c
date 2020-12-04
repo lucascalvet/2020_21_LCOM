@@ -148,6 +148,6 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
  * @return none
  */
 void(mouse_ih)() {
-  util_sys_inb(KBC_OUT_BUF, &data);
-  //kbc_read_data(&data);
+  //util_sys_inb(KBC_OUT_BUF, &data);
+  kbc_read_data(&data);
 }
