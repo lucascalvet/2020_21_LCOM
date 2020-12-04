@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+int counter = 0;
 // Any header files included below this line should have been created by you
 //#include "video_gr.h"
 //#include "sprite.h"
@@ -97,10 +98,19 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
                      int16_t speed, uint8_t fr_rate) { //exit criteria (final x and y or esc) possible use functions pointers too
   vg_init(VBE_INDEXED_1024_MODE);
+  xpm_image_t img;
+  uint8_t *map;
+  //gets the pixmap from the XPM
+  map = xpm_load(xpm, XPM_INDEXED, &img); //only working for indexed so colors only have 1 byte, therefore the color_assembler here it's not actually necessary
+  int map_index, x = xi, y = yi;
+
   int ipc_status;
   message msg;
   uint8_t kbd_bit_no, timer_bit_no;
   int r;
+  timer_set_frequency(0, 60);
+  int wait = 60/fr_rate;
+
   if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
   if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
 
@@ -108,7 +118,6 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
   uint64_t timer_irq_set = BIT(timer_bit_no);
 
   while (data != ESC) {
-
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != OK) {
       printf("driver_receive failed with: %d", r);
       continue;
@@ -118,6 +127,39 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
         case HARDWARE: /* hardware interrupt notification */
           if (msg.m_notify.interrupts & kbd_irq_set) {
             kbc_ih();
+          }
+          if (msg.m_notify.interrupts & timer_irq_set) {
+            timer_int_handler();
+            if(counter % wait == 0){
+              counter=0;
+              if (x > xf) {
+                vg_draw_rectangle(x + img.width - speed, y, speed, img.height, 0);
+                x -= speed;
+                if (x < xf) x = xf;
+              }
+              else if (x < xf) {
+                vg_draw_rectangle(x, y, speed, img.height, 0);
+                x += speed;
+                if (x > xf) x = xf;
+              }
+              if (y > yf) {
+                vg_draw_rectangle(x, y + img.height, img.width, speed, 0);
+                y -= speed;
+                if (y < yf) y = yf;
+              }
+              else if (y < yf) {
+                vg_draw_rectangle(x, y, img.width, speed, 0);
+                y += speed;
+                if (y > yf) y = yf;
+              }
+              map_index = 0;
+              //draws pixmap
+              for (int row = 0; row < img.height; row++) {
+                for (int col = 0; col < img.width; col++) {
+                  draw_pixel(x + col, y + row, color_assembler(map, &map_index));
+                }
+              }
+            }
           }
           break;
         default:
