@@ -51,6 +51,9 @@ void *(vg_init)(uint16_t mode);
 //assembles color bytes of an map starting at given position, according to nº bits_per_pixel
 uint32_t (color_assembler)(const uint8_t *map, int *map_position);
 
+//converts color from format BRG to RGB
+uint32_t(convert_BGR_to_RGB)(int color);
+
 //draws a pixel in screen
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
 

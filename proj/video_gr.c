@@ -220,11 +220,34 @@ uint32_t(color_assembler)(const uint8_t *map, int *map_position) {
   uint32_t color = 0;
 
   for (int i = 0; i < bits_to_bytes(); i++) {
-    color <<= 8;
+    color <<= 8; 
     color |= map[*map_position + i];
   }
-
+  
   *map_position += bits_to_bytes();
+
+  return color;
+}
+
+/**
+ * @brief changes the place of red and blue, because of the 
+ * @param color the color to be converted
+ * @return the converted color
+ */
+uint32_t(convert_BGR_to_RGB)(int color){
+  int red_mask = 0x0000FF;
+  int green_mask = 0x00FF00;
+  int blue_mask = 0xFF0000;
+
+  int red = color & red_mask;
+  red <<= 16;
+
+  int green = color & green_mask;
+
+  int blue = color & blue_mask;
+  blue >>= 16;
+
+  color = red | green | blue;
 
   return color;
 }

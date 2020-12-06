@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+//project headers
+#include "xpm_levels.h"
+
 unsigned timer_counter = 0;
 
 int main(int argc, char *argv[]) {
@@ -33,13 +36,14 @@ int main(int argc, char *argv[]) {
 }
 
 int(proj_main_loop)(int argc, char *argv[]){
+
   printf("Welcome to FireMi & WaterNix!!!\n");
-  proj_demo(VBE_DIRECT_800_MODE, true, false, 3);
-  vg_init(VBE_INDEXED_1024_MODE);
-  Sprite * player_1 = create_sprite(penguin, 0, 0);
-  draw_sprite(player_1);
-  sleep(3);
+  //proj_demo(VBE_DIRECT_800_MODE, true, false, 1);
+  vg_init(VBE_DIRECT_800_MODE);
+  Sprite * level1 = create_sprite(xpm_level1, 0, 0);
+  draw_sprite(level1);
+  sleep(20);
   vg_exit();
-  free(player_1);
+  delete_sprite(level1);
   return 0;
 }

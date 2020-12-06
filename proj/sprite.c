@@ -22,7 +22,7 @@ Sprite *(create_sprite)(xpm_map_t xpm, int x, int y) {
   xpm_image_t img;
 
   //reads the sprite pixmap
-  sp->map = xpm_load(xpm, XPM_INDEXED, &img);
+  sp->map = xpm_load(xpm, XPM_8_8_8, &img);
 
   if (sp->map == NULL) {
     free(sp);
@@ -82,7 +82,7 @@ void(draw_sprite)(Sprite *sp) {
   //draws pixmap
   for (int row = sp->y; row < sp->y + sp->height; row++) {
     for (int col = sp->x; col < sp->x + sp->width; col++) {
-      draw_pixel(col, row, color_assembler(sp->map, &map_index));
+      draw_pixel(col, row, convert_BGR_to_RGB(color_assembler(sp->map, &map_index)));
     }
   }
 }
