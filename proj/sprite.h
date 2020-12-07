@@ -31,7 +31,7 @@ void(draw_sprite)(Sprite *sp);
 void(erase_sprite)(Sprite *sp);
 
 //moves Sprite in screen
-void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed);
+void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background);
 
 //check collisions of sprite against a certain color in vram
 bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color);

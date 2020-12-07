@@ -47,7 +47,7 @@ int(proj_main_loop)(int argc, char *argv[]){
 
   Sprite *boal = create_sprite(xpm_boal, 20, 520);
   //draw_sprite(boal);
-  move_sprite(boal, 21, 300, 0, -1);
+  move_sprite(boal, 21, 300, 0, -1, level1);
 
   sleep(10);
   vg_exit();
