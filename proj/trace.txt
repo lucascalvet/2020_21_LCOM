@@ -1,0 +1,721 @@
+@lcflib.a:2019, lcf_start
+  proj_main_loop(argc, argv)
+> proj_main_loop(0, [NULL])
+  @proj.c:40, proj_main_loop
+    printf("Welcome to FireMi & WaterNix!!!\n")
+    "Welcome to FireMi & WaterNix!!!"
+  @proj.c:43, proj_main_loop
+    vg_init(VBE_DIRECT_800_MODE)
+  > vg_init(0x115)
+    @video_gr.c:59, get_vbe_mode_info
+      lm_alloc(sizeof(vbe_mode_info_t), &mmap)
+    < lm_alloc(256, addr: 0xeffff560 [phys: 0x0008f000, virt: 0xefb8c000, size: 256 bytes]) -> (ret: 0xefb8c000)
+    @video_gr.c:73, get_vbe_mode_info
+      sys_int86(&reg86)
+    > sys_int86(addr: 0xeffff538 [AX: 4f01, BX: 0000, CX: 0115, DX: 0000, ES: 8000, DI: f000])
+    < sys_int86(addr: 0xeffff538 [AX: 004f, BX: 0000, CX: 0115, DX: 0000, ES: 8000, DI: f000]) -> (ret: 0)
+    @video_gr.c:81, get_vbe_mode_info
+      lm_free(&mmap)
+    < lm_free(addr: 0xeffff560 [phys: 0x0008f000, virt: 0xefb8c000, size: 256 bytes]) -> (ret: 1)
+    @video_gr.c:186, vg_init
+      sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)
+    > sys_privctl(SELF, SYS_PRIV_ADD_MEM, addr: 0xeffff6d0 [0xe0000000 - 0xe015f900 <1.37329 MiB>])
+    < sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr) -> (ret: 0)
+    @video_gr.c:190, vg_init
+      vm_map_phys(SELF, (void *) mr.mr_base, vram_size)
+    < vm_map_phys(SELF, addr: 0xe0000000, 1.37329 MiB) -> (ret: 0xef89b000)
+    @video_gr.c:200, vg_init
+      sys_int86(&reg86)
+    > sys_int86(addr: 0xeffff5a8 [AX: 4f02, BX: 4115, CX: 0000, DX: 0000, ES: 0000, DI: 0000])
+    < sys_int86(addr: 0xeffff5a8 [AX: 004f, BX: 4115, CX: 0000, DX: 0000, ES: 0000, DI: 0000]) -> (ret: 0)
+  < vg_init(0x115) -> (ret: 0xef89b000)
+  @sprite.c:25, create_sprite
+    xpm_load(xpm, XPM_8_8_8, &img)
+  > xpm_load(addr: 0x82119f0, XPM_8_8_8, addr: 0xeffff788)
+  < xpm_load(addr: 0x82119f0, XPM_8_8_8, addr: 0xeffff788 [800x600 : 1440000 bytes]) -> (ret: 0x82bd000)
+  @sprite.c:25, create_sprite
+    xpm_load(xpm, XPM_8_8_8, &img)
+  > xpm_load(addr: 0x82124f0, XPM_8_8_8, addr: 0xeffff788)
+  < xpm_load(addr: 0x82124f0, XPM_8_8_8, addr: 0xeffff788 [50x50 : 7500 bytes]) -> (ret: 0x82ae000)
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @sprite.c:129, move_sprite
+    micros_to_ticks(20000)
+  @sprite.c:129, move_sprite
+    tickdelay(micros_to_ticks(20000))
+  > tickdelay(1 [16.7 ms])
+  @proj.c:52, proj_main_loop
+    sleep(10)
+  > sleep(10)
+  @proj.c:53, proj_main_loop
+    vg_exit()
+  < vg_exit() -> (ret: 0)
+< proj_main_loop(0, [NULL]) -> (ret: 0)

@@ -54,6 +54,12 @@ uint32_t (color_assembler)(const uint8_t *map, int *map_position);
 //converts color from format BRG to RGB
 uint32_t(convert_BGR_to_RGB)(int color);
 
+//returns the color at a certain address in the vram (by providing the coordinates)
+uint32_t (vram_get_color_by_coordinates)(uint16_t x, uint16_t y);
+
+//returns the color at a certain coordinate in a pixmap
+uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixmap, int width) ;
+
 //draws a pixel in screen
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
 
