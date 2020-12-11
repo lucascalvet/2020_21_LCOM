@@ -39,5 +39,14 @@ file instead of kbc.h to be easier to read */
 //scan codes
 #define TWO_BYTE_SCNCODE_PREFIX 0xE0
 #define ESC 0x81
+#define KEY_MAKE_W 0x11
+#define KEY_BREAK_W 0x91
+#define KEY_MAKE_A 0x1e
+#define KEY_BREAK_A 0x9e
+#define KEY_MAKE_S 0x1f
+#define KEY_BREAK_S 0x9f
+#define KEY_MAKE_D 0x20
+#define KEY_BREAK_D 0xa0
+
 
 #endif
