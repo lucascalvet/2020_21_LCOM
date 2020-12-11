@@ -37,6 +37,7 @@ Sprite *(create_sprite)(xpm_map_t xpm, int x, int y) {
   sp->xspeed = 0;
   sp->yspeed = 0;
   sp->xpm_type = img.type;
+  sp->transparency_color = xpm_transparency_color(sp->xpm_type); //gets the transparency color for xpm image type
 
   return sp;
 }
@@ -79,10 +80,14 @@ void(change_sprite_coords)(Sprite *sp, int x, int y) {
 void(draw_sprite)(Sprite *sp) {
   int map_index = 0; //to keep track of map index
 
+  uint32_t color;
+
   //draws pixmap
   for (int row = sp->y; row < sp->y + sp->height; row++) {
     for (int col = sp->x; col < sp->x + sp->width; col++) {
-      draw_pixel(col, row, convert_BGR_to_RGB(color_assembler(sp->map, &map_index)));
+      color = convert_BGR_to_RGB(color_assembler(sp->map, &map_index));
+      if(color != sp->transparency_color)
+        draw_pixel(col, row, color);
     }
   }
 }
@@ -93,13 +98,53 @@ void(draw_sprite)(Sprite *sp) {
  * @return none
  */
 void(erase_sprite)(Sprite *sp) {
-  uint32_t transparency_color = xpm_transparency_color(sp->xpm_type); //gets the transparency color for xpm image type
 
   for (int row = sp->y; row < sp->y + sp->height; row++) {
     for (int col = sp->x; col < sp->x + sp->width; col++) {
-      draw_pixel(col, row, transparency_color);
+      draw_pixel(col, row, sp->transparency_color);
     }
   }
+}
+
+/**
+ * @brief restores the background at a given rectangle to avoid overprocessing
+ * @param
+ * @param
+ * @param
+ * @param
+ * @return none
+ */
+void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background){
+    int map_index = 0; //to keep track of map index
+
+    for (int row = y; row < y + height; row++) {
+      for (int col = x; col < x + width; col++) {
+      map_index = (col + 800 * row) * 3; 
+      draw_pixel(col, row, convert_BGR_to_RGB(color_assembler(background->map, &map_index)));
+    }
+  }
+}
+
+//TODO: temporary for testing. Frame rate handled in proj.c. Later merging with move_sprite
+void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool keys[4]) {
+  int prev_x = sp->x;
+  int prev_y = sp->y;
+
+  if(keys[0]) sp->y -= yspeed;
+  if(keys[1]) sp->x -= xspeed;
+  if(keys[2]) sp->y += yspeed;
+  if(keys[3]) sp->x += xspeed;
+
+  //just for testing purpose
+  if(check_sprite_collision_by_color(sp, 0x0)){
+    sp->x = prev_x;
+    sp->y = prev_y;
+    return;
+  }
+  
+  restore_background(sp->x-xspeed, sp->y-yspeed, sp->width, sp->height, background);
+
+  draw_sprite(sp);
 }
 
 /**
@@ -111,12 +156,38 @@ void(erase_sprite)(Sprite *sp) {
  * @param yspeed displacement in pixels between consecutive frames, in the y axis
  * @return none
  */
-void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed) { //TODO: frame rate not yet implemented
-  while (sp->y != final_y && sp->x != final_x) {
+void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background) { //TODO: frame rate not yet implemented
+  while (sp->y != final_y || sp->x != final_x) {
     sp->x += xspeed;
     sp->y += yspeed;
 
+    //just for testing purpose
+    if(check_sprite_collision_by_color(sp, 0x0))
+      break;
+    
+    restore_background(sp->x-xspeed, sp->y-yspeed, sp->width, sp->height, background);
+
     draw_sprite(sp);
-    //sleep(1);
+
+    tickdelay(micros_to_ticks(20000)); 
   }
 }
+
+/**
+ * @brief check collisions of sprite against a certain color in vram
+ * @param sp sprite "object" to check for collision
+ * @param color color to check against with
+ * @return true if collision and false otherwise
+ */
+bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color) { //note: it must be used before the sprite is printed and the color is changed
+  for (int row = sp->y; row < sp->y + sp->height; row++) {
+    for (int col = sp->x; col < sp->x + sp->width; col++) {
+      if(convert_BGR_to_RGB(pixmap_get_color_by_coordinates(col - sp->x, row - sp->y, sp->map, sp->width)) != sp->transparency_color){
+        if (vram_get_color_by_coordinates(col, row) == color)
+          return true;
+      }
+    }
+  }
+  return false;
+}
+

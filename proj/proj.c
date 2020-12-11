@@ -12,6 +12,7 @@
 #include <lcom/timer.h>
 #include "xpm_levels.h"
 #include "xpm_characters.h"
+#include "xpm_boal.h"
 
 unsigned timer_counter = 0;
 
@@ -44,19 +45,22 @@ int(proj_main_loop)(int argc, char *argv[]){
   proj_demo(VBE_DIRECT_800_MODE, true, false, 1);
   vg_init(VBE_DIRECT_800_MODE);
   Sprite * level_1 = create_sprite(xpm_level1, 0, 0);
-  Sprite * firemi = create_sprite(xpm_firemi, 20, 530);
-  Sprite * waternix = create_sprite(xpm_waternix, 50, 530);
+  Sprite * firemi = create_sprite(xpm_firemi, 20, 510);
+  Sprite * waternix = create_sprite(xpm_waternix, 50, 510);
+  Sprite * boal = create_sprite(xpm_boal, 20, 520);
   draw_sprite(level_1);
   draw_sprite(firemi);
   draw_sprite(waternix);
+  draw_sprite(boal);
+  //move_sprite(boal, 21, 300, 0, -1, level_1);
   bool keys[4] = {0, 0, 0, 0}; //{W, A, S, D}
 
   int ipc_status;
   message msg;
   uint8_t kbd_bit_no, timer_bit_no;
   timer_set_frequency(0, 60);
-  int fr_rate = 30; //TODO: change to macro
-  int r, wait = 60 / fr_rate;
+  int r, wait = 60 / FPS;
+  int x_speed = 1, y_speed = 1;
 
   if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
   if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
@@ -87,7 +91,7 @@ int(proj_main_loop)(int argc, char *argv[]){
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
             if(timer_counter % wait == 0){
-              
+              handle_move(firemi, x_speed, y_speed, level_1, keys);
             }
           }
           break;
@@ -100,8 +104,10 @@ int(proj_main_loop)(int argc, char *argv[]){
   if (keyboard_unsubscribe_int() != OK) return 1;
   if (timer_unsubscribe_int() != OK) return 1;
 
-  sleep(3);
   vg_exit();
   delete_sprite(level_1);
+  delete_sprite(firemi);
+  delete_sprite(waternix);
+  delete_sprite(boal);
   return 0;
 }

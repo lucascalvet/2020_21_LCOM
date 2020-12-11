@@ -230,7 +230,7 @@ uint32_t(color_assembler)(const uint8_t *map, int *map_position) {
 }
 
 /**
- * @brief changes the place of red and blue, because of the 
+ * @brief changes the place of red and blue, because of the image converter format wich is BGR
  * @param color the color to be converted
  * @return the converted color
  */
@@ -253,6 +253,55 @@ uint32_t(convert_BGR_to_RGB)(int color){
 }
 
 /**
+ * @brief returns the color at a certain address in the vram (by providing the coordinates)
+ * @param x the x coordinate of screen from left to right
+ * @param y the y coordinate of screen from top to bottom
+ * @return the color in the desired position, -1 if no valid position given
+ */
+uint32_t (vram_get_color_by_coordinates)(uint16_t x, uint16_t y){
+  uint32_t color = -1;
+
+  char *pointer = video_mem; //pointer to video memory address
+
+  pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change 
+
+  if (x < h_res && y < v_res){ //if x and y exceeds the window size there is no color to be inputed
+    color = 0;
+
+    for (int i = 0; i < bits_to_bytes(); i++){
+      color <<= 8;
+      color |= *(pointer + i);
+    }
+  }
+
+  return color;
+}
+
+/**
+ * @brief returns the color at a certain coordinate in a pixmap
+ * @param x the x coordinate of screen from left to right
+ * @param y the y coordinate of screen from top to bottom
+ * @param pixmap the pixmap to get color from
+ */
+uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixmap, int width) {
+  uint32_t color = 0; //TODO: change "none" value
+
+  //if (x <  || y < v_res) //if x and y exceeds the window size there is no color to be inputed
+    //return -1;
+   //TODO: check for pixmap limits
+  uint8_t *pointer = pixmap; //pointer to video memory address
+
+  pointer += (x + width * y) * bits_to_bytes(); //gets correct position of memory map to change
+
+  for (int i = 0; i < bits_to_bytes(); i++) {
+    color <<= 8;
+    color |= *(pointer + i);
+  }
+
+  return color;
+}
+
+/**
  * @brief changes a pixel color in coordinates x and y of screen
  * @param x the x coordinate of screen from left to right
  * @param y the y coordinate of screen from top to bottom
@@ -262,7 +311,7 @@ uint32_t(convert_BGR_to_RGB)(int color){
  */
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
-  char *pointer = video_mem; //pointer to video memory adress
+  char *pointer = video_mem; //pointer to video memory address
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change according to x, y and bytes per pixel
 
