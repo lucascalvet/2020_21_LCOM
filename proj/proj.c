@@ -52,8 +52,11 @@ int(proj_main_loop)(int argc, char *argv[]){
   draw_sprite(firemi);
   draw_sprite(waternix);
   draw_sprite(boal);
+  Sprite* collision_objects_firemi[1] = {waternix};
+  Sprite* collision_objects_waternix[1] = {firemi};
   //move_sprite(boal, 21, 300, 0, -1, level_1);
   bool keys[4] = {0, 0, 0, 0}; //{W, A, S, D}
+  bool keys_waternix[4] = {0, 0, 0, 0}; //{^, <-, v, ->}
 
   int ipc_status;
   message msg;
@@ -86,12 +89,31 @@ int(proj_main_loop)(int argc, char *argv[]){
             if (data == KEY_BREAK_A) keys[1] = false;
             if (data == KEY_BREAK_S) keys[2] = false;
             if (data == KEY_BREAK_D) keys[3] = false;
+            /*
+            if (data == KEY_MAKE_ARROW_UP) keys_waternix[0] = true;
+            if (data == KEY_MAKE_ARROW_LEFT) keys_waternix[1] = true;
+            if (data == KEY_MAKE_ARROW_DOWN) keys_waternix[2] = true;
+            if (data == KEY_MAKE_ARROW_RIGHT) keys_waternix[3] = true;
+            if (data == KEY_BREAK_ARROW_UP) keys_waternix[0] = false;
+            if (data == KEY_BREAK_ARROW_LEFT) keys_waternix[1] = false;
+            if (data == KEY_BREAK_ARROW_DOWN) keys_waternix[2] = false;
+            if (data == KEY_BREAK_ARROW_RIGHT) keys_waternix[3] = false;
+            */
+            if (data == KEY_MAKE_I) keys_waternix[0] = true;
+            if (data == KEY_MAKE_J) keys_waternix[1] = true;
+            if (data == KEY_MAKE_K) keys_waternix[2] = true;
+            if (data == KEY_MAKE_L) keys_waternix[3] = true;
+            if (data == KEY_BREAK_I) keys_waternix[0] = false;
+            if (data == KEY_BREAK_J) keys_waternix[1] = false;
+            if (data == KEY_BREAK_K) keys_waternix[2] = false;
+            if (data == KEY_BREAK_L) keys_waternix[3] = false;
             //printf("\nkeys = {%x, %x, %x, %x}", keys[0], keys[1], keys[2], keys[3]);
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
             if(timer_counter % wait == 0){
-              handle_move(firemi, x_speed, y_speed, level_1, keys);
+              handle_move(firemi, x_speed, y_speed, level_1, keys, collision_objects_firemi, 1);
+              handle_move(waternix, x_speed, y_speed, level_1, keys_waternix, collision_objects_waternix, 1);
             }
           }
           break;

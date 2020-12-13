@@ -47,6 +47,28 @@ file instead of kbc.h to be easier to read */
 #define KEY_BREAK_S 0x9f
 #define KEY_MAKE_D 0x20
 #define KEY_BREAK_D 0xa0
+/*
+#define KEY_MAKE_ARROW_UP 0xe048
+#define KEY_BREAK_ARROW_UP 0xe0c8
+#define KEY_MAKE_ARROW_LEFT 0xe04b
+#define KEY_BREAK_ARROW_LEFT 0xe0cb
+#define KEY_MAKE_ARROW_DOWN 0xe050
+#define KEY_BREAK_ARROW_DOWN 0xe0d0
+#define KEY_MAKE_ARROW_RIGHT 0xe04d
+#define KEY_BREAK_ARROW_RIGHT 0xe0cd
+*/
+
+#define KEY_MAKE_I 0x17
+#define KEY_MAKE_J 0x24
+#define KEY_MAKE_K 0x25
+#define KEY_MAKE_L 0x26
+#define KEY_BREAK_I 0x97
+#define KEY_BREAK_J 0xa4
+#define KEY_BREAK_K 0xa5
+#define KEY_BREAK_L 0xa6
+
+//http://users.utcluj.ro/~baruch/sie/labor/PS2/Scan_Codes_Set_1.htm
+
 
 
 #endif

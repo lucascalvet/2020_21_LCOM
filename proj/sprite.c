@@ -125,8 +125,17 @@ void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *
   }
 }
 
+/**
+ * @brief handle a sprite movement using keyboard and a set of 4 keys
+ * @param sp the sprite to handle the movement
+ * @param collision_sprites pointer arrays to objects that can collide to that so that each object 
+ * doesn't deleat each other while restoring background
+ * @param n_collision_objects the size of the collision sprite array
+ * @return none
+ */
+
 //TODO: temporary for testing. Frame rate handled in proj.c. Later merging with move_sprite
-void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool keys[4]) {
+void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool keys[4], Sprite* collision_sprites[], int n_collision_objects) {
   int prev_x = sp->x;
   int prev_y = sp->y;
 
@@ -200,12 +209,19 @@ void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool k
   }
 
   if (sp->x == prev_x && sp->y == prev_y) return;
+
+  for(int i = 0; i < n_collision_objects; i++){
+    if(collision(sp, collision_sprites[i])){
+      draw_sprite(collision_sprites[i]); //draws again the sprite that is colliding with
+    }
+  }
   
   restore_background(prev_x, prev_y, sp->width, sp->height, background);
 
   draw_sprite(sp);
 }
 
+//******* KINDA DEPRECATED ********//
 /**
  * @brief moves sprite in screen
  * @param sp pointer to Sprite "object" to be moved
@@ -230,6 +246,24 @@ void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, 
 
     tickdelay(micros_to_ticks(20000)); 
   }
+}
+
+//#################### COLLISION FUNCTIONS #################### //
+
+/**
+ * @brief checks collision between two sprites (note: this algorithm treats each sprite as a rectangle)
+ * @param sp1 the first sprite to check collisions
+ * @param sp2 the second sprite to check collisions with the first
+ * @return true if collision occurs, false otherwise
+ */
+bool (collision)(Sprite* sp1, Sprite *sp2){
+  if (sp1->x + sp1->width >= sp2->x &&       //sp1 right edge past sp2 left edge
+      sp1->x <= sp2->x + sp2->width &&      //sp1 left edge past sp2 right edge
+      sp1->y <= sp2->y + sp2->height &&     //sp1 top edge past sp2 bottom edge
+      sp1->y + sp1->height >= sp2->y) {  //sp1 bottom edge past sp2 top edge
+        return true;
+  }
+  return false;
 }
 
 /**
