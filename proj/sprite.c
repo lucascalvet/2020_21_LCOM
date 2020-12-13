@@ -9,10 +9,11 @@
 
 /**
  * @brief creates a Sprite
- * @param xpm pointer to xpm to be used as image
+ * @param xpm pointer to xpm array to be used as image
+ * @param n_xpms number os xpm maps that form the sprite
  * @return pointer to Sprite "object" created, in fact to a structer of type Sprite
  */
-Sprite *(create_sprite)(xpm_map_t xpm, int x, int y) {
+Sprite *(create_sprite)(xpm_map_t xpm[], int x, int y, int n_xpms) {
   //allocates space for the "object"
   Sprite *sp = (Sprite *) malloc(sizeof(Sprite));
 
@@ -21,8 +22,9 @@ Sprite *(create_sprite)(xpm_map_t xpm, int x, int y) {
 
   xpm_image_t img;
 
-  //reads the sprite pixmap
-  sp->map = xpm_load(xpm, XPM_8_8_8, &img);
+  sp->map = xpm_load(xpm[0], XPM_8_8_8, &img);
+
+  sp->xpms[0] = sp->map;
 
   if (sp->map == NULL) {
     free(sp);
@@ -38,6 +40,11 @@ Sprite *(create_sprite)(xpm_map_t xpm, int x, int y) {
   sp->yspeed = 0;
   sp->xpm_type = img.type;
   sp->transparency_color = xpm_transparency_color(sp->xpm_type); //gets the transparency color for xpm image type
+
+   //reads the sprite pixmaps
+  for(int i = 1; i < n_xpms; i++){
+    sp->xpms[i] = xpm_load(xpm[i], XPM_8_8_8, &img);
+  }
 
   return sp;
 }
@@ -145,9 +152,15 @@ void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool k
       sp->yspeed -= JUMP_STEP;
     sp->y -= 1; //restoring y value
   }
-  if(keys[1]) sp->xspeed -= V_STEP;
+  if(keys[1]){ 
+    sp->xspeed -= V_STEP;
+    //sp->map = sp->xpms[1];
+  }
   if(keys[2]) sp->yspeed += V_STEP;
-  if(keys[3]) sp->xspeed += V_STEP;
+  if(keys[3]){
+    sp->xspeed += V_STEP;
+    sp->map = sp->xpms[2];
+  }
 
   if (sp->xspeed > 0) {
     sp->xspeed -= FRICTION;
@@ -201,6 +214,9 @@ void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool k
     }
     sp->xspeed = 0;
   }
+
+  printf("XSPEED: %d", sp->xspeed);
+  if(sp->xspeed == 0) sp->map = sp->xpms[0];
 
   if(check_sprite_collision_by_color(sp, 0x0)){
     sp->x = prev_x;
@@ -284,3 +300,4 @@ bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color) { //note: it m
   return false;
 }
 
+//#################### SPECIFIC FUNCTIONS #################### //

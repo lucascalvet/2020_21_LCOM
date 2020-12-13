@@ -40,19 +40,23 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+//xpm array encapsulation
+xpm_map_t xpm_leve1_array[1] = {xpm_level1};
+xpm_map_t xpm_firemi_array[3] = {xpm_firemi, firemi_run_l, firemi_run_r};
+xpm_map_t xpm_waternix_array[3] = {xpm_waternix, waternix_run_l, waternix_run_r};
 
 int(proj_main_loop)(int argc, char *argv[]){
   printf("Welcome to FireMi & WaterNix!!!\n");
   proj_demo(VBE_DIRECT_800_MODE, true, false, 1);
   vg_init(VBE_DIRECT_800_MODE);
-  Sprite * level_1 = create_sprite(xpm_level1, 0, 0);
-  Sprite * firemi = create_sprite(xpm_firemi, 20, 510);
-  Sprite * waternix = create_sprite(xpm_waternix, 50, 510);
-  Sprite * boal = create_sprite(xpm_boal, 20, 520);
+  Sprite * level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
+  Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 3);
+  Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 3);
+  //Sprite * boal = create_sprite(xpm_boal, 20, 520);
   draw_sprite(level_1);
   draw_sprite(firemi);
   draw_sprite(waternix);
-  draw_sprite(boal);
+  //draw_sprite(boal);
   Sprite* collision_objects_firemi[1] = {waternix};
   Sprite* collision_objects_waternix[1] = {firemi};
   //move_sprite(boal, 21, 300, 0, -1, level_1);
@@ -81,7 +85,7 @@ int(proj_main_loop)(int argc, char *argv[]){
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE: // hardware interrupt notification
           if (msg.m_notify.interrupts & kbd_irq_set) {
-            kbc_ih();
+            keyboard_ih();
             if (bytes[0] == KEY_MAKE_W) keys[0] = true;
             if (bytes[0] == KEY_MAKE_A) keys[1] = true;
             if (bytes[0] == KEY_MAKE_S) keys[2] = true;
@@ -134,6 +138,6 @@ int(proj_main_loop)(int argc, char *argv[]){
   delete_sprite(level_1);
   delete_sprite(firemi);
   delete_sprite(waternix);
-  delete_sprite(boal);
+  //delete_sprite(boal);
   return 0;
 }

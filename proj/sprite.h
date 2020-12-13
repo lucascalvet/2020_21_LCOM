@@ -19,11 +19,12 @@ typedef struct {
   enum xpm_image_type xpm_type; //xpm image type
   int width, height;            // dimensions
   int xspeed, yspeed;           // current speed
-  uint8_t *map;                 // the pixmap
+  uint8_t *map;                 // current pixmap
+  uint8_t* xpms[3];             //array of xpm's
 } Sprite;
 
 //creates a Sprite
-Sprite *create_sprite(xpm_map_t xpm, int x, int y); //speed set to zero
+Sprite *create_sprite(xpm_map_t xpm[], int x, int y, int n_xpms); //speed set to zero
 
 //deletes Sprite pointed from sp
 void(delete_sprite)(Sprite *sp);

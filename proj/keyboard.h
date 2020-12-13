@@ -8,7 +8,7 @@ int (keyboard_writing_cmd)(int reg, int cmd, int tries);
 
 int (keyboard_reading_cmd)(int tries);
 
-int (keyboard_ih)(uint8_t cmd);
+void (keyboard_ih)();
 
 int (keyboard_unsubscribe_int)();
 
