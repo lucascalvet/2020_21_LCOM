@@ -47,16 +47,15 @@ file instead of kbc.h to be easier to read */
 #define KEY_BREAK_S 0x9f
 #define KEY_MAKE_D 0x20
 #define KEY_BREAK_D 0xa0
-/*
-#define KEY_MAKE_ARROW_UP 0xe048
-#define KEY_BREAK_ARROW_UP 0xe0c8
-#define KEY_MAKE_ARROW_LEFT 0xe04b
-#define KEY_BREAK_ARROW_LEFT 0xe0cb
-#define KEY_MAKE_ARROW_DOWN 0xe050
-#define KEY_BREAK_ARROW_DOWN 0xe0d0
-#define KEY_MAKE_ARROW_RIGHT 0xe04d
-#define KEY_BREAK_ARROW_RIGHT 0xe0cd
-*/
+
+#define KEY_MAKE_ARROW_UP 0x48
+#define KEY_BREAK_ARROW_UP 0xc8
+#define KEY_MAKE_ARROW_LEFT 0x4b
+#define KEY_BREAK_ARROW_LEFT 0xcb
+#define KEY_MAKE_ARROW_DOWN 0x50
+#define KEY_BREAK_ARROW_DOWN 0xd0
+#define KEY_MAKE_ARROW_RIGHT 0x4d
+#define KEY_BREAK_ARROW_RIGHT 0xcd
 
 #define KEY_MAKE_I 0x17
 #define KEY_MAKE_J 0x24

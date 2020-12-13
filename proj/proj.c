@@ -15,6 +15,7 @@
 #include "xpm_boal.h"
 
 unsigned timer_counter = 0;
+extern uint8_t bytes[2];
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -71,7 +72,7 @@ int(proj_main_loop)(int argc, char *argv[]){
   uint64_t kbd_irq_set = BIT(kbd_bit_no);
   uint64_t timer_irq_set = BIT(timer_bit_no);
 
-  while (data != ESC) {
+  while (bytes[0] != ESC) {
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != OK) {
       printf("driver_receive failed with: %d", r);
       continue;
@@ -81,24 +82,26 @@ int(proj_main_loop)(int argc, char *argv[]){
         case HARDWARE: // hardware interrupt notification
           if (msg.m_notify.interrupts & kbd_irq_set) {
             kbc_ih();
-            if (data == KEY_MAKE_W) keys[0] = true;
-            if (data == KEY_MAKE_A) keys[1] = true;
-            if (data == KEY_MAKE_S) keys[2] = true;
-            if (data == KEY_MAKE_D) keys[3] = true;
-            if (data == KEY_BREAK_W) keys[0] = false;
-            if (data == KEY_BREAK_A) keys[1] = false;
-            if (data == KEY_BREAK_S) keys[2] = false;
-            if (data == KEY_BREAK_D) keys[3] = false;
+            if (bytes[0] == KEY_MAKE_W) keys[0] = true;
+            if (bytes[0] == KEY_MAKE_A) keys[1] = true;
+            if (bytes[0] == KEY_MAKE_S) keys[2] = true;
+            if (bytes[0] == KEY_MAKE_D) keys[3] = true;
+            if (bytes[0] == KEY_BREAK_W) keys[0] = false;
+            if (bytes[0] == KEY_BREAK_A) keys[1] = false;
+            if (bytes[0] == KEY_BREAK_S) keys[2] = false;
+            if (bytes[0] == KEY_BREAK_D) keys[3] = false;
+            
+            if(bytes[0] == TWO_BYTE_SCNCODE_PREFIX){
+              if (bytes[1] == KEY_MAKE_ARROW_UP) keys_waternix[0] = true;
+              if (bytes[1] == KEY_MAKE_ARROW_LEFT) keys_waternix[1] = true;
+              if (bytes[1] == KEY_MAKE_ARROW_DOWN) keys_waternix[2] = true;
+              if (bytes[1] == KEY_MAKE_ARROW_RIGHT) keys_waternix[3] = true;
+              if (bytes[1] == KEY_BREAK_ARROW_UP) keys_waternix[0] = false;
+              if (bytes[1] == KEY_BREAK_ARROW_LEFT) keys_waternix[1] = false;
+              if (bytes[1] == KEY_BREAK_ARROW_DOWN) keys_waternix[2] = false;
+              if (bytes[1] == KEY_BREAK_ARROW_RIGHT) keys_waternix[3] = false;
+            }
             /*
-            if (data == KEY_MAKE_ARROW_UP) keys_waternix[0] = true;
-            if (data == KEY_MAKE_ARROW_LEFT) keys_waternix[1] = true;
-            if (data == KEY_MAKE_ARROW_DOWN) keys_waternix[2] = true;
-            if (data == KEY_MAKE_ARROW_RIGHT) keys_waternix[3] = true;
-            if (data == KEY_BREAK_ARROW_UP) keys_waternix[0] = false;
-            if (data == KEY_BREAK_ARROW_LEFT) keys_waternix[1] = false;
-            if (data == KEY_BREAK_ARROW_DOWN) keys_waternix[2] = false;
-            if (data == KEY_BREAK_ARROW_RIGHT) keys_waternix[3] = false;
-            */
             if (data == KEY_MAKE_I) keys_waternix[0] = true;
             if (data == KEY_MAKE_J) keys_waternix[1] = true;
             if (data == KEY_MAKE_K) keys_waternix[2] = true;
@@ -107,6 +110,7 @@ int(proj_main_loop)(int argc, char *argv[]){
             if (data == KEY_BREAK_J) keys_waternix[1] = false;
             if (data == KEY_BREAK_K) keys_waternix[2] = false;
             if (data == KEY_BREAK_L) keys_waternix[3] = false;
+            */
             //printf("\nkeys = {%x, %x, %x, %x}", keys[0], keys[1], keys[2], keys[3]);
           }
           if (msg.m_notify.interrupts & timer_irq_set) {

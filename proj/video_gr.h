@@ -66,7 +66,4 @@ void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
 //draws a pattern with rectangles
 int(draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t no_rectangles);
 
-//waits for ESC to be pressed
-int(kbd_interrupt_esc)();
-
 #endif //VIDEO_GR_H

@@ -4,7 +4,9 @@
 #include "utils.h"
 #include "keyboard.h"
 
+uint8_t data;
 uint8_t bytes[2];
+
 uint8_t st;
 uint8_t temp;
 int hook_id_kbd;
@@ -37,7 +39,7 @@ int (keyboard_writing_cmd)(int reg, int cmd, int tries){
     return 0;
 }
 
-int (keyboard_reading_cmd)(uint8_t st, int tries){
+int (keyboard_reading_cmd)(int tries){
 
     for(int i = 0; i < tries; i--) {
         if(util_sys_inb(KBC_STATUS_REG, &st) != OK)
@@ -58,28 +60,24 @@ int (keyboard_reading_cmd)(uint8_t st, int tries){
 }
 
 void (kbc_ih)(){  //keyboard interrupt handler
-    bool make;
+    bool make_identifier;
 
-    if(keyboard_reading_cmd(st, 3) == 0){
+    if(keyboard_reading_cmd(3) == 0){
         
-        uint8_t mk1 = data >> 7; //shitf value to stay with make
-        
-        if(!mk1)
-            make = true;
-        else
-            make = false;
-
-        //uint8_t mk2 = data >> 7;
+        make_identifier = data >> 7; //shitf value to stay with make
         
         bytes[0] = data;        
 
         if(data != TWO_BYTE_SCNCODE_PREFIX){
-            kbd_print_scancode(make, 1, bytes);
+            kbd_print_scancode(make_identifier, 1, bytes);
         }
         else{
-            data = keyboard_reading_cmd(st, 3);
+            keyboard_reading_cmd(3);
+
+            make_identifier = data >> 7; //shitf value to stay with make
+
             bytes[1] = data;
-            //kbd_print_scancode(make, 2, bytes);
+            kbd_print_scancode(make_identifier, 2, bytes);
         }
     }
 }
