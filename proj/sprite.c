@@ -130,19 +130,78 @@ void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool k
   int prev_x = sp->x;
   int prev_y = sp->y;
 
-  if(keys[0]) sp->y -= yspeed;
-  if(keys[1]) sp->x -= xspeed;
-  if(keys[2]) sp->y += yspeed;
-  if(keys[3]) sp->x += xspeed;
+  if(keys[0]) {
+    sp->y += 1; //checking if it is on the ground TODO: not very pretty, but it works...
+    if(check_sprite_collision_by_color(sp, 0x0))
+      sp->yspeed -= JUMP_STEP;
+    sp->y -= 1; //restoring y value
+  }
+  if(keys[1]) sp->xspeed -= V_STEP;
+  if(keys[2]) sp->yspeed += V_STEP;
+  if(keys[3]) sp->xspeed += V_STEP;
 
-  //just for testing purpose
+  if (sp->xspeed > 0) {
+    sp->xspeed -= FRICTION;
+    if (sp->xspeed < 0) sp->xspeed = 0;
+  }
+  else if (sp->xspeed < 0) {
+    sp->xspeed += FRICTION;
+    if (sp->xspeed > 0) sp->xspeed = 0;
+  }
+  sp->yspeed += GRAVITY;
+
+  if (sp->xspeed > MAX_V) sp->xspeed = MAX_V;
+  if (sp->xspeed < -MAX_V) sp->xspeed = -MAX_V;
+
+  sp->y += sp->yspeed;
+  if (check_sprite_collision_by_color(sp, 0x0)) {
+    sp->y = prev_y;
+    if (sp->yspeed > 0){
+      for (int step = sp->yspeed - 1; step > 0; step--) {
+        sp->y += step;
+        if (!check_sprite_collision_by_color(sp, 0x0)) break;
+        sp->y = prev_y;
+      }
+    }
+    else if (sp->yspeed < 0){
+      for (int step = sp->yspeed + 1; step < 0; step++) {
+        sp->y += step;
+        if (!check_sprite_collision_by_color(sp, 0x0)) break;
+        sp->y = prev_y;
+      }
+    }
+    sp->yspeed = 0;
+  }
+
+  sp->x += sp->xspeed;
+  if (check_sprite_collision_by_color(sp, 0x0)) {
+    sp->x = prev_x;
+    if (sp->xspeed > 0){
+      for (int step = sp->xspeed - 1; step > 0; step--) {
+        sp->x += step;
+        if (!check_sprite_collision_by_color(sp, 0x0)) break;
+        sp->x = prev_x;
+      }
+    }
+    else if (sp->xspeed < 0){
+      for (int step = sp->xspeed + 1; step < 0; step++) {
+        sp->x += step;
+        if (!check_sprite_collision_by_color(sp, 0x0)) break;
+        sp->x = prev_x;
+      }
+    }
+    sp->xspeed = 0;
+  }
+
   if(check_sprite_collision_by_color(sp, 0x0)){
     sp->x = prev_x;
     sp->y = prev_y;
     return;
   }
+
+  if (sp->x == prev_x && sp->y == prev_y) return;
   
-  restore_background(sp->x-xspeed, sp->y-yspeed, sp->width, sp->height, background);
+  restore_background(prev_x, prev_y, sp->width, sp->height, background);
 
   draw_sprite(sp);
 }

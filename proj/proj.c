@@ -86,7 +86,7 @@ int(proj_main_loop)(int argc, char *argv[]){
             if (data == KEY_BREAK_A) keys[1] = false;
             if (data == KEY_BREAK_S) keys[2] = false;
             if (data == KEY_BREAK_D) keys[3] = false;
-            printf("\nkeys = {%x, %x, %x, %x}", keys[0], keys[1], keys[2], keys[3]);
+            //printf("\nkeys = {%x, %x, %x, %x}", keys[0], keys[1], keys[2], keys[3]);
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();

@@ -7,6 +7,11 @@
 #include <stdio.h>
 
 #define FPS 30
+#define V_STEP 3
+#define JUMP_STEP 25
+#define GRAVITY 3
+#define MAX_V 6
+#define FRICTION 1
 
 typedef struct {
   int x, y;                     // current position

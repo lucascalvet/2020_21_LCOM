@@ -79,7 +79,7 @@ void (kbc_ih)(){  //keyboard interrupt handler
         else{
             data = keyboard_reading_cmd(st, 3);
             bytes[1] = data;
-            kbd_print_scancode(make, 2, bytes);
+            //kbd_print_scancode(make, 2, bytes);
         }
     }
 }
