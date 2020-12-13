@@ -135,7 +135,7 @@ void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *
  */
 
 //TODO: temporary for testing. Frame rate handled in proj.c. Later merging with move_sprite
-void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool keys[4], Sprite* collision_sprites[], int n_collision_objects) {
+void(handle_move)(Sprite *sp, bool keys[4]) {
   int prev_x = sp->x;
   int prev_y = sp->y;
 
@@ -146,7 +146,7 @@ void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool k
     sp->y -= 1; //restoring y value
   }
   if(keys[1]) sp->xspeed -= V_STEP;
-  if(keys[2]) sp->yspeed += V_STEP;
+  //if(keys[2]) sp->yspeed += V_STEP;
   if(keys[3]) sp->xspeed += V_STEP;
 
   if (sp->xspeed > 0) {
@@ -207,7 +207,7 @@ void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool k
     sp->y = prev_y;
     return;
   }
-
+/*
   if (sp->x == prev_x && sp->y == prev_y) return;
 
   for(int i = 0; i < n_collision_objects; i++){
@@ -215,10 +215,26 @@ void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool k
       draw_sprite(collision_sprites[i]); //draws again the sprite that is colliding with
     }
   }
-  
-  restore_background(prev_x, prev_y, sp->width, sp->height, background);
+  */
+}
 
-  draw_sprite(sp);
+void handle_characters_move(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4]){
+  int prev_char1_x = char1->x;
+  int prev_char2_x = char2->x;
+  int prev_char1_y = char1->y;
+  int prev_char2_y = char2->y;
+  handle_move(char1, char1_keys);
+  handle_move(char2, char2_keys);
+  bool change_char1 = char1->x != prev_char1_x || char1->y != prev_char1_y;
+  bool change_char2 = char2->x != prev_char2_x || char2->y != prev_char2_y;
+  if (change_char2) {
+    restore_background(prev_char2_x, prev_char2_y, char2->width, char2->height, background);
+  }
+  if (change_char1) {
+    restore_background(prev_char1_x, prev_char1_y, char1->width, char1->height, background);
+  }
+  draw_sprite(char2);
+  draw_sprite(char1);
 }
 
 //******* KINDA DEPRECATED ********//

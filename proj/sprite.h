@@ -37,7 +37,9 @@ void(draw_sprite)(Sprite *sp);
 //erases Sprite from screen
 void(erase_sprite)(Sprite *sp);
 
-void(handle_move)(Sprite *sp, int xspeed, int yspeed, Sprite *background, bool keys[4], Sprite* collision_sprites[], int n_collision_objects);
+void(handle_move)(Sprite *sp, bool keys[4]);
+
+void handle_characters_move(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4]);
 
 //moves Sprite in screen
 void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background);

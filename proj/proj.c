@@ -53,10 +53,10 @@ int(proj_main_loop)(int argc, char *argv[]){
   draw_sprite(firemi);
   draw_sprite(waternix);
   draw_sprite(boal);
-  Sprite* collision_objects_firemi[1] = {waternix};
-  Sprite* collision_objects_waternix[1] = {firemi};
+  //Sprite* collision_objects_firemi[1] = {waternix};
+  //Sprite* collision_objects_waternix[1] = {firemi};
   //move_sprite(boal, 21, 300, 0, -1, level_1);
-  bool keys[4] = {0, 0, 0, 0}; //{W, A, S, D}
+  bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
   bool keys_waternix[4] = {0, 0, 0, 0}; //{^, <-, v, ->}
 
   int ipc_status;
@@ -64,7 +64,6 @@ int(proj_main_loop)(int argc, char *argv[]){
   uint8_t kbd_bit_no, timer_bit_no;
   timer_set_frequency(0, 60);
   int r, wait = 60 / FPS;
-  int x_speed = 1, y_speed = 1;
 
   if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
   if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
@@ -82,14 +81,14 @@ int(proj_main_loop)(int argc, char *argv[]){
         case HARDWARE: // hardware interrupt notification
           if (msg.m_notify.interrupts & kbd_irq_set) {
             kbc_ih();
-            if (bytes[0] == KEY_MAKE_W) keys[0] = true;
-            if (bytes[0] == KEY_MAKE_A) keys[1] = true;
-            if (bytes[0] == KEY_MAKE_S) keys[2] = true;
-            if (bytes[0] == KEY_MAKE_D) keys[3] = true;
-            if (bytes[0] == KEY_BREAK_W) keys[0] = false;
-            if (bytes[0] == KEY_BREAK_A) keys[1] = false;
-            if (bytes[0] == KEY_BREAK_S) keys[2] = false;
-            if (bytes[0] == KEY_BREAK_D) keys[3] = false;
+            if (bytes[0] == KEY_MAKE_W) keys_firemi[0] = true;
+            if (bytes[0] == KEY_MAKE_A) keys_firemi[1] = true;
+            if (bytes[0] == KEY_MAKE_S) keys_firemi[2] = true;
+            if (bytes[0] == KEY_MAKE_D) keys_firemi[3] = true;
+            if (bytes[0] == KEY_BREAK_W) keys_firemi[0] = false;
+            if (bytes[0] == KEY_BREAK_A) keys_firemi[1] = false;
+            if (bytes[0] == KEY_BREAK_S) keys_firemi[2] = false;
+            if (bytes[0] == KEY_BREAK_D) keys_firemi[3] = false;
             
             if(bytes[0] == TWO_BYTE_SCNCODE_PREFIX){
               if (bytes[1] == KEY_MAKE_ARROW_UP) keys_waternix[0] = true;
@@ -111,13 +110,12 @@ int(proj_main_loop)(int argc, char *argv[]){
             if (data == KEY_BREAK_K) keys_waternix[2] = false;
             if (data == KEY_BREAK_L) keys_waternix[3] = false;
             */
-            //printf("\nkeys = {%x, %x, %x, %x}", keys[0], keys[1], keys[2], keys[3]);
+            //printf("\nkeys = {%x, %x, %x, %x}", keys_firemi[0], keys_firemi[1], keys_firemi[2], keys_firemi[3]);
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
             if(timer_counter % wait == 0){
-              handle_move(firemi, x_speed, y_speed, level_1, keys, collision_objects_firemi, 1);
-              handle_move(waternix, x_speed, y_speed, level_1, keys_waternix, collision_objects_waternix, 1);
+              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix);
             }
           }
           break;
