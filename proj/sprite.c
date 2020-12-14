@@ -9,10 +9,11 @@
 
 /**
  * @brief creates a Sprite
- * @param xpm pointer to xpm to be used as image
+ * @param xpm pointer to xpm array to be used as image
+ * @param n_xpms number os xpm maps that form the sprite
  * @return pointer to Sprite "object" created, in fact to a structer of type Sprite
  */
-Sprite *(create_sprite)(xpm_map_t xpm, int x, int y) {
+Sprite *(create_sprite)(xpm_map_t xpm[], int x, int y, int n_xpms) {
   //allocates space for the "object"
   Sprite *sp = (Sprite *) malloc(sizeof(Sprite));
 
@@ -21,8 +22,9 @@ Sprite *(create_sprite)(xpm_map_t xpm, int x, int y) {
 
   xpm_image_t img;
 
-  //reads the sprite pixmap
-  sp->map = xpm_load(xpm, XPM_8_8_8, &img);
+  sp->map = xpm_load(xpm[0], XPM_8_8_8, &img);
+
+  sp->xpms[0] = sp->map;
 
   if (sp->map == NULL) {
     free(sp);
@@ -38,6 +40,11 @@ Sprite *(create_sprite)(xpm_map_t xpm, int x, int y) {
   sp->yspeed = 0;
   sp->xpm_type = img.type;
   sp->transparency_color = xpm_transparency_color(sp->xpm_type); //gets the transparency color for xpm image type
+
+   //reads the sprite pixmaps
+  for(int i = 1; i < n_xpms; i++){
+    sp->xpms[i] = xpm_load(xpm[i], XPM_8_8_8, &img);
+  }
 
   return sp;
 }
@@ -128,26 +135,34 @@ void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *
 /**
  * @brief handle a sprite movement using keyboard and a set of 4 keys
  * @param sp the sprite to handle the movement
- * @param collision_sprites pointer arrays to objects that can collide to that so that each object 
- * doesn't deleat each other while restoring background
- * @param n_collision_objects the size of the collision sprite array
- * @return none
+ * 
+ * @return if the sprite has changed
  */
-
-//TODO: temporary for testing. Frame rate handled in proj.c. Later merging with move_sprite
-void(handle_move)(Sprite *sp, bool keys[4]) {
+bool (handle_move)(Sprite *sp, bool keys[4]) {
   int prev_x = sp->x;
   int prev_y = sp->y;
-
+  bool changed = false;
   if(keys[0]) {
     sp->y += 1; //checking if it is on the ground TODO: not very pretty, but it works...
     if(check_sprite_collision_by_color(sp, 0x0))
       sp->yspeed -= JUMP_STEP;
     sp->y -= 1; //restoring y value
   }
-  if(keys[1]) sp->xspeed -= V_STEP;
+  if(keys[1]){ 
+    sp->xspeed -= V_STEP;
+    if (sp->map != sp->xpms[1]){
+      sp->map = sp->xpms[1];
+      changed = true;
+    }
+  }
   //if(keys[2]) sp->yspeed += V_STEP;
-  if(keys[3]) sp->xspeed += V_STEP;
+  if(keys[3]){
+    sp->xspeed += V_STEP;
+    if (sp->map != sp->xpms[2]){
+      sp->map = sp->xpms[2];
+      changed = true;
+    }
+  }
 
   if (sp->xspeed > 0) {
     sp->xspeed -= FRICTION;
@@ -162,25 +177,37 @@ void(handle_move)(Sprite *sp, bool keys[4]) {
   if (sp->xspeed > MAX_V) sp->xspeed = MAX_V;
   if (sp->xspeed < -MAX_V) sp->xspeed = -MAX_V;
 
+  if(sp->xspeed == 0 && sp->map != sp->xpms[0]){
+    sp->map = sp->xpms[0];
+    changed = true;
+  }
+
   sp->y += sp->yspeed;
   if (check_sprite_collision_by_color(sp, 0x0)) {
     sp->y = prev_y;
     if (sp->yspeed > 0){
       for (int step = sp->yspeed - 1; step > 0; step--) {
         sp->y += step;
-        if (!check_sprite_collision_by_color(sp, 0x0)) break;
+        if (!check_sprite_collision_by_color(sp, 0x0)){
+          changed = true;
+          break;
+        }
         sp->y = prev_y;
       }
     }
     else if (sp->yspeed < 0){
       for (int step = sp->yspeed + 1; step < 0; step++) {
         sp->y += step;
-        if (!check_sprite_collision_by_color(sp, 0x0)) break;
+        if (!check_sprite_collision_by_color(sp, 0x0)){
+          changed = true;
+          break;
+        }
         sp->y = prev_y;
       }
     }
     sp->yspeed = 0;
   }
+  else changed = true;
 
   sp->x += sp->xspeed;
   if (check_sprite_collision_by_color(sp, 0x0)) {
@@ -188,25 +215,28 @@ void(handle_move)(Sprite *sp, bool keys[4]) {
     if (sp->xspeed > 0){
       for (int step = sp->xspeed - 1; step > 0; step--) {
         sp->x += step;
-        if (!check_sprite_collision_by_color(sp, 0x0)) break;
+        if (!check_sprite_collision_by_color(sp, 0x0)) {
+          changed = true;
+          break;
+        }
         sp->x = prev_x;
       }
     }
     else if (sp->xspeed < 0){
       for (int step = sp->xspeed + 1; step < 0; step++) {
         sp->x += step;
-        if (!check_sprite_collision_by_color(sp, 0x0)) break;
+        if (!check_sprite_collision_by_color(sp, 0x0)) {
+          changed = true;
+          break;
+        }
         sp->x = prev_x;
       }
     }
     sp->xspeed = 0;
   }
-
-  if(check_sprite_collision_by_color(sp, 0x0)){
-    sp->x = prev_x;
-    sp->y = prev_y;
-    return;
-  }
+  else changed = true;
+  
+  return changed;
 /*
   if (sp->x == prev_x && sp->y == prev_y) return;
 
@@ -218,23 +248,30 @@ void(handle_move)(Sprite *sp, bool keys[4]) {
   */
 }
 
-void handle_characters_move(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4]){
+/**
+ * @brief handle a character's movement
+ * 
+ * @param char1 one of the characters to move
+ * @param char2 the other character to move
+ * @param background the game's background (to be restored)
+ * @param char1_keys the pressed keys for the movement of the first character
+ * @param char2_keys the pressed keys for the movement of the second character
+ */
+void (handle_characters_move)(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4]){
   int prev_char1_x = char1->x;
   int prev_char2_x = char2->x;
   int prev_char1_y = char1->y;
   int prev_char2_y = char2->y;
-  handle_move(char1, char1_keys);
-  handle_move(char2, char2_keys);
-  bool change_char1 = char1->x != prev_char1_x || char1->y != prev_char1_y;
-  bool change_char2 = char2->x != prev_char2_x || char2->y != prev_char2_y;
-  if (change_char2) {
-    restore_background(prev_char2_x, prev_char2_y, char2->width, char2->height, background);
-  }
-  if (change_char1) {
+  bool change_char1 = handle_move(char1, char1_keys);
+  bool change_char2 = handle_move(char2, char2_keys);
+  if (change_char1)
     restore_background(prev_char1_x, prev_char1_y, char1->width, char1->height, background);
+  if (change_char2)
+    restore_background(prev_char2_x, prev_char2_y, char2->width, char2->height, background);
+  if (change_char1 || change_char2){
+    draw_sprite(char2);
+    draw_sprite(char1);
   }
-  draw_sprite(char2);
-  draw_sprite(char1);
 }
 
 //******* KINDA DEPRECATED ********//
@@ -300,3 +337,4 @@ bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color) { //note: it m
   return false;
 }
 
+//#################### SPECIFIC FUNCTIONS #################### //

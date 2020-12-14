@@ -3,6 +3,7 @@
 #include "i8042.h"
 #include "utils.h"
 #include "keyboard.h"
+#include "kbc.h"
 
 uint8_t data;
 uint8_t bytes[2];
@@ -24,7 +25,7 @@ int (keyboard_unsubscribe_int)(){
         return 1;
     return 0;
 }
-
+/*
 int (keyboard_writing_cmd)(int reg, int cmd, int tries){
     for(int i = 0; i < tries; i--) {  //loop while 8042 input buffer is not empty max [tries] times, then exit
         if(util_sys_inb(KBC_STATUS_REG, &st) != OK)
@@ -44,8 +45,8 @@ int (keyboard_reading_cmd)(int tries){
     for(int i = 0; i < tries; i--) {
         if(util_sys_inb(KBC_STATUS_REG, &st) != OK)
             return -1;
-
-        if(st & KBC_ST_OBF) {
+if(true){
+        //if(st & KBC_ST_OBF) {
             if(util_sys_inb(KBC_OUT_BUF, &data) != OK)
                 return -1;
 
@@ -58,11 +59,11 @@ int (keyboard_reading_cmd)(int tries){
     }
     return -1;
 }
-
-void (kbc_ih)(){  //keyboard interrupt handler
+*/
+void (keyboard_ih)(){  //keyboard interrupt handler
     bool make_identifier;
 
-    if(keyboard_reading_cmd(3) == 0){
+    if(kbc_read_data(&data) == 0){
         
         make_identifier = data >> 7; //shitf value to stay with make
         
@@ -72,7 +73,7 @@ void (kbc_ih)(){  //keyboard interrupt handler
             kbd_print_scancode(make_identifier, 1, bytes);
         }
         else{
-            keyboard_reading_cmd(3);
+            kbc_read_data(&data);
 
             make_identifier = data >> 7; //shitf value to stay with make
 

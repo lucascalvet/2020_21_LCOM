@@ -19,11 +19,12 @@ typedef struct {
   enum xpm_image_type xpm_type; //xpm image type
   int width, height;            // dimensions
   int xspeed, yspeed;           // current speed
-  uint8_t *map;                 // the pixmap
+  uint8_t *map;                 // current pixmap
+  uint8_t *xpms[3];             //array of xpm's
 } Sprite;
 
 //creates a Sprite
-Sprite *create_sprite(xpm_map_t xpm, int x, int y); //speed set to zero
+Sprite *create_sprite(xpm_map_t xpm[], int x, int y, int n_xpms); //speed set to zero
 
 //deletes Sprite pointed from sp
 void(delete_sprite)(Sprite *sp);
@@ -37,9 +38,9 @@ void(draw_sprite)(Sprite *sp);
 //erases Sprite from screen
 void(erase_sprite)(Sprite *sp);
 
-void(handle_move)(Sprite *sp, bool keys[4]);
+bool (handle_move)(Sprite *sp, bool keys[4]);
 
-void handle_characters_move(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4]);
+void (handle_characters_move)(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4]);
 
 //moves Sprite in screen
 void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background);
