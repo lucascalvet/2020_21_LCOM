@@ -6,8 +6,6 @@ for mouse and keyboard operations */
 
 #include "i8042.h"
 
-#define NUM_TRIES 5
-
 //writes command to control register
 int(kbc_write_cmd)(int command);
 

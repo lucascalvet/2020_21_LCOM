@@ -50,19 +50,20 @@ int(kbc_write_arg)(int arg) {
 int(kbc_read_data)(uint8_t *data) {
 
   uint8_t status = 0; //to retrieve status register byte
-  int errors = 0;
 
   for (int i = 0; i < NUM_TRIES; i++) {
-    util_sys_inb(KBC_STATUS_REG, &status);
+    if (util_sys_inb(KBC_STATUS_REG, &status) != OK)
+      return -1;
+      
+    if (status & KBC_ST_OBF) {
+      if (util_sys_inb(KBC_OUT_BUF, data) != OK)
+        return -1;
 
-    util_sys_inb(KBC_OUT_BUF, data);
-
-    if (status & (KBC_ST_PARITY | KBC_ST_TIMEOUT)){ //checks for errors
-      errors = 1;
-      return errors;
+      if (status & (KBC_ST_PARITY | KBC_ST_TIMEOUT)) { //checks for errors
+        return -1;
+      }
+      return 0;
     }
-    return 0;
-    
     tickdelay(micros_to_ticks(DELAY_US));
   }
   return 0;

@@ -7,6 +7,7 @@
 
 uint8_t data;
 uint8_t bytes[2];
+bool making_scancode;
 
 uint8_t st;
 uint8_t temp;
@@ -60,25 +61,31 @@ if(true){
     return -1;
 }
 */
-void (keyboard_ih)(){  //keyboard interrupt handler
-    bool make_identifier;
+void(keyboard_ih)() {
+  bool make_identifier;
 
-    if(kbc_read_data(&data) == 0){
-        
-        make_identifier = data >> 7; //shitf value to stay with make
-        
-        bytes[0] = data;        
-
-        if(data != TWO_BYTE_SCNCODE_PREFIX){
-            kbd_print_scancode(make_identifier, 1, bytes);
-        }
-        else{
-            kbc_read_data(&data);
-
-            make_identifier = data >> 7; //shitf value to stay with make
-
-            bytes[1] = data;
-            kbd_print_scancode(make_identifier, 2, bytes);
-        }
+  if (kbc_read_data(&data) == 0) {
+    if (data == TWO_BYTE_SCNCODE_PREFIX) {
+      bytes[0] = data;
+      making_scancode = true;
     }
+    else {
+      make_identifier = !(data >> 7); //shift value to check if it is a make code
+
+      if (making_scancode) {
+        bytes[1] = data;
+        making_scancode = false;
+        #ifdef PRINT_SCANCODES
+        kbd_print_scancode(make_identifier, 2, bytes);
+        #endif
+      }
+      else {
+        bytes[0] = data;
+        bytes[1] = 0x00;
+        #ifdef PRINT_SCANCODES
+        kbd_print_scancode(make_identifier, 1, bytes);
+        #endif
+      }
+    }
+  }
 }

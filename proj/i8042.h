@@ -35,6 +35,7 @@ file instead of kbc.h to be easier to read */
 
 //measuring time
 #define DELAY_US 20000
+#define NUM_TRIES 5
 
 //scan codes
 #define TWO_BYTE_SCNCODE_PREFIX 0xE0
