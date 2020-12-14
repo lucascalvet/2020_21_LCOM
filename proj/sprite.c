@@ -4,8 +4,7 @@
 #include <stdio.h>
 
 #include "sprite.h"
-#include "video_gr.h"
-#include <lcom/timer.h>
+#include "game_engine.h" //TODO: cross include to be resolved
 
 /**
  * @brief creates a Sprite
@@ -251,26 +250,30 @@ bool (handle_move)(Sprite *sp, bool keys[4]) {
 /**
  * @brief handle a character's movement
  * 
- * @param char1 one of the characters to move
- * @param char2 the other character to move
+ * @param firemi one of the characters to move
+ * @param waternix the other character to move
  * @param background the game's background (to be restored)
  * @param char1_keys the pressed keys for the movement of the first character
  * @param char2_keys the pressed keys for the movement of the second character
  */
-void (handle_characters_move)(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4]){
-  int prev_char1_x = char1->x;
-  int prev_char2_x = char2->x;
-  int prev_char1_y = char1->y;
-  int prev_char2_y = char2->y;
-  bool change_char1 = handle_move(char1, char1_keys);
-  bool change_char2 = handle_move(char2, char2_keys);
+void (handle_characters_move)(Sprite * firemi, Sprite * waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool* game_over){
+
+  *game_over = check_lava(firemi, waternix);
+  printf("CHECKLAVA: %d", *game_over);
+
+  int prev_char1_x = firemi->x;
+  int prev_char2_x = waternix->x;
+  int prev_char1_y = firemi->y;
+  int prev_char2_y = waternix->y;
+  bool change_char1 = handle_move(firemi, char1_keys);
+  bool change_char2 = handle_move(waternix, char2_keys);
   if (change_char1)
-    restore_background(prev_char1_x, prev_char1_y, char1->width, char1->height, background);
+    restore_background(prev_char1_x, prev_char1_y, firemi->width, firemi->height, background);
   if (change_char2)
-    restore_background(prev_char2_x, prev_char2_y, char2->width, char2->height, background);
+    restore_background(prev_char2_x, prev_char2_y, waternix->width, waternix->height, background);
   if (change_char1 || change_char2){
-    draw_sprite(char2);
-    draw_sprite(char1);
+    draw_sprite(waternix);
+    draw_sprite(firemi);
   }
 }
 
@@ -337,4 +340,3 @@ bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color) { //note: it m
   return false;
 }
 
-//#################### SPECIFIC FUNCTIONS #################### //

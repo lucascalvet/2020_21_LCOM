@@ -8,15 +8,17 @@
 
 // Any header files included below this line should have been created by you
 #include "video_gr.h"
-#include "sprite.h"
+#include "game_engine.h"
 #include <lcom/timer.h>
 #include "xpm_levels.h"
 #include "xpm_characters.h"
 #include "xpm_boal.h"
+#include "xpm_titles.h"
 
 unsigned timer_counter = 0;
 extern uint8_t bytes[2];
 extern bool making_scancode;
+bool game_over = false;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -42,7 +44,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 //xpm array encapsulation
-xpm_map_t xpm_leve1_array[1] = {xpm_level1};
+xpm_map_t xpm_leve1_array[1] = {xpm_level1_without_elements};
 xpm_map_t xpm_firemi_array[3] = {xpm_firemi, firemi_run_l, firemi_run_r};
 xpm_map_t xpm_waternix_array[3] = {xpm_waternix, waternix_run_l, waternix_run_r};
 
@@ -76,7 +78,7 @@ int(proj_main_loop)(int argc, char *argv[]){
   uint64_t kbd_irq_set = BIT(kbd_bit_no);
   uint64_t timer_irq_set = BIT(timer_bit_no);
 
-  while (bytes[0] != ESC) {
+  while (bytes[0] != ESC && !game_over) {
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != OK) {
       printf("driver_receive failed with: %d", r);
       continue;
@@ -120,7 +122,7 @@ int(proj_main_loop)(int argc, char *argv[]){
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
             if(timer_counter % wait == 0){
-              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix);
+              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over);
             }
           }
           break;
@@ -128,6 +130,13 @@ int(proj_main_loop)(int argc, char *argv[]){
           break; // no other notifications expected: do nothing
       }
     }
+  }
+
+  if(game_over){
+    xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
+    Sprite * game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
+    draw_sprite(game_over_title);
+    sleep(4);
   }
 
   if (keyboard_unsubscribe_int() != OK) return 1;

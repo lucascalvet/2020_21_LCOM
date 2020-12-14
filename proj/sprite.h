@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "video_gr.h"
+#include <lcom/timer.h>
+
 #define FPS 30
 #define V_STEP 3
 #define JUMP_STEP 25
@@ -40,7 +43,7 @@ void(erase_sprite)(Sprite *sp);
 
 bool (handle_move)(Sprite *sp, bool keys[4]);
 
-void (handle_characters_move)(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4]);
+void (handle_characters_move)(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool* game_over);
 
 //moves Sprite in screen
 void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background);
