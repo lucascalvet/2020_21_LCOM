@@ -20,14 +20,13 @@
 #define MAX_V 8
 #define FRICTION 1
 
-
 typedef struct {
-  int x, y;                     // current position
-  uint32_t transparency_color;  // transparency_color
+  int x, y;                     //current position
+  uint32_t transparency_color;  //transparency_color
   enum xpm_image_type xpm_type; //xpm image type
-  int width, height;            // dimensions
-  int xspeed, yspeed;           // current speed
-  uint8_t *map;                 // current pixmap
+  int width, height;            //dimensions
+  int xspeed, yspeed;           //current speed
+  uint8_t *map;                 //current pixmap
   uint8_t *xpms[3];             //array of xpm's
 } Sprite;
 
@@ -50,10 +49,13 @@ void(erase_sprite)(Sprite *sp);
 void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background);
 
 //sprite movement controlled with keyboard using a set of keys
-bool (sprite_keyboard_move)(Sprite *sp, bool keys[4]);
+bool(sprite_keyboard_move)(Sprite *sp, bool keys[4]);
 
 //checks collision between two sprites (treating both as a rectangle)
-bool (collision)(Sprite* sp1, Sprite *sp2);
+bool(collision_two_rects)(Sprite *sp1, Sprite *sp2);
+
+//checks collision between two sprites (only the second sprite is treatead as a rectangle)
+bool(collision_one_rect)(Sprite *sp1, Sprite *sp2);
 
 //check collisions of sprite against a certain color in vram
 bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color);

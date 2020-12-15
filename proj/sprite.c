@@ -259,12 +259,34 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4]) {
  * @param sp2 the second sprite to check collisions with the first
  * @return true if collision occurs, false otherwise
  */
-bool(collision)(Sprite *sp1, Sprite *sp2) {
+bool(collision_two_rects)(Sprite *sp1, Sprite *sp2) {
   if (sp1->x + sp1->width >= sp2->x &&  //sp1 right edge past sp2 left edge
       sp1->x <= sp2->x + sp2->width &&  //sp1 left edge past sp2 right edge
       sp1->y <= sp2->y + sp2->height && //sp1 top edge past sp2 bottom edge
       sp1->y + sp1->height >= sp2->y) { //sp1 bottom edge past sp2 top edge
     return true;
+  }
+  return false;
+}
+
+/**
+ * @brief checks collision between two sprites (note: this algorithm treats only the second sprite as a rectangle)
+ * @param sp1 the first sprite to check collisions
+ * @param sp2 the second sprite to check collisions with the first, seen as a rectangle
+ * @return true if collision occurs, false otherwise
+ */
+bool(collision_one_rect)(Sprite *sp1, Sprite *sp2) {
+  for (int row = sp1->y; row < sp1->y + sp1->height; row++) {
+    for (int col = sp1->x; col < sp1->x + sp1->width; col++) {
+      if (convert_BGR_to_RGB(pixmap_get_color_by_coordinates(col - sp1->x, row - sp1->y, sp1->map, sp1->width)) != sp1->transparency_color) {
+        if (col >= sp2->x &&               //sp1 coord past sp2 left edge
+            col <= sp2->x + sp2->width &&  //sp1 coord past sp2 right edge
+            row <= sp2->y + sp2->height && //sp1 coord past sp2 bottom edge
+            row >= sp2->y) {               //sp1 coord past sp2 top edge
+          return true;
+        }
+      }
+    }
   }
   return false;
 }
@@ -287,7 +309,7 @@ bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color) { //note: it m
   return false;
 }
 
-//******* KINDA DEPRECATED ********//
+//******* POSSIBLY DEPRECATED ********//
 /**
  * @brief moves sprite in screen
  * @param sp pointer to Sprite "object" to be moved

@@ -9,7 +9,7 @@
  * @param char1_keys the pressed keys for the movement of the first character
  * @param char2_keys the pressed keys for the movement of the second character
  */
-void (handle_characters_move)(Sprite * firemi, Sprite * waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool* game_over){
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, Game_button *bup) {
   int prev_char1_x = firemi->x;
   int prev_char2_x = waternix->x;
   int prev_char1_y = firemi->y;
@@ -23,7 +23,10 @@ void (handle_characters_move)(Sprite * firemi, Sprite * waternix, Sprite *backgr
 
   if (change_char1 || change_char2) {
     *game_over = check_lava(firemi, waternix);
-    
+    bup->pressed = collision_one_rect(firemi, bup->button_sprite);  //TODO:no need to collision_one_rect, going to change to a function to check if it on top or not or the other directions, much more simpler
+    bup->pressed = collision_one_rect(waternix, bup->button_sprite);
+
+    draw_game_button(bup);
     draw_sprite(waternix);
     draw_sprite(firemi);
   }
@@ -35,10 +38,149 @@ void (handle_characters_move)(Sprite * firemi, Sprite * waternix, Sprite *backgr
  * @param waternix pointer to waternix sprite object
  * @return true if they are in lava, false otherwise
  */
-bool (check_lava)(Sprite* firemi, Sprite* waternix){
-  if(check_sprite_collision_by_color(firemi, LAVA_BLUE)) return true;
-  if(check_sprite_collision_by_color(waternix, LAVA_RED)) return true;
-  if(check_sprite_collision_by_color(firemi, LAVA_PURPLE)) return true;
-  if(check_sprite_collision_by_color(waternix, LAVA_PURPLE)) return true;
+bool(check_lava)(Sprite *firemi, Sprite *waternix) {
+  if (check_sprite_collision_by_color(firemi, LAVA_BLUE))
+    return true;
+  if (check_sprite_collision_by_color(waternix, LAVA_RED))
+    return true;
+  if (check_sprite_collision_by_color(firemi, LAVA_PURPLE))
+    return true;
+  if (check_sprite_collision_by_color(waternix, LAVA_PURPLE))
+    return true;
   return false;
+}
+
+/**
+ * @brief creates a button sprite for the game board
+ * @param xpm xpm array with the xpm's to be used
+ * @param x x coordinate to initiate the sprite with
+ * @param y y coordinate to initiate the sprite with
+ * @param n_xpms number os xpm maps that form the sprite
+ * @param orientation_of_button represents the button orientation to know where to print it when pressed
+ * @return pointer to game_button sprite
+ */
+Game_button *(create_game_button)(xpm_map_t xpm[], int x, int y, int n_xpms, enum orientation orientation_of_button) {
+  Game_button *bup = (Game_button *) malloc(sizeof(Game_button));
+
+  if (bup == NULL)
+    return NULL;
+
+  Sprite *sp = create_sprite(xpm, x, y, n_xpms);
+
+  bup->initx = x;
+  bup->inity = y;
+  bup->button_sprite = sp;
+  bup->pressed = false;
+  bup->orientation_of_button = orientation_of_button;
+
+  if (bup->orientation_of_button == NORTH) {
+    bup->finalx = bup->button_sprite->x;
+    bup->finaly = bup->button_sprite->y + bup->button_sprite->height;
+  }
+  if (bup->orientation_of_button == SOUTH) {
+    bup->finalx = bup->button_sprite->x;
+    bup->finaly = bup->button_sprite->y - bup->button_sprite->height;
+  }
+  if (bup->orientation_of_button == EAST) {
+    bup->finalx = bup->button_sprite->x - bup->button_sprite->width;
+    bup->finaly = bup->button_sprite->y;
+  }
+  if (bup->orientation_of_button == WEST) {
+    bup->finalx = bup->button_sprite->x + bup->button_sprite->width;
+    bup->finaly = bup->button_sprite->y;
+  }
+
+  return bup;
+}
+
+/**
+ * @brief creates a bar sprite for the game board
+ * @param xpm xpm array with the xpm's to be used
+ * @param x x coordinate to initiate the sprite with
+ * @param y y coordinate to initiate the sprite with
+ * @param n_xpms number os xpm maps that form the sprite
+ * @param init_angle the initial angle for the bar
+ * @param final_angle the final angle after the bar moves
+ * @param angular_speed the angular speed for the bar movement
+ * @param game_button pointer to the game_button that triggers the bar to move
+ * @return pointer to a game_bar sprite
+ * 
+ */
+Game_bar *(create_game_bar)(xpm_map_t xpm[], int x, int y, int n_xpms, uint8_t init_angle, uint8_t final_angle, uint8_t angular_speed, Game_button *bup) {
+  Game_bar *bap = (Game_bar *) malloc(sizeof(Game_bar));
+
+  if (bap == NULL)
+    return NULL;
+
+  Sprite *sp = create_sprite(xpm, x, y, n_xpms);
+
+  bap->bar_sprite = sp;
+
+  bap->init_angle = init_angle;
+  bap->final_angle = final_angle;
+  bap->angular_speed = angular_speed;
+  bap->game_button = bup;
+
+  return bap;
+}
+
+/**
+ * @brief deletes game_button sprite
+ * @param sp pointer to game_button "object" to be deleted
+ * @return none
+ */
+void(delete_game_button)(Game_button *bup) {
+  if (bup == NULL)
+    return;
+
+  if (bup->button_sprite) {
+    delete_sprite(bup->button_sprite);
+  }
+
+  free(bup);
+  bup = NULL; // XXX: pointer is passed by value
+  // should do this @ the caller
+}
+
+/**
+ * @brief deletes game_bar sprite
+ * @param sp pointer to game_bar "object" to be deleted
+ * @return none
+ */
+void(delete_game_bar)(Game_bar *bap) {
+  if (bap == NULL)
+    return;
+
+  if (bap->bar_sprite) {
+    delete_sprite(bap->bar_sprite);
+  }
+
+  free(bap);
+  bap = NULL; // XXX: pointer is passed by value
+  // should do this @ the caller
+}
+
+/**
+ * @brief draws game_button accorrding to it's pressed state
+ * @param bup pointer to game_button sprite "object"
+ * @return none
+ */
+void(draw_game_button)(Game_button *bup) {
+  if (bup->pressed) {
+    if (bup->orientation_of_button == NORTH || bup->orientation_of_button == SOUTH) {
+      if (bup->button_sprite->y != bup->finaly) {
+        bup->button_sprite->y += 1; //just to test
+      }
+    }
+    if (bup->orientation_of_button == EAST || bup->orientation_of_button == WEST) {
+      if (bup->button_sprite->x != bup->finalx) {
+        //TODO: finish for all of them
+      }
+    }
+  }
+  else {
+    //bup->button_sprite->x = bup->initx;
+    //bup->button_sprite->y = bup->inity;
+  }
+  draw_sprite(bup->button_sprite);
 }
