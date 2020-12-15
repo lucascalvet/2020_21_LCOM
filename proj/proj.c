@@ -14,7 +14,6 @@
 #include "xpm_characters.h"
 #include "xpm_boal.h"
 #include "xpm_titles.h"
-#include "xpm_font.h"
 
 unsigned timer_counter = 0;
 extern uint8_t bytes[2];
