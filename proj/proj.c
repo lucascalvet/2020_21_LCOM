@@ -16,7 +16,11 @@
 #include "xpm_levels.h"
 #include "xpm_characters.h"
 #include "xpm_titles.h"
+<<<<<<< HEAD
 #include "xpm_slider.h"
+=======
+#include "xpm_game_elements.h"
+>>>>>>> 1105ed35f00d8c4f24f53de94ea96f35dac53110
 
 //global variables
 unsigned timer_counter = 0;
@@ -47,11 +51,16 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+
 //xpm array encapsulation for sprite creation
 xpm_map_t xpm_leve1_array[1] = {xpm_level1_without_elements};
 xpm_map_t xpm_firemi_array[3] = {xpm_firemi, firemi_run_l, firemi_run_r};
 xpm_map_t xpm_waternix_array[3] = {xpm_waternix, waternix_run_l, waternix_run_r};
+<<<<<<< HEAD
 xpm_map_t xpm_slider_array[1] = {xpm_slider};
+=======
+xpm_map_t xpm_game_button[1] = {xpm_button};
+>>>>>>> 1105ed35f00d8c4f24f53de94ea96f35dac53110
 
 /**
  * @brief game main loop, where the driver receive is called
@@ -69,12 +78,19 @@ int(proj_main_loop)(int argc, char *argv[]){
   Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 3);
   Sprite * slider = create_sprite(xpm_slider_array, 317, 90, 1);
 
+  //creating game board sprite elements
+  Game_button *game_button = create_game_button(xpm_game_button, 80, 560, 1, NORTH);
+
   //drawing main sprites
   draw_sprite(level_1);
   draw_sprite(firemi);
   draw_sprite(waternix);
+<<<<<<< HEAD
   draw_sprite(slider);
   //create_clock();
+=======
+  draw_game_button(game_button);
+>>>>>>> 1105ed35f00d8c4f24f53de94ea96f35dac53110
 
   //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
@@ -129,7 +145,7 @@ int(proj_main_loop)(int argc, char *argv[]){
             timer_int_handler();
             if(timer_counter % wait == 0){
               handle_slider_move(slider, level_1);
-              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over);
+              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over, game_button);
             }
             /*
             if(timer_counter % 60){
@@ -145,7 +161,11 @@ int(proj_main_loop)(int argc, char *argv[]){
     }
   }
 
+<<<<<<< HEAD
     //unsubscribing the intrrupt notifications for both devices
+=======
+  //unsubscribing the intrrupt notifications for both devices
+>>>>>>> 1105ed35f00d8c4f24f53de94ea96f35dac53110
   if (keyboard_unsubscribe_int() != OK) return 1;
   if (timer_unsubscribe_int() != OK) return 1;
 
@@ -164,6 +184,7 @@ int(proj_main_loop)(int argc, char *argv[]){
   delete_sprite(level_1);
   delete_sprite(firemi);
   delete_sprite(waternix);
+  delete_game_button(game_button);
 
   return 0;
 }
