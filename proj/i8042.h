@@ -69,6 +69,19 @@ file instead of kbc.h to be easier to read */
 
 //http://users.utcluj.ro/~baruch/sie/labor/PS2/Scan_Codes_Set_1.htm
 
+//leaved this here because it's an alternative key set if we need
+            /*
+            if (data == KEY_MAKE_I) keys_waternix[0] = true;
+            if (data == KEY_MAKE_J) keys_waternix[1] = true;
+            if (data == KEY_MAKE_K) keys_waternix[2] = true;
+            if (data == KEY_MAKE_L) keys_waternix[3] = true;
+            if (data == KEY_BREAK_I) keys_waternix[0] = false;
+            if (data == KEY_BREAK_J) keys_waternix[1] = false;
+            if (data == KEY_BREAK_K) keys_waternix[2] = false;
+            if (data == KEY_BREAK_L) keys_waternix[3] = false;
+            */
+            //printf("\nkeys = {%x, %x, %x, %x}", keys_firemi[0], keys_firemi[1], keys_firemi[2], keys_firemi[3]);
+
 
 
 #endif

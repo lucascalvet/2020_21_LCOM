@@ -1,21 +1,24 @@
-// IMPORTANT: you must include the following line in all your C files
+//LCOM header files
 #include <lcom/lcf.h>
 #include <lcom/liblm.h>
 #include <lcom/proj.h>
+#include <lcom/timer.h>
 
+//c header files
 #include <stdbool.h>
 #include <stdint.h>
 
-// Any header files included below this line should have been created by you
+//project header files - modulos
 #include "video_gr.h"
 #include "game_engine.h"
-#include <lcom/timer.h>
+
+//project header files - xpm's
 #include "xpm_levels.h"
 #include "xpm_characters.h"
-#include "xpm_boal.h"
 #include "xpm_titles.h"
-#include "xpm_font.h"
+#include "xpm_boal.h"
 
+//global variables
 unsigned timer_counter = 0;
 extern uint8_t bytes[2];
 extern bool making_scancode;
@@ -44,26 +47,32 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-//xpm array encapsulation
+//xpm array encapsulation for sprite creation
 xpm_map_t xpm_leve1_array[1] = {xpm_level1_without_elements};
 xpm_map_t xpm_firemi_array[3] = {xpm_firemi, firemi_run_l, firemi_run_r};
 xpm_map_t xpm_waternix_array[3] = {xpm_waternix, waternix_run_l, waternix_run_r};
 
+/**
+ * @brief game main loop, where the driver receive is called
+ * @return 0 if no erros, 1 otherwise
+ */
 int(proj_main_loop)(int argc, char *argv[]){
   printf("Welcome to FireMi & WaterNix!!!\n");
-  //proj_demo(VBE_DIRECT_800_MODE, true, false, 1);
+
+  //initiating the VBE
   vg_init(VBE_DIRECT_800_MODE);
+
+  //creating main sprites needed
   Sprite * level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
   Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 3);
   Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 3);
-  //Sprite * boal = create_sprite(xpm_boal, 20, 520);
+
+  //drawing main sprites
   draw_sprite(level_1);
   draw_sprite(firemi);
   draw_sprite(waternix);
-  //draw_sprite(boal);
-  //Sprite* collision_objects_firemi[1] = {waternix};
-  //Sprite* collision_objects_waternix[1] = {firemi};
-  //move_sprite(boal, 21, 300, 0, -1, level_1);
+
+  //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
   bool keys_waternix[4] = {0, 0, 0, 0}; //{^, <-, v, ->}
 
@@ -73,12 +82,14 @@ int(proj_main_loop)(int argc, char *argv[]){
   timer_set_frequency(0, 60);
   int r, wait = 60 / FPS;
 
+  //subscribing the intrrupt notifications for both devices
   if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
   if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
 
   uint64_t kbd_irq_set = BIT(kbd_bit_no);
   uint64_t timer_irq_set = BIT(timer_bit_no);
 
+  //main driver receive loop
   while (bytes[0] != ESC && !game_over) {
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != OK) {
       printf("driver_receive failed with: %d", r);
@@ -86,9 +97,10 @@ int(proj_main_loop)(int argc, char *argv[]){
     }
     if (is_ipc_notify(ipc_status)) {
       switch (_ENDPOINT_P(msg.m_source)) {
-        case HARDWARE: // hardware interrupt notification
+        case HARDWARE: //hardware interrupt notification
           if (msg.m_notify.interrupts & kbd_irq_set) {
             keyboard_ih();
+            
             if (bytes[0] == KEY_MAKE_W) keys_firemi[0] = true;
             if (bytes[0] == KEY_MAKE_A) keys_firemi[1] = true;
             if (bytes[0] == KEY_MAKE_S) keys_firemi[2] = true;
@@ -108,17 +120,6 @@ int(proj_main_loop)(int argc, char *argv[]){
               if (bytes[1] == KEY_BREAK_ARROW_DOWN) keys_waternix[2] = false;
               if (bytes[1] == KEY_BREAK_ARROW_RIGHT) keys_waternix[3] = false;
             }
-            /*
-            if (data == KEY_MAKE_I) keys_waternix[0] = true;
-            if (data == KEY_MAKE_J) keys_waternix[1] = true;
-            if (data == KEY_MAKE_K) keys_waternix[2] = true;
-            if (data == KEY_MAKE_L) keys_waternix[3] = true;
-            if (data == KEY_BREAK_I) keys_waternix[0] = false;
-            if (data == KEY_BREAK_J) keys_waternix[1] = false;
-            if (data == KEY_BREAK_K) keys_waternix[2] = false;
-            if (data == KEY_BREAK_L) keys_waternix[3] = false;
-            */
-            //printf("\nkeys = {%x, %x, %x, %x}", keys_firemi[0], keys_firemi[1], keys_firemi[2], keys_firemi[3]);
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
@@ -128,7 +129,7 @@ int(proj_main_loop)(int argc, char *argv[]){
           }
           break;
         default:
-          break; // no other notifications expected: do nothing
+          break;
       }
     }
   }
@@ -137,16 +138,21 @@ int(proj_main_loop)(int argc, char *argv[]){
     xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
     Sprite * game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
     draw_sprite(game_over_title);
-    sleep(4);
+    //sleep(4);
+    delete_sprite(game_over_title);
   }
 
+  //unsubscribing the intrrupt notifications for both devices
   if (keyboard_unsubscribe_int() != OK) return 1;
   if (timer_unsubscribe_int() != OK) return 1;
 
+  //exiting the VBE graphics mode, puting back to text mode
   vg_exit();
+
+  //freing the sprites memory
   delete_sprite(level_1);
   delete_sprite(firemi);
   delete_sprite(waternix);
-  //delete_sprite(boal);
+
   return 0;
 }

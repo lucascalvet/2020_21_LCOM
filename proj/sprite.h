@@ -1,20 +1,25 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
+//LCOM header files
 #include <lcom/lab5.h>
 #include <lcom/lcf.h>
+#include <lcom/timer.h>
+
+//c header files
 #include <stdint.h>
 #include <stdio.h>
 
 #include "video_gr.h"
-#include <lcom/timer.h>
 
+//environment constants
 #define FPS 30
 #define V_STEP 1
 #define JUMP_STEP 27
 #define GRAVITY 3
 #define MAX_V 8
 #define FRICTION 1
+
 
 typedef struct {
   int x, y;                     // current position
@@ -35,23 +40,25 @@ void(delete_sprite)(Sprite *sp);
 //changes the sprite coordinates to x and y
 void(change_sprite_coords)(Sprite *sp, int x, int y);
 
-//draws Sprite in screen
+//draws Sprite "objects" in screen at their current coordinates
 void(draw_sprite)(Sprite *sp);
 
 //erases Sprite from screen
 void(erase_sprite)(Sprite *sp);
 
-bool (handle_move)(Sprite *sp, bool keys[4]);
+//restores the background at a given rectangle to avoid overprocessing
+void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background);
 
-void (handle_characters_move)(Sprite * char1, Sprite * char2, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool* game_over);
-
-//moves Sprite in screen
-void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background);
+//sprite movement controlled with keyboard using a set of keys
+bool (sprite_keyboard_move)(Sprite *sp, bool keys[4]);
 
 //checks collision between two sprites (treating both as a rectangle)
 bool (collision)(Sprite* sp1, Sprite *sp2);
 
 //check collisions of sprite against a certain color in vram
 bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color);
+
+//moves Sprite in screen POSSIBILY DEPRECATED
+void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background);
 
 #endif //SPRITE_H
