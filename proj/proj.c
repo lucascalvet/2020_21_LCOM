@@ -16,6 +16,7 @@
 #include "xpm_levels.h"
 #include "xpm_characters.h"
 #include "xpm_titles.h"
+#include "xpm_slider.h"
 
 //global variables
 unsigned timer_counter = 0;
@@ -50,6 +51,7 @@ int main(int argc, char *argv[]) {
 xpm_map_t xpm_leve1_array[1] = {xpm_level1_without_elements};
 xpm_map_t xpm_firemi_array[3] = {xpm_firemi, firemi_run_l, firemi_run_r};
 xpm_map_t xpm_waternix_array[3] = {xpm_waternix, waternix_run_l, waternix_run_r};
+xpm_map_t xpm_slider_array[1] = {xpm_slider};
 
 /**
  * @brief game main loop, where the driver receive is called
@@ -65,11 +67,14 @@ int(proj_main_loop)(int argc, char *argv[]){
   Sprite * level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
   Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 3);
   Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 3);
+  Sprite * slider = create_sprite(xpm_slider_array, 317, 90, 1);
 
   //drawing main sprites
   draw_sprite(level_1);
   draw_sprite(firemi);
   draw_sprite(waternix);
+  draw_sprite(slider);
+  //create_clock();
 
   //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
@@ -123,8 +128,15 @@ int(proj_main_loop)(int argc, char *argv[]){
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
             if(timer_counter % wait == 0){
+              handle_slider_move(slider, level_1);
               handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over);
             }
+            /*
+            if(timer_counter % 60){
+              //tick_clock(level_1);
+              timer_counter = 0;
+            }
+            */
           }
           break;
         default:
@@ -133,17 +145,17 @@ int(proj_main_loop)(int argc, char *argv[]){
     }
   }
 
+    //unsubscribing the intrrupt notifications for both devices
+  if (keyboard_unsubscribe_int() != OK) return 1;
+  if (timer_unsubscribe_int() != OK) return 1;
+
   if(game_over){
     xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
     Sprite * game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
     draw_sprite(game_over_title);
-    //sleep(4);
+    sleep(4);
     delete_sprite(game_over_title);
   }
-
-  //unsubscribing the intrrupt notifications for both devices
-  if (keyboard_unsubscribe_int() != OK) return 1;
-  if (timer_unsubscribe_int() != OK) return 1;
 
   //exiting the VBE graphics mode, puting back to text mode
   vg_exit();
