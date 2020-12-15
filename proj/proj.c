@@ -16,7 +16,6 @@
 #include "xpm_levels.h"
 #include "xpm_characters.h"
 #include "xpm_titles.h"
-#include "xpm_boal.h"
 
 //global variables
 unsigned timer_counter = 0;
