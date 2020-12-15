@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-static char *video_mem;         //virtual vram address
+static uint8_t *video_mem;         //virtual vram address
 static unsigned h_res;          //horizontal resolution in pixels
 static unsigned v_res;          //vertical resolution in pixels
 static unsigned bits_per_pixel; //number of VRAM bits per pixel
@@ -259,12 +259,12 @@ uint32_t(convert_BGR_to_RGB)(int color){
  * @return the color in the desired position, -1 if no valid position given
  */
 uint32_t (vram_get_color_by_coordinates)(uint16_t x, uint16_t y){
-  uint32_t color = -1;
+  uint32_t color = 0;
 
-  char *pointer = video_mem; //pointer to video memory address
+  uint8_t *pointer = video_mem; //pointer to video memory address
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change 
-
+  
   if (x < h_res && y < v_res){ //if x and y exceeds the window size there is no color to be inputed
     color = 0;
 
@@ -292,7 +292,6 @@ uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixma
   uint8_t *pointer = pixmap; //pointer to video memory address
 
   pointer += (x + width * y) * bits_to_bytes(); //gets correct position of memory map to change
-
   for (int i = 0; i < bits_to_bytes(); i++) {
     color <<= 8;
     color |= *(pointer + i);
@@ -311,7 +310,7 @@ uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixma
  */
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
-  char *pointer = video_mem; //pointer to video memory address
+  uint8_t *pointer = video_mem; //pointer to video memory address
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change according to x, y and bytes per pixel
 
