@@ -10,10 +10,10 @@
 #include <lcom/timer.h>
 
 #define FPS 30
-#define V_STEP 3
-#define JUMP_STEP 25
+#define V_STEP 1
+#define JUMP_STEP 27
 #define GRAVITY 3
-#define MAX_V 6
+#define MAX_V 8
 #define FRICTION 1
 
 typedef struct {

@@ -1,7 +1,7 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#define PRINT_SCANCODES
+//#define PRINT_SCANCODES
 
 #include <stdbool.h>
 #include <stdint.h>

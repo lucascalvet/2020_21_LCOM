@@ -148,7 +148,7 @@ bool (handle_move)(Sprite *sp, bool keys[4]) {
     sp->y -= 1; //restoring y value
   }
   if(keys[1]){ 
-    sp->xspeed -= V_STEP;
+    sp->xspeed -= V_STEP + FRICTION;
     if (sp->map != sp->xpms[1]){
       sp->map = sp->xpms[1];
       changed = true;
@@ -156,7 +156,7 @@ bool (handle_move)(Sprite *sp, bool keys[4]) {
   }
   //if(keys[2]) sp->yspeed += V_STEP;
   if(keys[3]){
-    sp->xspeed += V_STEP;
+    sp->xspeed += V_STEP + FRICTION;
     if (sp->map != sp->xpms[2]){
       sp->map = sp->xpms[2];
       changed = true;
@@ -181,60 +181,66 @@ bool (handle_move)(Sprite *sp, bool keys[4]) {
     changed = true;
   }
 
-  sp->y += sp->yspeed;
-  if (check_sprite_collision_by_color(sp, 0x0)) {
-    sp->y = prev_y;
-    if (sp->yspeed > 0){
-      for (int step = sp->yspeed - 1; step > 0; step--) {
-        sp->y += step;
-        if (!check_sprite_collision_by_color(sp, 0x0)){
-          changed = true;
-          break;
+  if (sp->yspeed != 0) {
+    sp->y += sp->yspeed;
+    if (check_sprite_collision_by_color(sp, 0x0)) {
+      sp->y = prev_y;
+      if (sp->yspeed > 0) {
+        for (int step = sp->yspeed - 1; step > 0; step--) {
+          sp->y += step;
+          if (!check_sprite_collision_by_color(sp, 0x0)) {
+            changed = true;
+            break;
+          }
+          sp->y = prev_y;
         }
-        sp->y = prev_y;
       }
-    }
-    else if (sp->yspeed < 0){
-      for (int step = sp->yspeed + 1; step < 0; step++) {
-        sp->y += step;
-        if (!check_sprite_collision_by_color(sp, 0x0)){
-          changed = true;
-          break;
+      else if (sp->yspeed < 0) {
+        for (int step = sp->yspeed + 1; step < 0; step++) {
+          sp->y += step;
+          if (!check_sprite_collision_by_color(sp, 0x0)) {
+            changed = true;
+            break;
+          }
+          sp->y = prev_y;
         }
-        sp->y = prev_y;
       }
+      sp->yspeed = 0;
     }
-    sp->yspeed = 0;
+    else
+      changed = true;
   }
-  else changed = true;
 
-  sp->x += sp->xspeed;
-  if (check_sprite_collision_by_color(sp, 0x0)) {
-    sp->x = prev_x;
-    if (sp->xspeed > 0){
-      for (int step = sp->xspeed - 1; step > 0; step--) {
-        sp->x += step;
-        if (!check_sprite_collision_by_color(sp, 0x0)) {
-          changed = true;
-          break;
+  if (sp->xspeed != 0) {
+    sp->x += sp->xspeed;
+    if (check_sprite_collision_by_color(sp, 0x0)) {
+      sp->x = prev_x;
+      if (sp->xspeed > 0) {
+        for (int step = sp->xspeed - 1; step > 0; step--) {
+          sp->x += step;
+          if (!check_sprite_collision_by_color(sp, 0x0)) {
+            changed = true;
+            break;
+          }
+          sp->x = prev_x;
         }
-        sp->x = prev_x;
       }
-    }
-    else if (sp->xspeed < 0){
-      for (int step = sp->xspeed + 1; step < 0; step++) {
-        sp->x += step;
-        if (!check_sprite_collision_by_color(sp, 0x0)) {
-          changed = true;
-          break;
+      else if (sp->xspeed < 0) {
+        for (int step = sp->xspeed + 1; step < 0; step++) {
+          sp->x += step;
+          if (!check_sprite_collision_by_color(sp, 0x0)) {
+            changed = true;
+            break;
+          }
+          sp->x = prev_x;
         }
-        sp->x = prev_x;
       }
+      sp->xspeed = 0;
     }
-    sp->xspeed = 0;
+    else
+      changed = true;
   }
-  else changed = true;
-  
+
   return changed;
 /*
   if (sp->x == prev_x && sp->y == prev_y) return;
@@ -257,10 +263,6 @@ bool (handle_move)(Sprite *sp, bool keys[4]) {
  * @param char2_keys the pressed keys for the movement of the second character
  */
 void (handle_characters_move)(Sprite * firemi, Sprite * waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool* game_over){
-
-  *game_over = check_lava(firemi, waternix);
-  printf("CHECKLAVA: %d", *game_over);
-
   int prev_char1_x = firemi->x;
   int prev_char2_x = waternix->x;
   int prev_char1_y = firemi->y;
@@ -271,7 +273,10 @@ void (handle_characters_move)(Sprite * firemi, Sprite * waternix, Sprite *backgr
     restore_background(prev_char1_x, prev_char1_y, firemi->width, firemi->height, background);
   if (change_char2)
     restore_background(prev_char2_x, prev_char2_y, waternix->width, waternix->height, background);
-  if (change_char1 || change_char2){
+
+  if (change_char1 || change_char2) {
+    *game_over = check_lava(firemi, waternix);
+    
     draw_sprite(waternix);
     draw_sprite(firemi);
   }
@@ -339,4 +344,3 @@ bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color) { //note: it m
   }
   return false;
 }
-
