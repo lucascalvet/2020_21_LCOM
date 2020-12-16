@@ -75,13 +75,18 @@ int(proj_main_loop)(int argc, char *argv[]){
   //creating game board sprite elements
   Game_button *game_button = create_game_button(xpm_game_button, 80, 560, 1, NORTH);
 
+  //creating the clock element
+  Clock * clock = create_clock(652, 20);
+
   //drawing main sprites
   draw_sprite(level_1);
   draw_sprite(firemi);
   draw_sprite(waternix);
   draw_sprite(slider);
-  //create_clock();
+  
   draw_game_button(game_button);
+
+  draw_clock(clock);
 
   //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
@@ -138,12 +143,10 @@ int(proj_main_loop)(int argc, char *argv[]){
               handle_slider_move(slider, level_1);
               handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over, game_button);
             }
-            /*
-            if(timer_counter % 60){
-              //tick_clock(level_1);
+            if(timer_counter % 60 == 0){
+              tick_clock(clock, level_1);
               timer_counter = 0;
             }
-            */
           }
           break;
         default:

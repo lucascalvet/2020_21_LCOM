@@ -117,10 +117,12 @@ void(erase_sprite)(Sprite *sp) {
 void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background) {
   int map_index = 0; //to keep track of map index
 
-  for (int row = y; row < y + height; row++) {
-    for (int col = x; col < x + width; col++) {
-      map_index = (col + 800 * row) * 3;
-      draw_pixel(col, row, convert_BGR_to_RGB(color_assembler(background->map, &map_index)));
+  if (x < 800 && y < 600){ //TODO: Change
+    for (int row = y; row < y + height; row++) {
+      for (int col = x; col < x + width; col++) {
+        map_index = (col + 800 * row) * 3;
+        draw_pixel(col, row, convert_BGR_to_RGB(color_assembler(background->map, &map_index)));
+      }
     }
   }
 }

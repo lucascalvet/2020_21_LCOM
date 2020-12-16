@@ -1,11 +1,5 @@
 #include "game_engine.h"
 
-static uint8_t * clock_map; //TODO: Should it be here? Make a clock module or struct?
-static unsigned clock_height;
-static unsigned clock_width = CLOCK_WIDTH;
-static unsigned clock_count = 0;
-static uint32_t clock_transparency_color;
-
 /**
  * @brief handle a character's movement
  * 
@@ -52,42 +46,95 @@ void (handle_slider_move)(Sprite * slider, Sprite *background){
   draw_sprite(slider);
 }
 
-void (create_clock)(){
+/**
+ * @brief Creates a minutes:seconds clock
+ * @return the created clock
+ */
+Clock * (create_clock)(unsigned x, unsigned y){
+  Clock *clock = (Clock *) malloc(sizeof(Clock));
+
   xpm_image_t img;
-  clock_map = xpm_load(xpm_numbers, XPM_8_8_8, &img);
-  clock_height = img.height;
-  clock_transparency_color = xpm_transparency_color(img.type);
-  draw_clock();
+  clock->x = x;
+  clock->y = y;
+  clock->map = xpm_load(xpm_numbers, XPM_8_8_8, &img);
+  clock->height = img.height;
+  clock->transparency_color = xpm_transparency_color(img.type);
+  clock->width = CLOCK_WIDTH;
+  clock->xpm_width = img.width;
+  clock->count = 0;
+
+  return clock;
 }
 
-void (draw_clock)(){
+/**
+ * @brief Draws the clock
+ * @param clock the clock to draw
+ */
+void (draw_clock)(Clock * clock){
   int map_index = 0; //to keep track of map index
 
   uint32_t color;
 
-  unsigned minutes = clock_count/60;
-  unsigned seconds = clock_count%60;
+  unsigned minutes = clock->count/60;
+  unsigned seconds = clock->count%60;
 
   unsigned clock_digits[4] = {minutes/10, minutes%10, seconds/10, seconds%10};
+  printf("\nClock digits: {%d, %d, %d, %d}", clock_digits[0], clock_digits[1], clock_digits[2], clock_digits[3]);
 
   //draws pixmap
   for (int i = 0; i < 4; i++){
-    for (unsigned row = 0; row < clock_height; row++) {
+    for (unsigned row = 0; row < clock->height; row++) {
       for (unsigned col = 0; col < XPM_NUMBERS_WIDTH; col++) {
-        map_index = row * 800 + XPM_NUMBERS_STEP * clock_digits[i] + col;
-        color = convert_BGR_to_RGB(color_assembler(clock_map, &map_index));
-        if (color != clock_transparency_color)
-          draw_pixel(col + CLOCK_X, row + CLOCK_Y, color);
+        map_index = (row * clock->xpm_width + XPM_NUMBERS_STEP * clock_digits[i] + col)*bits_to_bytes();
+        color = convert_BGR_to_RGB(color_assembler(clock->map, &map_index));
+        if (color != clock->transparency_color){
+          if (i < 2)
+            draw_pixel(col + clock->x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP)*i, row + clock->y, color);
+          else
+            draw_pixel(col + clock->x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP)*i + XPM_COLON_WIDTH + NUMBERS_SEP, row + clock->y, color);
+        }
       }
     }
   }
+  for (unsigned row = 0; row < clock->height; row++) {
+      for (unsigned col = 0; col < XPM_COLON_WIDTH; col++) {
+        map_index = (row * clock->xpm_width + XPM_NUMBERS_STEP * 10 + col)*bits_to_bytes();
+        color = convert_BGR_to_RGB(color_assembler(clock->map, &map_index));
+        if (color != clock->transparency_color){
+            draw_pixel(col + clock->x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP)*2, row + clock->y - 3, color);
+        }
+      }
+    }
 }
 
-void (tick_clock)(Sprite * background){
-  clock_count++;
-  restore_background(CLOCK_X, CLOCK_Y, clock_width, clock_height, background);
-  draw_clock();
+/**
+ * @brief Adds one second to the clock
+ * @param clock the clock to tick
+ * @param background the background to be restored
+ */
+void (tick_clock)(Clock * clock, Sprite * background){
+  clock->count++;
+  restore_background(clock->x, clock->y, clock->width, clock->height, background);
+  draw_clock(clock);
 }
+
+/**
+ * @brief deletes a clock object
+ * @param sp pointer to clock "object" to be deleted
+ * @return none
+ */
+void(delete_clock)(Clock * clock) {
+  if (clock == NULL)
+    return;
+
+  if (clock->map)
+    free(clock->map);
+
+  free(clock);
+  clock = NULL; // XXX: pointer is passed by value
+  // should do this @ the caller
+}
+
 
 /**
  * @brief checks if characters are in lava or not
