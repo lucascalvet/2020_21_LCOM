@@ -9,7 +9,7 @@
  * @param char1_keys the pressed keys for the movement of the first character
  * @param char2_keys the pressed keys for the movement of the second character
  */
-void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, Game_button *bup) {
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over) {
   int prev_char1_x = firemi->x;
   int prev_char2_x = waternix->x;
   int prev_char1_y = firemi->y;
@@ -23,10 +23,7 @@ void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *backgroun
 
   if (change_char1 || change_char2) {
     *game_over = check_lava(firemi, waternix);
-    bup->pressed = collision_one_rect(firemi, bup->button_sprite);  //TODO:no need to collision_one_rect, going to change to a function to check if it on top or not or the other directions, much more simpler
-    bup->pressed = collision_one_rect(waternix, bup->button_sprite);
 
-    draw_game_button(bup);
     draw_sprite(waternix);
     draw_sprite(firemi);
   }
@@ -59,7 +56,7 @@ bool(check_lava)(Sprite *firemi, Sprite *waternix) {
  * @param orientation_of_button represents the button orientation to know where to print it when pressed
  * @return pointer to game_button sprite
  */
-Game_button *(create_game_button)(xpm_map_t xpm[], int x, int y, int n_xpms, enum orientation orientation_of_button) {
+Game_button *(create_game_button)(xpm_map_t xpm[], uint16_t x, uint16_t y, int n_xpms, enum orientation orientation_of_button) {
   Game_button *bup = (Game_button *) malloc(sizeof(Game_button));
 
   if (bup == NULL)
@@ -75,18 +72,18 @@ Game_button *(create_game_button)(xpm_map_t xpm[], int x, int y, int n_xpms, enu
 
   if (bup->orientation_of_button == NORTH) {
     bup->finalx = bup->button_sprite->x;
-    bup->finaly = bup->button_sprite->y + bup->button_sprite->height;
+    bup->finaly = bup->button_sprite->y + bup->button_sprite->height / 2 + bup->button_sprite->height / 4; //goes until 3/4 of its height
   }
   if (bup->orientation_of_button == SOUTH) {
     bup->finalx = bup->button_sprite->x;
-    bup->finaly = bup->button_sprite->y - bup->button_sprite->height;
+    bup->finaly = bup->button_sprite->y - bup->button_sprite->height / 2 - bup->button_sprite->height / 4;
   }
   if (bup->orientation_of_button == EAST) {
-    bup->finalx = bup->button_sprite->x - bup->button_sprite->width;
+    bup->finalx = bup->button_sprite->x - bup->button_sprite->width / 2 - bup->button_sprite->width / 4;
     bup->finaly = bup->button_sprite->y;
   }
   if (bup->orientation_of_button == WEST) {
-    bup->finalx = bup->button_sprite->x + bup->button_sprite->width;
+    bup->finalx = bup->button_sprite->x + bup->button_sprite->width / 2 + bup->button_sprite->width / 4;
     bup->finaly = bup->button_sprite->y;
   }
 
@@ -106,7 +103,7 @@ Game_button *(create_game_button)(xpm_map_t xpm[], int x, int y, int n_xpms, enu
  * @return pointer to a game_bar sprite
  * 
  */
-Game_bar *(create_game_bar)(xpm_map_t xpm[], int x, int y, int n_xpms, uint8_t init_angle, uint8_t final_angle, uint8_t angular_speed, Game_button *bup) {
+Game_bar *(create_game_bar)(xpm_map_t xpm[], uint16_t x, uint16_t y, int n_xpms, uint16_t final_angle, uint16_t angular_speed, Game_button *bup) {
   Game_bar *bap = (Game_bar *) malloc(sizeof(Game_bar));
 
   if (bap == NULL)
@@ -115,8 +112,6 @@ Game_bar *(create_game_bar)(xpm_map_t xpm[], int x, int y, int n_xpms, uint8_t i
   Sprite *sp = create_sprite(xpm, x, y, n_xpms);
 
   bap->bar_sprite = sp;
-
-  bap->init_angle = init_angle;
   bap->final_angle = final_angle;
   bap->angular_speed = angular_speed;
   bap->game_button = bup;
@@ -161,26 +156,113 @@ void(delete_game_bar)(Game_bar *bap) {
 }
 
 /**
- * @brief draws game_button accorrding to it's pressed state
+ * @brief handles the movement the game button mechanics
  * @param bup pointer to game_button sprite "object"
+ * @param background pointer to the background sprite
+ * @param firemi pointer to firemi sprite character
+ * @param waterix pointer to waternix sprite character
  * @return none
  */
-void(draw_game_button)(Game_button *bup) {
+void(handle_game_button)(Game_button *bup, Sprite *background, Sprite *firemi, Sprite *waternix) {
+  int prev_button_x = bup->button_sprite->x;
+  int prev_button_y = bup->button_sprite->y;
+
+  //restoring the button background after it moves
+  restore_background(prev_button_x, prev_button_y, bup->button_sprite->width, bup->button_sprite->height, background);
+
+  uint16_t rect_y = 0, rect_x = 0;
+  bool south_pressed = false;
+
+  if (bup->orientation_of_button == NORTH) {
+    rect_x = bup->button_sprite->x;
+    rect_y = bup->button_sprite->y - 1;
+  }
+  if (bup->orientation_of_button == SOUTH) {
+    rect_x = bup->button_sprite->x;
+    rect_y = bup->button_sprite->y + bup->button_sprite->height + 1;
+  }
+  if (bup->orientation_of_button == EAST) {
+    rect_x = bup->button_sprite->x + bup->button_sprite->width + 1;
+    rect_y = bup->button_sprite->y;
+  }
+  if (bup->orientation_of_button == WEST) {
+    rect_x = bup->button_sprite->x - 1;
+    rect_y = bup->button_sprite->y;
+  }
+
+  //TODO: optimize this code to only run this when one os the characters is close
+  //TODO: all workin besides south
+  //checking collision of characters with imaginary rectangle on top of button, according to button orientation
+  bup->pressed = collision_one_rect(firemi, rect_x, rect_y, bup->button_sprite->width, bup->button_sprite->height) || collision_one_rect(waternix, rect_x, rect_y, bup->button_sprite->width, bup->button_sprite->height);
+
   if (bup->pressed) {
-    if (bup->orientation_of_button == NORTH || bup->orientation_of_button == SOUTH) {
-      if (bup->button_sprite->y != bup->finaly) {
-        bup->button_sprite->y += 1; //just to test
-      }
+    if (bup->orientation_of_button == NORTH) {
+      if (bup->button_sprite->y != bup->finaly)
+        bup->button_sprite->y += 1;
     }
-    if (bup->orientation_of_button == EAST || bup->orientation_of_button == WEST) {
-      if (bup->button_sprite->x != bup->finalx) {
-        //TODO: finish for all of them
-      }
+    if (bup->orientation_of_button == SOUTH) {
+      if (south_pressed)
+        south_pressed = false;
+      else
+        south_pressed = true;
+    }
+    if (bup->orientation_of_button == EAST) {
+      if (bup->button_sprite->x != bup->finalx)
+        bup->button_sprite->x -= 1;
+    }
+    if (bup->orientation_of_button == WEST) {
+      if (bup->button_sprite->x != bup->finalx)
+        bup->button_sprite->x += 1;
     }
   }
   else {
-    //bup->button_sprite->x = bup->initx;
-    //bup->button_sprite->y = bup->inity;
+    if (bup->orientation_of_button != SOUTH) {
+      bup->button_sprite->x = bup->initx;
+      bup->button_sprite->y = bup->inity;
+    }
   }
+
+  if (bup->orientation_of_button == SOUTH) {
+    if (south_pressed) {
+      if (bup->button_sprite->y != bup->finaly) {
+        bup->button_sprite->y -= 1;
+      }
+    }
+    else {
+      bup->button_sprite->x = bup->initx;
+      bup->button_sprite->y = bup->inity;
+    }
+  }
+
   draw_sprite(bup->button_sprite);
+}
+
+/**
+ * @brief  
+ * 
+ */
+void(handle_game_bar)(Game_bar *bap, Sprite *background) {
+  //int prev_bar_x = bap->bar_sprite->x;
+  //int prev_bar_y = bap->bar_sprite->y;
+  uint16_t angle = 0;
+
+  //restoring the button background after it moves
+  //restore_background(prev_bar_x, prev_bar_y, bap->bar_sprite->width, bap->bar_sprite->height, background);
+
+  //bar moves if it's respective button is pressed
+  if(bap->game_button->pressed){
+    if(angle != bap->final_angle){
+      if(bap->final_angle > 0){
+      angle += bap->angular_speed;
+      }
+      else{
+         angle -= bap->angular_speed;
+      }
+    }
+  }
+  else{
+    angle = 0;
+  }
+
+  draw_sprite_at_angle(bap->bar_sprite, angle);
 }

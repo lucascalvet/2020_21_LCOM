@@ -52,7 +52,9 @@ int main(int argc, char *argv[]) {
 xpm_map_t xpm_leve1_array[1] = {xpm_level1_without_elements};
 xpm_map_t xpm_firemi_array[3] = {xpm_firemi, firemi_run_l, firemi_run_r};
 xpm_map_t xpm_waternix_array[3] = {xpm_waternix, waternix_run_l, waternix_run_r};
-xpm_map_t xpm_game_button[1] = {xpm_button};
+xpm_map_t xpm_game_button_h[1] = {xpm_button_h};
+xpm_map_t xpm_game_button_v[1] = {xpm_button_v};
+xpm_map_t xpm_game_bar[1] = {xpm_bar};
 
 /**
  * @brief game main loop, where the driver receive is called
@@ -70,13 +72,21 @@ int(proj_main_loop)(int argc, char *argv[]){
   Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 3);
 
   //creating game board sprite elements
-  Game_button *game_button = create_game_button(xpm_game_button, 80, 560, 1, NORTH);
+  Game_button *game_button1 = create_game_button(xpm_game_button_h, 90, 555, 1, NORTH);
+  Game_button *game_button2 = create_game_button(xpm_game_button_h, 150, 450, 1, SOUTH);
+  Game_button *game_button3 = create_game_button(xpm_game_button_v, 180, 555, 1, WEST);
+  Game_bar *game_bar1 = create_game_bar(xpm_game_bar, 555, 510, 1,  -110, 1, game_button1);
 
   //drawing main sprites
   draw_sprite(level_1);
   draw_sprite(firemi);
   draw_sprite(waternix);
-  draw_game_button(game_button);
+
+  //draw board game elements
+  draw_sprite(game_button1->button_sprite);
+  draw_sprite(game_button2->button_sprite);
+  draw_sprite(game_button3->button_sprite);
+  draw_sprite(game_bar1->bar_sprite);
 
   //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
@@ -130,7 +140,12 @@ int(proj_main_loop)(int argc, char *argv[]){
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
             if(timer_counter % wait == 0){
-              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over, game_button);
+              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over);
+
+              handle_game_button(game_button1, level_1, firemi, waternix);
+              handle_game_button(game_button2, level_1, firemi, waternix);
+              handle_game_button(game_button3, level_1, firemi, waternix);
+              //handle_game_bar(game_bar1, level_1); 
             }
           }
           break;
@@ -140,7 +155,7 @@ int(proj_main_loop)(int argc, char *argv[]){
     }
   }
 
-  //unsubscribing the intrrupt notifications for both devices
+  //unsubscribing the interrupt notifications for both devices
   if (keyboard_unsubscribe_int() != OK) return 1;
   if (timer_unsubscribe_int() != OK) return 1;
 
@@ -159,7 +174,11 @@ int(proj_main_loop)(int argc, char *argv[]){
   delete_sprite(level_1);
   delete_sprite(firemi);
   delete_sprite(waternix);
-  delete_game_button(game_button);
+
+  delete_game_button(game_button1);
+  delete_game_button(game_button2);
+  delete_game_button(game_button3);
+  delete_game_bar(game_bar1);
 
   return 0;
 }

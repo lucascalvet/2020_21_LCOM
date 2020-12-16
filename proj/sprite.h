@@ -9,6 +9,7 @@
 //c header files
 #include <stdint.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "video_gr.h"
 
@@ -42,6 +43,9 @@ void(change_sprite_coords)(Sprite *sp, int x, int y);
 //draws Sprite "objects" in screen at their current coordinates
 void(draw_sprite)(Sprite *sp);
 
+//draws Sprite "objects" in screen at the angle
+void(draw_sprite_at_angle)(Sprite *sp, uint16_t angle);
+
 //erases Sprite from screen
 void(erase_sprite)(Sprite *sp);
 
@@ -54,8 +58,8 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4]);
 //checks collision between two sprites (treating both as a rectangle)
 bool(collision_two_rects)(Sprite *sp1, Sprite *sp2);
 
-//checks collision between two sprites (only the second sprite is treatead as a rectangle)
-bool(collision_one_rect)(Sprite *sp1, Sprite *sp2);
+//checks collision between a sprite and rectangle
+bool(collision_one_rect)(Sprite *sp1, uint16_t x, uint16_t y, int width, int height);
 
 //check collisions of sprite against a certain color in vram
 bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color);

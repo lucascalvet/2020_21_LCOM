@@ -93,6 +93,40 @@ void(draw_sprite)(Sprite *sp) {
 }
 
 /**
+ * @brief draws Sprite "objects" in screen at the angle counting from the vector passed  as argument
+ * @param angle the angle of the sprite in relation to the vector passed
+ * @return none
+ */
+void(draw_sprite_at_angle)(Sprite *sp, uint16_t angle) {
+  int map_index = 0; //to keep track of map index
+
+  uint32_t color;
+
+  int transformed_x = 0;
+  int transformed_y = 0;
+
+  float teta = angle * (M_PI / 180); //current angle in randians
+
+  printf("ANGLE: %d", teta);
+
+  //draws pixmap
+  for (int row = 0; row < sp->height; row++) {
+    for (int col = 0; col < sp->width; col++) {
+      color = convert_BGR_to_RGB(color_assembler(sp->map, &map_index));
+      if (color != sp->transparency_color){
+        transformed_x = (double) col * cos(teta) + (double) row * sin(teta);
+        transformed_y = (double) row * cos(teta) - (double) col * sin(teta);
+
+        //printf("X: %d Y: %d", transformed_x, transformed_y);
+        if (transformed_x + sp->x >= 0 && transformed_y + sp->y >= 0)
+          draw_pixel(transformed_x + sp->x, transformed_y + sp->y, color);
+      }
+    }
+  }
+}
+
+
+/**
  * @brief erases sprite from screen according to xpm type transparency color
  * @param sp pointer to Sprite "object" to be erased
  * @return none
@@ -270,19 +304,19 @@ bool(collision_two_rects)(Sprite *sp1, Sprite *sp2) {
 }
 
 /**
- * @brief checks collision between two sprites (note: this algorithm treats only the second sprite as a rectangle)
- * @param sp1 the first sprite to check collisions
- * @param sp2 the second sprite to check collisions with the first, seen as a rectangle
+ * @brief checks collision between a sprite and rectangle
+ * @param sp the first sprite to check collisions
+ * @param x x coordinate of the rectangle
+ * @param y y coordinate of the rectangle
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
  * @return true if collision occurs, false otherwise
  */
-bool(collision_one_rect)(Sprite *sp1, Sprite *sp2) {
-  for (int row = sp1->y; row < sp1->y + sp1->height; row++) {
-    for (int col = sp1->x; col < sp1->x + sp1->width; col++) {
-      if (convert_BGR_to_RGB(pixmap_get_color_by_coordinates(col - sp1->x, row - sp1->y, sp1->map, sp1->width)) != sp1->transparency_color) {
-        if (col >= sp2->x &&               //sp1 coord past sp2 left edge
-            col <= sp2->x + sp2->width &&  //sp1 coord past sp2 right edge
-            row <= sp2->y + sp2->height && //sp1 coord past sp2 bottom edge
-            row >= sp2->y) {               //sp1 coord past sp2 top edge
+bool(collision_one_rect)(Sprite *sp, uint16_t x, uint16_t y, int width, int height) {
+  for (int row = sp->y; row < sp->y + sp->height; row++) {
+    for (int col = sp->x; col < sp->x + sp->width; col++) {
+      if (convert_BGR_to_RGB(pixmap_get_color_by_coordinates(col - sp->x, row - sp->y, sp->map, sp->width)) != sp->transparency_color) {
+        if(col <= x + width && col >= x && row >= y && row <= y + height){
           return true;
         }
       }
