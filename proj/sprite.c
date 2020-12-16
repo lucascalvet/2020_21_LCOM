@@ -1,4 +1,5 @@
 #include "sprite.h"
+#include <math.h>
 
 /**
  * @brief creates a Sprite
@@ -88,6 +89,39 @@ void(draw_sprite)(Sprite *sp) {
       color = convert_BGR_to_RGB(color_assembler(sp->map, &map_index));
       if (color != sp->transparency_color)
         draw_pixel(col, row, color);
+    }
+  }
+}
+
+/**
+ * @brief draws Sprite "objects" in screen at the angle counting from the vector passed  as argument
+ * @param angle the angle of the sprite in relation to the vector passed
+ * @return none
+ */
+void(draw_sprite_at_angle)(Sprite *sp, uint16_t angle) {
+  int map_index = 0; //to keep track of map index
+
+  uint32_t color;
+
+  int transformed_x = 0;
+  int transformed_y = 0;
+
+  float teta = angle * (M_PI / 180); //current angle in randians
+
+  printf("ANGLE: %d", teta);
+
+  //draws pixmap
+  for (int row = 0; row < sp->height; row++) {
+    for (int col = 0; col < sp->width; col++) {
+      color = convert_BGR_to_RGB(color_assembler(sp->map, &map_index));
+      if (color != sp->transparency_color){
+        transformed_x = (double) col * cos(teta) + (double) row * sin(teta);
+        transformed_y = (double) row * cos(teta) - (double) col * sin(teta);
+
+        //printf("X: %d Y: %d", transformed_x, transformed_y);
+        if (transformed_x + sp->x >= 0 && transformed_y + sp->y >= 0)
+          draw_pixel(transformed_x + sp->x, transformed_y + sp->y, color);
+      }
     }
   }
 }
