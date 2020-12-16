@@ -16,6 +16,7 @@
 #include "xpm_levels.h"
 #include "xpm_characters.h"
 #include "xpm_titles.h"
+#include "xpm_slider.h"
 #include "xpm_game_elements.h"
 
 //global variables
@@ -55,6 +56,7 @@ xpm_map_t xpm_waternix_array[3] = {xpm_waternix, waternix_run_l, waternix_run_r}
 xpm_map_t xpm_game_button_h[1] = {xpm_button_h};
 xpm_map_t xpm_game_button_v[1] = {xpm_button_v};
 xpm_map_t xpm_game_bar[1] = {xpm_bar};
+xpm_map_t xpm_slider_array[1] = {xpm_slider};
 
 /**
  * @brief game main loop, where the driver receive is called
@@ -70,12 +72,16 @@ int(proj_main_loop)(int argc, char *argv[]){
   Sprite * level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
   Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 3);
   Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 3);
+  Sprite * slider = create_sprite(xpm_slider_array, 317, 90, 1);
 
   //creating game board sprite elements
   Game_button *game_button1 = create_game_button(xpm_game_button_h, 90, 555, 1, NORTH);
   Game_button *game_button2 = create_game_button(xpm_game_button_h, 150, 450, 1, SOUTH);
   Game_button *game_button3 = create_game_button(xpm_game_button_v, 180, 555, 1, WEST);
   Game_bar *game_bar1 = create_game_bar(xpm_game_bar, 555, 510, 1,  -110, 1, game_button1);
+
+  //creating the clock element
+  Clock * clock = create_clock(652, 20);
 
   //drawing main sprites
   draw_sprite(level_1);
@@ -87,6 +93,10 @@ int(proj_main_loop)(int argc, char *argv[]){
   draw_sprite(game_button2->button_sprite);
   draw_sprite(game_button3->button_sprite);
   draw_sprite(game_bar1->bar_sprite);
+
+  draw_sprite(slider);
+
+  draw_clock(clock);
 
   //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
@@ -146,6 +156,12 @@ int(proj_main_loop)(int argc, char *argv[]){
               handle_game_button(game_button2, level_1, firemi, waternix);
               handle_game_button(game_button3, level_1, firemi, waternix);
               //handle_game_bar(game_bar1, level_1); 
+
+              handle_slider_move(slider, level_1);
+            }
+            if(timer_counter % 60 == 0){
+              tick_clock(clock, level_1);
+              timer_counter = 0;
             }
           }
           break;

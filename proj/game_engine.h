@@ -2,17 +2,30 @@
 #define GAME_ENGINE_H
 
 #include "sprite.h"
+#include "xpm_numbers.h"
 
 //game reseved colors (BGR)
 #define LAVA_RED 0x2f08f2
 #define LAVA_BLUE 0xff3300
 #define LAVA_PURPLE 0x95095b
 #define GAME_BLACK 0x000000
-
+#define NUMBERS_SEP 5
+#define CLOCK_WIDTH ((XPM_NUMBERS_WIDTH + NUMBERS_SEP)*4 + XPM_COLON_WIDTH)
 //enum with all the directions
 enum orientation{
   NORTH, SOUTH, EAST, WEST
 };
+
+typedef struct {
+uint8_t * map; //TODO: Should it be here? Make a clock module or struct?
+unsigned x;
+unsigned y;
+unsigned height;
+unsigned width;
+unsigned xpm_width;
+unsigned count;
+uint32_t transparency_color;
+} Clock;
 
 //game board buttons
 typedef struct {
@@ -36,10 +49,20 @@ typedef struct {
 //handle a character's movement
 void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over);
 
+void (handle_slider_move)(Sprite * slider, Sprite *background);
+
 //checks if characters are in lava or not
 bool(check_lava)(Sprite *firemi, Sprite *waternix);
 
-//creates a game_button sprite for the game board
+Clock * (create_clock)(unsigned x, unsigned y);
+
+void (draw_clock)(Clock * clock);
+
+void (tick_clock)(Clock * clock, Sprite * background);
+
+void(delete_clock)(Clock * clock);
+
+//creates a button sprite for the game board
 Game_button *(create_game_button)(xpm_map_t xpm[], uint16_t x, uint16_t y, int n_xpms, enum orientation orientation_of_button);
 
 //creates a game_bar sprite for the game board
