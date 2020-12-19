@@ -9,13 +9,15 @@
  * @param char1_keys the pressed keys for the movement of the first character
  * @param char2_keys the pressed keys for the movement of the second character
  */
-void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over) {
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w) {
   int prev_char1_x = firemi->x;
   int prev_char2_x = waternix->x;
   int prev_char1_y = firemi->y;
   int prev_char2_y = waternix->y;
-  bool change_char1 = sprite_keyboard_move(firemi, char1_keys);
-  bool change_char2 = sprite_keyboard_move(waternix, char2_keys);
+
+  bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f);
+  bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w);
+
   if (change_char1)
     restore_background(prev_char1_x, prev_char1_y, firemi->width, firemi->height, background);
   if (change_char2)

@@ -51,8 +51,8 @@ int main(int argc, char *argv[]) {
 
 //xpm array encapsulation for sprite creation
 xpm_map_t xpm_leve1_array[1] = {xpm_level1_without_elements};
-xpm_map_t xpm_firemi_array[3] = {xpm_firemi, firemi_run_l, firemi_run_r};
-xpm_map_t xpm_waternix_array[3] = {xpm_waternix, waternix_run_l, waternix_run_r};
+xpm_map_t xpm_firemi_array[6] = {xpm_firemi, firemi_run_l, firemi_run_r, xpm_waternix, waternix_run_l, waternix_run_r};
+xpm_map_t xpm_waternix_array[6] = {xpm_waternix, waternix_run_l, waternix_run_r, xpm_firemi, firemi_run_l, firemi_run_r};  //the last xpm are only to test the animated sprite
 xpm_map_t xpm_game_button_h[1] = {xpm_button_h};
 xpm_map_t xpm_game_button_v[1] = {xpm_button_v};
 xpm_map_t xpm_game_bar[1] = {xpm_bar};
@@ -70,8 +70,8 @@ int(proj_main_loop)(int argc, char *argv[]){
 
   //creating main sprites needed
   Sprite * level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
-  Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 3);
-  Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 3);
+  Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 6);
+  Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 6);
   Sprite * slider = create_sprite(xpm_slider_array, 317, 90, 1);
 
   //creating game board sprite elements
@@ -101,6 +101,10 @@ int(proj_main_loop)(int argc, char *argv[]){
   //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
   bool keys_waternix[4] = {0, 0, 0, 0}; //{^, <-, v, ->}
+
+  //to handle the change of xpm to animate sprite when running
+  int n_maps_f = 0;
+  int n_maps_w = 0;
 
   int ipc_status;
   message msg;
@@ -150,8 +154,7 @@ int(proj_main_loop)(int argc, char *argv[]){
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
             if(timer_counter % wait == 0){
-              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over);
-
+              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over, &n_maps_f, &n_maps_w);
               handle_game_button(game_button1, level_1, firemi, waternix);
               handle_game_button(game_button2, level_1, firemi, waternix);
               handle_game_button(game_button3, level_1, firemi, waternix);

@@ -47,7 +47,7 @@ typedef struct {
 } Game_bar;
 
 //handle a character's movement
-void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over);
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w);
 
 void (handle_slider_move)(Sprite * slider, Sprite *background);
 

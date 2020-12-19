@@ -166,10 +166,11 @@ void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *
  * @param keys the array of 4 keys to be used
  * @return true if the sprite has changed state
  */
-bool(sprite_keyboard_move)(Sprite *sp, bool keys[4]) {
+bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map) {
   int prev_x = sp->x;
   int prev_y = sp->y;
   bool changed = false;
+ 
   if (keys[0]) {
     sp->y += 1; //checking if it is on the ground TODO: not very pretty, but it works...
     if (check_sprite_collision_by_color(sp, 0x0))
@@ -178,18 +179,56 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4]) {
   }
   if (keys[1]) {
     sp->xspeed -= V_STEP + FRICTION;
-    if (sp->map != sp->xpms[1]) {
+     if(sp->yspeed == 0){
+      switch(*n_map){  //TODO: when we have the pixmaps change the array values to respective ones
+        case 0:  
+          sp->map = sp->xpms[1];
+          break;
+        case 1:
+          sp->map = sp->xpms[3];
+          break;
+        case 2:
+          sp->map = sp->xpms[4];
+          break;
+        case 3:
+          sp->map = sp->xpms[5];
+          break;
+        default:
+          break;
+      }
+      *n_map = (*n_map + 1) % 6;
+    }else{
       sp->map = sp->xpms[1];
-      changed = true;
     }
+      changed = true;
+
   }
   //if(keys[2]) sp->yspeed += V_STEP;
   if (keys[3]) {
     sp->xspeed += V_STEP + FRICTION;
-    if (sp->map != sp->xpms[2]) {
+    if(sp->yspeed == 0){
+      switch(*n_map){  //we can enlarge it to how many sprites we need to put it running
+        case 0:  
+          sp->map = sp->xpms[2];
+          break;
+        case 1:
+          sp->map = sp->xpms[3];
+          break;
+        case 2:
+          sp->map = sp->xpms[4];
+          break;
+        case 3:
+          sp->map = sp->xpms[5];
+          break;
+        default:
+          break;
+      }
+      *n_map = (*n_map + 1) % 6;
+    }else{
       sp->map = sp->xpms[2];
-      changed = true;
     }
+      changed = true;
+  
   }
 
   if (sp->xspeed > 0) {
@@ -211,6 +250,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4]) {
 
   if (sp->xspeed == 0 && sp->map != sp->xpms[0]) {
     sp->map = sp->xpms[0];
+    *n_map = 0;
     changed = true;
   }
 
