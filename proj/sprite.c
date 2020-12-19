@@ -126,6 +126,33 @@ void(draw_sprite_at_angle)(Sprite *sp, uint16_t angle) {
 }
 
 /**
+ * @brief draws a Sprite resized to new width and new height TODO: not working yet tentative of doing this algorithm: Nearest Neighbor Image Scaling
+ * 
+ */
+void(draw_resized_sprite)(Sprite *sp, int new_width, int new_height){
+    uint32_t color;
+
+    double x_ratio = (double) sp->width /  new_width;
+    double y_ratio = (double) sp->height / new_height;
+
+    uint16_t px, py;
+
+    for (int row = sp->y; row < sp->y + new_height; row++) {
+      for (int col = sp->x; col < sp->x + new_width; col++) {
+        px = (uint16_t) floor(col * x_ratio) ;
+        py = (uint16_t) floor(row * y_ratio) ;
+
+        //printf("VAluess: %d  %d", px, py);
+
+        color = convert_BGR_to_RGB(pixmap_get_color_by_coordinates(px, py, sp->map, sp->width));
+
+        if (color != sp->transparency_color)
+          draw_pixel(col, row, color);
+    }
+  } 
+}
+
+/**
  * @brief erases sprite from screen according to xpm type transparency color
  * @param sp pointer to Sprite "object" to be erased
  * @return none

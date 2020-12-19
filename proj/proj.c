@@ -70,9 +70,18 @@ int(proj_main_loop)(int argc, char *argv[]){
 
   //creating main sprites needed
   Sprite * level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
-  Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 6);
+  //Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 6);
   Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 6);
   Sprite * slider = create_sprite(xpm_slider_array, 317, 90, 1);
+
+
+  //EXPEIRMENTTTTTT 
+  
+  Sprite * firemi = create_sprite(xpm_firemi_array, 200, 310, 6);
+  draw_resized_sprite(firemi, 100, 100);
+  sleep(4);
+  
+
 
   //creating game board sprite elements
   Game_button *game_button1 = create_game_button(xpm_game_button_h, 90, 555, 1, NORTH);

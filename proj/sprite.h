@@ -46,6 +46,9 @@ void(draw_sprite)(Sprite *sp);
 //draws Sprite "objects" in screen at a certain angle
 void(draw_sprite_at_angle)(Sprite *sp, uint16_t angle);
 
+//draws a Sprite resized to new width and new height
+void(draw_resized_sprite)(Sprite *sp, int new_width, int new_height);
+
 //erases Sprite from screen
 void(erase_sprite)(Sprite *sp);
 
