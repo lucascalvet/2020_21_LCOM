@@ -3,6 +3,7 @@
 
 #include "sprite.h"
 #include "xpm_numbers.h"
+#include "xpm_mouse.h"
 
 //game reseved colors (BGR)
 #define LAVA_RED 0x2f08f2
@@ -17,14 +18,25 @@ enum orientation{
 };
 
 typedef struct {
-uint8_t * map; //TODO: Should it be here? Make a clock module or struct?
-unsigned x;
-unsigned y;
-unsigned height;
-unsigned width;
-unsigned xpm_width;
-unsigned count;
-uint32_t transparency_color;
+  int x;
+  int y;
+  int prev_x;
+  int prev_y;
+  uint8_t *map;
+  unsigned height;
+  unsigned width;
+  uint32_t transparency_color;
+} Cursor;
+
+typedef struct {
+  uint8_t *map; //TODO: Should it be here? Make a clock module or struct?
+  unsigned x;
+  unsigned y;
+  unsigned height;
+  unsigned width;
+  unsigned xpm_width;
+  unsigned count;
+  uint32_t transparency_color;
 } Clock;
 
 //game board buttons
@@ -53,6 +65,14 @@ void (handle_slider_move)(Sprite * slider, Sprite *background);
 
 //checks if characters are in lava or not
 bool(check_lava)(Sprite *firemi, Sprite *waternix);
+
+Cursor * (create_cursor)(unsigned x, unsigned y);
+
+void (update_cursor)(Cursor *cursor, struct packet packet);
+
+void (draw_cursor)(Cursor *cursor, Sprite * background);
+
+void(delete_cursor)(Cursor *cursor);
 
 Clock * (create_clock)(unsigned x, unsigned y);
 

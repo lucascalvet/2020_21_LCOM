@@ -9,6 +9,8 @@
 #include <stdint.h>
 
 //project header files - modulos
+#include "keyboard.h"
+#include "mouse.h"
 #include "video_gr.h"
 #include "game_engine.h"
 
@@ -78,8 +80,8 @@ int(proj_main_loop)(int argc, char *argv[]){
   //EXPEIRMENTTTTTT 
   
   Sprite * firemi = create_sprite(xpm_firemi_array, 200, 310, 6);
-  draw_resized_sprite(firemi, 100, 100);
-  sleep(4);
+  //draw_resized_sprite(firemi, 100, 100);
+  //sleep(4);
   
 
 
@@ -91,6 +93,8 @@ int(proj_main_loop)(int argc, char *argv[]){
 
   //creating the clock element
   Clock * clock = create_clock(652, 20);
+
+  Cursor *cursor = create_cursor(400, 300);
 
   //drawing main sprites
   draw_sprite(level_1);
@@ -117,16 +121,19 @@ int(proj_main_loop)(int argc, char *argv[]){
 
   int ipc_status;
   message msg;
-  uint8_t kbd_bit_no, timer_bit_no;
+  uint8_t kbd_bit_no, timer_bit_no, mouse_bit_no;
   timer_set_frequency(0, 60);
   int r, wait = 60 / FPS;
+  struct packet mouse_packet;
 
   //subscribing the intrrupt notifications for both devices
   if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
   if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
+  if (mouse_subscribe_int(&mouse_bit_no) != OK) return 1;
 
   uint64_t kbd_irq_set = BIT(kbd_bit_no);
   uint64_t timer_irq_set = BIT(timer_bit_no);
+  uint64_t mouse_irq_set = BIT(mouse_bit_no);
 
   //main driver receive loop
   while (bytes[0] != ESC && !game_over) {
@@ -170,10 +177,17 @@ int(proj_main_loop)(int argc, char *argv[]){
               //handle_game_bar(game_bar1, level_1); 
 
               handle_slider_move(slider, level_1);
+              draw_cursor(cursor, level_1);
             }
             if(timer_counter % 60 == 0){
               tick_clock(clock, level_1);
               timer_counter = 0;
+            }
+          }
+          if (msg.m_notify.interrupts & mouse_irq_set) {
+            mouse_ih();
+            if (build_packet(&mouse_packet)){
+              update_cursor(cursor, mouse_packet);
             }
           }
           break;
@@ -186,6 +200,7 @@ int(proj_main_loop)(int argc, char *argv[]){
   //unsubscribing the interrupt notifications for both devices
   if (keyboard_unsubscribe_int() != OK) return 1;
   if (timer_unsubscribe_int() != OK) return 1;
+  if (mouse_unsubscribe_int() != OK) return 1;
 
   if(game_over){
     xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
@@ -202,6 +217,9 @@ int(proj_main_loop)(int argc, char *argv[]){
   delete_sprite(level_1);
   delete_sprite(firemi);
   delete_sprite(waternix);
+
+  delete_clock(clock);
+  delete_cursor(cursor);
 
   delete_game_button(game_button1);
   delete_game_button(game_button2);

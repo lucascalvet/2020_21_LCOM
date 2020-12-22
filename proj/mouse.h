@@ -26,7 +26,7 @@ int(mouse_enable_data_report)();
 int(mouse_disable_data_report)();
 
 //build the mouse packet bytes
-void(build_packet)(int *counter, uint8_t packet[]);
+bool(build_packet)(struct packet *packet);
 
 //handles the mouse interrupts
 void(mouse_ih)();
