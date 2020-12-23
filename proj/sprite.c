@@ -97,7 +97,7 @@ void(draw_sprite)(Sprite *sp) {
  * @param angle the angle of the sprite in relation to the vector passed
  * @return none
  */
-void(draw_sprite_at_angle)(Sprite *sp, uint16_t angle) {
+void(draw_sprite_at_angle)(Sprite *sp, int angle) {
   int map_index = 0; //to keep track of map index
 
   uint32_t color;
@@ -106,8 +106,6 @@ void(draw_sprite_at_angle)(Sprite *sp, uint16_t angle) {
   int transformed_y = 0;
 
   float teta = angle * (M_PI / 180); //current angle in randians
-
-  printf("ANGLE: %d", teta);
 
   //draws pixmap
   for (int row = 0; row < sp->height; row++) {

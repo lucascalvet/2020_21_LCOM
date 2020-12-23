@@ -9,15 +9,15 @@
 #include <stdint.h>
 
 //project header files - modulos
-#include "video_gr.h"
 #include "game_engine.h"
+#include "video_gr.h"
 
 //project header files - xpm's
-#include "xpm_levels.h"
 #include "xpm_characters.h"
-#include "xpm_titles.h"
-#include "xpm_slider.h"
 #include "xpm_game_elements.h"
+#include "xpm_levels.h"
+#include "xpm_slider.h"
+#include "xpm_titles.h"
 
 //global variables
 unsigned timer_counter = 0;
@@ -50,65 +50,64 @@ int main(int argc, char *argv[]) {
 }
 
 //xpm array encapsulation for sprite creation
-xpm_map_t xpm_leve1_array[1] = {xpm_level1_without_elements};
+xpm_map_t xpm_leve1_array[1] = {xpm_level1_with_slope_red_lava};
 xpm_map_t xpm_firemi_array[6] = {xpm_firemi, firemi_run_l, firemi_run_r, xpm_waternix, waternix_run_l, waternix_run_r};
-xpm_map_t xpm_waternix_array[6] = {xpm_waternix, waternix_run_l, waternix_run_r, xpm_firemi, firemi_run_l, firemi_run_r};  //the last xpm are only to test the animated sprite
-xpm_map_t xpm_game_button_h[1] = {xpm_button_h};
-xpm_map_t xpm_game_button_v[1] = {xpm_button_v};
-xpm_map_t xpm_game_bar[1] = {xpm_bar};
+xpm_map_t xpm_waternix_array[6] = {xpm_waternix, waternix_run_l, waternix_run_r, xpm_firemi, firemi_run_l, firemi_run_r}; //the last xpm are only to test the animated sprite
 xpm_map_t xpm_slider_array[1] = {xpm_slider};
+xpm_map_t xpm_box_array[1] = {xpm_box};
 
 /**
  * @brief game main loop, where the driver receive is called
  * @return 0 if no erros, 1 otherwise
  */
-int(proj_main_loop)(int argc, char *argv[]){
+int(proj_main_loop)(int argc, char *argv[]) {
   printf("Welcome to FireMi & WaterNix!!!\n");
 
   //initiating the VBE
   vg_init(VBE_DIRECT_800_MODE);
 
-  //creating main sprites needed
-  Sprite * level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
-  //Sprite * firemi = create_sprite(xpm_firemi_array, 20, 510, 6);
-  Sprite * waternix = create_sprite(xpm_waternix_array, 50, 510, 6);
-  Sprite * slider = create_sprite(xpm_slider_array, 317, 90, 1);
+  //creating the clock element
+  Clock *clock = create_clock(652, 20);
 
+  //creating main character sprites
+  Sprite *firemi = create_sprite(xpm_firemi_array, 20, 510, 6);
+  Sprite *waternix = create_sprite(xpm_waternix_array, 50, 510, 6);
 
-  //EXPEIRMENTTTTTT 
-  
+  //creating game board sprite elements for level1
+  Sprite *level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
+  Sprite *slider = create_sprite(xpm_slider_array, 317, 90, 1);
+  Sprite *box = create_sprite(xpm_box_array, 390, 509, 1);
+  Game_button *game_button1 = create_game_button(xpm_button_1, 66, 376, SOUTH);
+  Game_bar *game_bar1 = create_game_bar(xpm_bar_1, 555, 510, 0, 0, 0, -90, -1, game_button1);
+  Game_button *game_button2 = create_game_button(xpm_button_2, 705, 570, NORTH);
+  Game_bar *game_bar2 = create_game_bar(xpm_bar_2, 195, 270, 106, 270, 0, 0, 0, game_button2);
+
+  //used to acknoledge the button of who ca trigger him TODO: can used for bar collision against them wich is not done yet
+  Sprite *objs_to_collide[3] = {firemi, waternix, box};
+
+  //EXPEIRMENTTTTTT
+  /*
   Sprite * firemi = create_sprite(xpm_firemi_array, 200, 310, 6);
   draw_resized_sprite(firemi, 100, 100);
   sleep(4);
-  
+  */
 
+  //draw_snow(1, 5, 800, 600, 130);
 
-  //creating game board sprite elements
-  Game_button *game_button1 = create_game_button(xpm_game_button_h, 90, 555, 1, NORTH);
-  Game_button *game_button2 = create_game_button(xpm_game_button_h, 150, 450, 1, SOUTH);
-  Game_button *game_button3 = create_game_button(xpm_game_button_v, 180, 555, 1, WEST);
-  Game_bar *game_bar1 = create_game_bar(xpm_game_bar, 555, 510, 1,  -110, 1, game_button1);
-
-  //creating the clock element
-  Clock * clock = create_clock(652, 20);
-
-  //drawing main sprites
+  //drawing level1 elements
+  draw_clock(clock);
   draw_sprite(level_1);
   draw_sprite(firemi);
   draw_sprite(waternix);
-
-  //draw board game elements
-  draw_sprite(game_button1->button_sprite);
-  draw_sprite(game_button2->button_sprite);
-  draw_sprite(game_button3->button_sprite);
-  draw_sprite(game_bar1->bar_sprite);
-
+  draw_sprite(box);
   draw_sprite(slider);
-
-  draw_clock(clock);
+  draw_sprite(game_button1->button_sprite);
+  draw_sprite(game_bar1->bar_sprite);
+  draw_sprite(game_button2->button_sprite);
+  draw_sprite(game_bar2->bar_sprite);
 
   //set of keys to the two main characters
-  bool keys_firemi[4] = {0, 0, 0, 0}; //{W, A, S, D}
+  bool keys_firemi[4] = {0, 0, 0, 0};   //{W, A, S, D}
   bool keys_waternix[4] = {0, 0, 0, 0}; //{^, <-, v, ->}
 
   //to handle the change of xpm to animate sprite when running
@@ -122,8 +121,10 @@ int(proj_main_loop)(int argc, char *argv[]){
   int r, wait = 60 / FPS;
 
   //subscribing the intrrupt notifications for both devices
-  if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
-  if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
+  if (keyboard_subscribe_int(&kbd_bit_no) != OK)
+    return 1;
+  if (timer_subscribe_int(&timer_bit_no) != OK)
+    return 1;
 
   uint64_t kbd_irq_set = BIT(kbd_bit_no);
   uint64_t timer_irq_set = BIT(timer_bit_no);
@@ -139,39 +140,56 @@ int(proj_main_loop)(int argc, char *argv[]){
         case HARDWARE: //hardware interrupt notification
           if (msg.m_notify.interrupts & kbd_irq_set) {
             keyboard_ih();
-            
-            if (bytes[0] == KEY_MAKE_W) keys_firemi[0] = true;
-            if (bytes[0] == KEY_MAKE_A) keys_firemi[1] = true;
-            if (bytes[0] == KEY_MAKE_S) keys_firemi[2] = true;
-            if (bytes[0] == KEY_MAKE_D) keys_firemi[3] = true;
-            if (bytes[0] == KEY_BREAK_W) keys_firemi[0] = false;
-            if (bytes[0] == KEY_BREAK_A) keys_firemi[1] = false;
-            if (bytes[0] == KEY_BREAK_S) keys_firemi[2] = false;
-            if (bytes[0] == KEY_BREAK_D) keys_firemi[3] = false;
-            
-            if(bytes[0] == TWO_BYTE_SCNCODE_PREFIX && !making_scancode){
-              if (bytes[1] == KEY_MAKE_ARROW_UP) keys_waternix[0] = true;
-              if (bytes[1] == KEY_MAKE_ARROW_LEFT) keys_waternix[1] = true;
-              if (bytes[1] == KEY_MAKE_ARROW_DOWN) keys_waternix[2] = true;
-              if (bytes[1] == KEY_MAKE_ARROW_RIGHT) keys_waternix[3] = true;
-              if (bytes[1] == KEY_BREAK_ARROW_UP) keys_waternix[0] = false;
-              if (bytes[1] == KEY_BREAK_ARROW_LEFT) keys_waternix[1] = false;
-              if (bytes[1] == KEY_BREAK_ARROW_DOWN) keys_waternix[2] = false;
-              if (bytes[1] == KEY_BREAK_ARROW_RIGHT) keys_waternix[3] = false;
+
+            if (bytes[0] == KEY_MAKE_W)
+              keys_firemi[0] = true;
+            if (bytes[0] == KEY_MAKE_A)
+              keys_firemi[1] = true;
+            if (bytes[0] == KEY_MAKE_S)
+              keys_firemi[2] = true;
+            if (bytes[0] == KEY_MAKE_D)
+              keys_firemi[3] = true;
+            if (bytes[0] == KEY_BREAK_W)
+              keys_firemi[0] = false;
+            if (bytes[0] == KEY_BREAK_A)
+              keys_firemi[1] = false;
+            if (bytes[0] == KEY_BREAK_S)
+              keys_firemi[2] = false;
+            if (bytes[0] == KEY_BREAK_D)
+              keys_firemi[3] = false;
+
+            if (bytes[0] == TWO_BYTE_SCNCODE_PREFIX && !making_scancode) {
+              if (bytes[1] == KEY_MAKE_ARROW_UP)
+                keys_waternix[0] = true;
+              if (bytes[1] == KEY_MAKE_ARROW_LEFT)
+                keys_waternix[1] = true;
+              if (bytes[1] == KEY_MAKE_ARROW_DOWN)
+                keys_waternix[2] = true;
+              if (bytes[1] == KEY_MAKE_ARROW_RIGHT)
+                keys_waternix[3] = true;
+              if (bytes[1] == KEY_BREAK_ARROW_UP)
+                keys_waternix[0] = false;
+              if (bytes[1] == KEY_BREAK_ARROW_LEFT)
+                keys_waternix[1] = false;
+              if (bytes[1] == KEY_BREAK_ARROW_DOWN)
+                keys_waternix[2] = false;
+              if (bytes[1] == KEY_BREAK_ARROW_RIGHT)
+                keys_waternix[3] = false;
             }
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
-            if(timer_counter % wait == 0){
-              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over, &n_maps_f, &n_maps_w);
-              handle_game_button(game_button1, level_1, firemi, waternix);
-              handle_game_button(game_button2, level_1, firemi, waternix);
-              handle_game_button(game_button3, level_1, firemi, waternix);
-              //handle_game_bar(game_bar1, level_1); 
-
+            if (timer_counter % wait == 0) {
+              //level1 handlers
+              handle_game_button(game_button1, level_1, 3, objs_to_collide);
+              handle_game_bar(game_bar1, level_1);
+              handle_game_button(game_button2, level_1, 3, objs_to_collide);
+              handle_game_bar(game_bar2, level_1);
               handle_slider_move(slider, level_1);
+              handle_game_box(firemi, waternix, box, level_1);
+              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over, &n_maps_f, &n_maps_w);
             }
-            if(timer_counter % 60 == 0){
+            if (timer_counter % 60 == 0) {
               tick_clock(clock, level_1);
               timer_counter = 0;
             }
@@ -184,12 +202,14 @@ int(proj_main_loop)(int argc, char *argv[]){
   }
 
   //unsubscribing the interrupt notifications for both devices
-  if (keyboard_unsubscribe_int() != OK) return 1;
-  if (timer_unsubscribe_int() != OK) return 1;
+  if (keyboard_unsubscribe_int() != OK)
+    return 1;
+  if (timer_unsubscribe_int() != OK)
+    return 1;
 
-  if(game_over){
+  if (game_over) {
     xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
-    Sprite * game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
+    Sprite *game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
     draw_sprite(game_over_title);
     sleep(4);
     delete_sprite(game_over_title);
@@ -204,9 +224,10 @@ int(proj_main_loop)(int argc, char *argv[]){
   delete_sprite(waternix);
 
   delete_game_button(game_button1);
-  delete_game_button(game_button2);
-  delete_game_button(game_button3);
   delete_game_bar(game_bar1);
+  
+  delete_game_button(game_button2);
+  delete_game_bar(game_bar2);
 
   return 0;
 }

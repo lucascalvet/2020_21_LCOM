@@ -3,6 +3,7 @@
 
 #include "sprite.h"
 #include "xpm_numbers.h"
+#include<time.h>
 
 //game reseved colors (BGR)
 #define LAVA_RED 0x2f08f2
@@ -32,6 +33,7 @@ typedef struct {
   Sprite *button_sprite;                  //pointer to the correspondant sprite object
   enum orientation orientation_of_button; //the orientation of the button is pointing to
   bool pressed;                           //state of the button
+  bool south_pressed;
   uint16_t initx;                          //default x coord for button
   uint16_t inity;                          //default y coord for button
   uint16_t finalx;                         //final x coord of button when pressed
@@ -41,8 +43,13 @@ typedef struct {
 //game board bars
 typedef struct {
   Sprite *bar_sprite;                     //pointer to the correspondant sprite object
-  uint16_t final_angle;                          //the angle that the bar does when moved
-  uint16_t angular_speed;                  //the bar angular speed
+  uint16_t initx;                          //default x coord for button
+  uint16_t inity;                          //default y coord for button
+  uint16_t finalx;                         //final x coord of button when pressed
+  uint16_t finaly;                         //final y coord of button when pressed
+  int final_angle;                          //the angle that the bar does when moved
+  int angle;
+  int angular_speed;                  //the bar angular speed
   Game_button *game_button;               //pointer to the button that triggers the bar movement
 } Game_bar;
 
@@ -63,10 +70,10 @@ void (tick_clock)(Clock * clock, Sprite * background);
 void(delete_clock)(Clock * clock);
 
 //creates a button sprite for the game board
-Game_button *(create_game_button)(xpm_map_t xpm[], uint16_t x, uint16_t y, int n_xpms, enum orientation orientation_of_button);
+Game_button *(create_game_button)(const xpm_row_t *xpm_button, uint16_t x, uint16_t y, enum orientation orientation_of_button);
 
 //creates a game_bar sprite for the game board
-Game_bar *(create_game_bar)(xpm_map_t xpm[], uint16_t x, uint16_t y, int n_xpms,  uint16_t angle, uint16_t angular_speed, Game_button *bup);
+Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, uint16_t finalx, uint16_t finaly, int init_angle, int final_angle, int angular_speed, Game_button *bup);
 
 //deletes game_button sprite "object"
 void(delete_game_button)(Game_button *bup);
@@ -75,9 +82,16 @@ void(delete_game_button)(Game_button *bup);
 void(delete_game_bar)(Game_bar *bap);
 
 //
-void(handle_game_button)(Game_button *bup, Sprite *background, Sprite* firemi, Sprite* waternix);
+void(handle_game_button)(Game_button *bup, Sprite *background,  uint16_t n_objs, Sprite* objs[]);
 
 //
 void(handle_game_bar)(Game_bar *bap, Sprite *background);
+
+//creates random 2d array of line of snow
+void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_quantity);
+
+void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite * game_box, Sprite *background);
+
+
 
 #endif //GAME_ENGINE_H

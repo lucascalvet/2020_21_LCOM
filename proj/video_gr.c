@@ -1,10 +1,11 @@
 #include "video_gr.h"
 #include <lcom/lab5.h>
 #include <lcom/lcf.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 
-static uint8_t *video_mem;         //virtual vram address
+static uint8_t *video_mem;      //virtual vram address
 static unsigned h_res;          //horizontal resolution in pixels
 static unsigned v_res;          //vertical resolution in pixels
 static unsigned bits_per_pixel; //number of VRAM bits per pixel
@@ -194,7 +195,7 @@ void *(vg_init)(uint16_t mode) {
 
   reg86.intno = VBE_INTERRUPT_INSTRUCTION;
   reg86.ax = VBE_SET_MODE_FUNCTION;
-  reg86.bx = VBE_LINEAR_ACTIVATE | mode; 
+  reg86.bx = VBE_LINEAR_ACTIVATE | mode;
 
   //making kernell call in real mode (momentaneous switch from minix protected mode)
   if (sys_int86(&reg86) != OK) {
@@ -220,10 +221,10 @@ uint32_t(color_assembler)(const uint8_t *map, int *map_position) {
   uint32_t color = 0;
 
   for (int i = 0; i < bits_to_bytes(); i++) {
-    color <<= 8; 
+    color <<= 8;
     color |= map[*map_position + i];
   }
-  
+
   *map_position += bits_to_bytes();
 
   return color;
@@ -234,7 +235,7 @@ uint32_t(color_assembler)(const uint8_t *map, int *map_position) {
  * @param color the color to be converted
  * @return the converted color
  */
-uint32_t(convert_BGR_to_RGB)(int color){
+uint32_t(convert_BGR_to_RGB)(int color) {
   int red_mask = 0x0000FF;
   int green_mask = 0x00FF00;
   int blue_mask = 0xFF0000;
@@ -258,17 +259,17 @@ uint32_t(convert_BGR_to_RGB)(int color){
  * @param y the y coordinate of screen from top to bottom
  * @return the color in the desired position, -1 if no valid position given
  */
-uint32_t (vram_get_color_by_coordinates)(uint16_t x, uint16_t y){
+uint32_t(vram_get_color_by_coordinates)(uint16_t x, uint16_t y) {
   uint32_t color = 0;
 
   uint8_t *pointer = video_mem; //pointer to video memory address
 
-  pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change 
-  
-  if (x < h_res && y < v_res){ //if x and y exceeds the window size there is no color to be inputed
+  pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change
+
+  if (x < h_res && y < v_res) { //if x and y exceeds the window size there is no color to be inputed
     color = 0;
 
-    for (int i = 0; i < bits_to_bytes(); i++){
+    for (int i = 0; i < bits_to_bytes(); i++) {
       color <<= 8;
       color |= *(pointer + i);
     }
@@ -287,8 +288,8 @@ uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixma
   uint32_t color = 0; //TODO: change "none" value
 
   //if (x <  || y < v_res) //if x and y exceeds the window size there is no color to be inputed
-    //return -1;
-   //TODO: check for pixmap limits
+  //return -1;
+  //TODO: check for pixmap limits
   uint8_t *pointer = pixmap; //pointer to video memory address
 
   pointer += (x + width * y) * bits_to_bytes(); //gets correct position of memory map to change
@@ -314,8 +315,8 @@ void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change according to x, y and bytes per pixel
 
-  if (x < h_res && y < v_res){ //if x and y exceeds the window size doesn't change anything
-    for (int i = 0; i < bits_to_bytes(); i++){
+  if (x < h_res && y < v_res) { //if x and y exceeds the window size doesn't change anything
+    for (int i = 0; i < bits_to_bytes(); i++) {
       *(pointer + i) = color;
       color >>= 8;
     }
@@ -348,6 +349,31 @@ int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
   for (int i = y; i < y + height; i++) {
     vg_draw_hline(x, i, width, color);
+  }
+
+  return 0;
+}
+
+/**
+ * @brief draws a circle in screen at determinated coordinates and specifified color
+ * @param left_corner_x the x coordinate of top left corner of the rectangle that embeddeds the circle
+ * @param left_corner_y the y coordinate of top left corner of the rectangle that embeddeds the circle
+ * @param radius the radius of the circle
+ * @param color the color of the circle
+ * @return 0 if no errors, 1 otherwise
+ */
+int(vg_draw_circle)(uint16_t left_corner_x, uint16_t left_corner_y, uint16_t radius, uint32_t color) {
+  //calculating the circle center
+  double center_x = left_corner_x + radius;
+  double center_y = left_corner_y + radius;
+
+  //drawing the circle
+  for (int row = left_corner_y; row < left_corner_y + radius * 2; row++) {
+    for (int col = left_corner_x; col < left_corner_x + radius * 2; col++) {
+      if (pow((double) (col - center_x), 2) + pow((double) (row - center_y), 2) - pow((double) radius, 2) <= 0) {
+        draw_pixel(col, row, color);
+      }
+    }
   }
 
   return 0;

@@ -58,10 +58,13 @@ uint32_t(convert_BGR_to_RGB)(int color);
 uint32_t (vram_get_color_by_coordinates)(uint16_t x, uint16_t y);
 
 //returns the color at a certain coordinate in a pixmap
-uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixmap, int width) ;
+uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixmap, int width);
 
 //draws a pixel in screen
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
+
+//draws a circle in screen
+int(vg_draw_circle)(uint16_t left_corner_x, uint16_t left_corner_y, uint16_t radius, uint32_t color);
 
 //draws a pattern with rectangles
 int(draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t no_rectangles);
