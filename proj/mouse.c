@@ -4,6 +4,8 @@
 
 int hook_id_mouse;
 uint8_t data; //used to hold the data from interrupt handler
+unsigned byte_counter = 0;
+uint8_t packet[3];
 
 /**
  * @brief subscribes mouse interruptions
@@ -84,27 +86,27 @@ int(mouse_disable_data_report)() {
 }
 
 /**
- * @brief builds the mouse packe with 3 bytes
- * @param counter use to keep track of the byte number
- * @param packet pointer to packet array 
- * @return none
+ * @brief builds the mouse packet with 3 bytes
+ * @param packet_struct pointer to a packet struct
+ * @return if a packet was built
  */
-void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet to use
-  if (*counter == 0) {                               //data & FIRST_BYTE_CHECK &
+bool(build_packet)(struct packet *packet_struct) { //builds the struct packet to use
+  if (byte_counter == 0) {                               //data & FIRST_BYTE_CHECK &
     packet[0] = data;
   }
-  else if (*counter == 1) {
+  else if (byte_counter == 1) {
     packet[1] = data;
   }
-  else if (*counter == 2) {
+  else if (byte_counter == 2) {
     packet[2] = data;
   }
 
-  if (*counter == 2) {
-    struct packet packet_struct;
+  byte_counter++; 
+
+  if (byte_counter == 3) {
 
     for (int i = 0; i < 3; i++) {
-      packet_struct.bytes[i] = packet[i];
+      (*packet_struct).bytes[i] = packet[i];
     }
 
     bool rb = packet[0] & PACKET_RB;
@@ -113,11 +115,11 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
     bool x_ov = packet[0] & PACKET_X_OVFL;
     bool y_ov = packet[0] & PACKET_Y_OVFL;
 
-    packet_struct.rb = rb;
-    packet_struct.mb = mb;
-    packet_struct.lb = lb;
-    packet_struct.x_ov = x_ov;
-    packet_struct.y_ov = y_ov;
+    (*packet_struct).rb = rb;
+    (*packet_struct).mb = mb;
+    (*packet_struct).lb = lb;
+    (*packet_struct).x_ov = x_ov;
+    (*packet_struct).y_ov = y_ov;
 
     uint8_t msb_x = packet[0] << 3;
     msb_x >>= 7;
@@ -136,11 +138,13 @@ void(build_packet)(int *counter, uint8_t packet[]) { //builds the struct packet 
       y = packet[2] | mask;
     else
       y = packet[2];
-    packet_struct.delta_x = x;
-    packet_struct.delta_y = y;
+    (*packet_struct).delta_x = x;
+    (*packet_struct).delta_y = y;
 
-    mouse_print_packet(&packet_struct); //prints mouse packet
+    byte_counter = 0;
+    return true;
   }
+  else return false;
 }
 
 /**

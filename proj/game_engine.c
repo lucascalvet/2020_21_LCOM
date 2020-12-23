@@ -1,5 +1,6 @@
 #include "game_engine.h"
 
+
 /**
  * @brief handle a character's movement
  * 
@@ -49,7 +50,81 @@ void(handle_slider_move)(Sprite *slider, Sprite *background) {
  * @brief Creates a minutes:seconds clock
  * @return the created clock
  */
-Clock *(create_clock)(unsigned x, unsigned y) {
+Cursor * (create_cursor)(unsigned x, unsigned y){
+  Cursor *cursor = (Cursor *) malloc(sizeof(Cursor));
+
+  xpm_image_t img;
+  cursor->x = x;
+  cursor->y = y;
+  cursor->prev_x = x;
+  cursor->prev_y = y;
+  cursor->map = xpm_load(xpm_mouse, XPM_8_8_8, &img);
+  cursor->height = img.height;
+  cursor->transparency_color = xpm_transparency_color(img.type);
+  cursor->width = img.width;
+
+  return cursor;
+}
+
+/**
+ * @brief Updates the cursor position
+ * @param cursor a pointer to the cursor to be updated
+ * @param packet a packet struct with the cursor movement information
+ */
+void (update_cursor)(Cursor *cursor, struct packet packet){
+  cursor->x += packet.delta_x;
+  cursor->y -= packet.delta_y;
+  if (!(cursor->x < (int) 800)) cursor->x = 800 - 1;
+  if (!(cursor->y < (int) 600)) cursor->y = 600 - 1;
+  if (cursor->x < 0) cursor->x = 0;
+  if (cursor->y < 0) cursor->y = 0;
+}
+
+/**
+ * @brief Draws the cursor
+ * @param cursor the cursor to draw
+ */
+void (draw_cursor)(Cursor *cursor, Sprite * background) {
+  restore_background(cursor->prev_x, cursor->prev_y, cursor->width, cursor->height, background);
+  cursor->prev_x = cursor->x;
+  cursor->prev_y = cursor->y;
+  
+  int map_index = 0; //to keep track of map index
+
+  uint32_t color;
+
+  //draws cursor
+  for (int row = cursor->y; row < cursor->y + (int) cursor->height; row++) {
+    for (int col = cursor->x; col < cursor->x + (int) cursor->width; col++) {
+      color = convert_BGR_to_RGB(color_assembler(cursor->map, &map_index));
+      if (color != cursor->transparency_color)
+        draw_pixel(col, row, color);
+    }
+  }
+}
+
+/**
+ * @brief deletes a cursor object
+ * @param sp pointer to cursor "object" to be deleted
+ * @return none
+ */
+void(delete_cursor)(Cursor * cursor) {
+  if (cursor == NULL)
+    return;
+
+  if (cursor->map)
+    free(cursor->map);
+
+  free(cursor);
+  cursor = NULL; // XXX: pointer is passed by value
+  // should do this @ the caller
+}
+
+/**
+ * @brief Creates a minutes:seconds clock
+ * @return the created clock
+ */
+Clock * (create_clock)(unsigned x, unsigned y){
   Clock *clock = (Clock *) malloc(sizeof(Clock));
 
   xpm_image_t img;
@@ -77,8 +152,8 @@ void(draw_clock)(Clock *clock) {
   unsigned minutes = clock->count / 60;
   unsigned seconds = clock->count % 60;
 
-  unsigned clock_digits[4] = {minutes / 10, minutes % 10, seconds / 10, seconds % 10};
-  printf("\nClock digits: {%d, %d, %d, %d}", clock_digits[0], clock_digits[1], clock_digits[2], clock_digits[3]);
+  unsigned clock_digits[4] = {minutes/10, minutes%10, seconds/10, seconds%10};
+  //printf("\nClock digits: {%d, %d, %d, %d}", clock_digits[0], clock_digits[1], clock_digits[2], clock_digits[3]);
 
   //draws pixmap
   for (int i = 0; i < 4; i++) {
