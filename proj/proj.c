@@ -12,6 +12,8 @@
 #include "game_engine.h"
 #include "keyboard.h"
 #include "mouse.h"
+#include "rtc.h"
+#include "game_engine.h"
 #include "video_gr.h"
 
 //project header files - xpm's
@@ -71,9 +73,10 @@ xpm_map_t xpm_box2_array[1] = {xpm_box2};
  */
 int(proj_main_loop)(int argc, char *argv[]) {
   printf("Welcome to FireMi & WaterNix!!!\n");
-
+  
   //initiating the VBE
   vg_init(VBE_DIRECT_800_MODE);
+
 
   //creating the clock element
   Clock *clock = create_clock(652, 20);
@@ -141,22 +144,23 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   int ipc_status;
   message msg;
-  uint8_t kbd_bit_no, timer_bit_no, mouse_bit_no;
+  uint8_t kbd_bit_no, timer_bit_no, mouse_bit_no, rtc_bit_no;
   timer_set_frequency(0, 60);
   int r, wait = 60 / FPS;
   struct packet mouse_packet;
+  rtc_time time;
 
   //subscribing the interrupt notifications for all devices needed
-  if (keyboard_subscribe_int(&kbd_bit_no) != OK)
-    return 1;
-  if (timer_subscribe_int(&timer_bit_no) != OK)
-    return 1;
-  if (mouse_subscribe_int(&mouse_bit_no) != OK)
-    return 1;
+  if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
+  if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
+  if (mouse_subscribe_int(&mouse_bit_no) != OK) return 1;
+  if (rtc_subscribe_int(&rtc_bit_no) != OK) return 1;
+  rtc_enable_update_int();
 
   uint64_t kbd_irq_set = BIT(kbd_bit_no);
   uint64_t timer_irq_set = BIT(timer_bit_no);
   uint64_t mouse_irq_set = BIT(mouse_bit_no);
+  uint64_t rtc_irq_set = BIT(rtc_bit_no);
 
   //main driver receive loop
   while (bytes[0] != ESC && !exit_game) {
@@ -237,6 +241,11 @@ int(proj_main_loop)(int argc, char *argv[]) {
             if (build_packet(&mouse_packet)) {
               update_cursor(cursor, mouse_packet);
             }
+          }
+          if (msg.m_notify.interrupts & rtc_irq_set) {
+            rtc_ih();
+            rtc_get_time(&time);
+            rtc_print_time(time);
           }
           break;
         default:
