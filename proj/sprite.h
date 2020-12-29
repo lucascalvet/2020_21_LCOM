@@ -28,7 +28,7 @@ typedef struct {
   int width, height;            //dimensions
   int xspeed, yspeed;           //current speed
   uint8_t *map;                 //current pixmap
-  uint8_t *xpms[6];             //array of xpm's
+  uint8_t *xpms[11];             //array of xpm's
 } Sprite;
 
 //creates a Sprite
@@ -56,7 +56,7 @@ void(erase_sprite)(Sprite *sp);
 void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background);
 
 //sprite movement controlled with keyboard using a set of keys
-bool(sprite_keyboard_move)(Sprite *sp, bool keys[4],  int *n_map);
+bool(sprite_keyboard_move)(Sprite *sp, bool keys[4],  int *n_map,  int *n_map_2);
 
 //checks collision between two sprites (treating both as a rectangle)
 bool(collision_two_rects)(Sprite *sp1, Sprite *sp2);

@@ -1,6 +1,5 @@
 #include "game_engine.h"
 
-
 /**
  * @brief handle a character's movement
  * 
@@ -10,14 +9,14 @@
  * @param char1_keys the pressed keys for the movement of the first character
  * @param char2_keys the pressed keys for the movement of the second character
  */
-void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w) {
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w) {
   int prev_char1_x = firemi->x;
   int prev_char2_x = waternix->x;
   int prev_char1_y = firemi->y;
   int prev_char2_y = waternix->y;
 
-  bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f);
-  bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w);
+  bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f, n_map_2_f);
+  bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w, n_map_2_w);
 
   if (change_char1)
     restore_background(prev_char1_x, prev_char1_y, firemi->width, firemi->height, background);
@@ -50,7 +49,7 @@ void(handle_slider_move)(Sprite *slider, Sprite *background) {
  * @brief Creates a minutes:seconds clock
  * @return the created clock
  */
-Cursor * (create_cursor)(unsigned x, unsigned y){
+Cursor *(create_cursor)(unsigned x, unsigned y) {
   Cursor *cursor = (Cursor *) malloc(sizeof(Cursor));
 
   xpm_image_t img;
@@ -71,24 +70,28 @@ Cursor * (create_cursor)(unsigned x, unsigned y){
  * @param cursor a pointer to the cursor to be updated
  * @param packet a packet struct with the cursor movement information
  */
-void (update_cursor)(Cursor *cursor, struct packet packet){
+void(update_cursor)(Cursor *cursor, struct packet packet) {
   cursor->x += packet.delta_x;
   cursor->y -= packet.delta_y;
-  if (!(cursor->x < (int) 800)) cursor->x = 800 - 1;
-  if (!(cursor->y < (int) 600)) cursor->y = 600 - 1;
-  if (cursor->x < 0) cursor->x = 0;
-  if (cursor->y < 0) cursor->y = 0;
+  if (!(cursor->x < (int) 800))
+    cursor->x = 800 - 1;
+  if (!(cursor->y < (int) 600))
+    cursor->y = 600 - 1;
+  if (cursor->x < 0)
+    cursor->x = 0;
+  if (cursor->y < 0)
+    cursor->y = 0;
 }
 
 /**
  * @brief Draws the cursor
  * @param cursor the cursor to draw
  */
-void (draw_cursor)(Cursor *cursor, Sprite * background) {
+void(draw_cursor)(Cursor *cursor, Sprite *background) {
   restore_background(cursor->prev_x, cursor->prev_y, cursor->width, cursor->height, background);
   cursor->prev_x = cursor->x;
   cursor->prev_y = cursor->y;
-  
+
   int map_index = 0; //to keep track of map index
 
   uint32_t color;
@@ -108,7 +111,7 @@ void (draw_cursor)(Cursor *cursor, Sprite * background) {
  * @param sp pointer to cursor "object" to be deleted
  * @return none
  */
-void(delete_cursor)(Cursor * cursor) {
+void(delete_cursor)(Cursor *cursor) {
   if (cursor == NULL)
     return;
 
@@ -124,7 +127,7 @@ void(delete_cursor)(Cursor * cursor) {
  * @brief Creates a minutes:seconds clock
  * @return the created clock
  */
-Clock * (create_clock)(unsigned x, unsigned y){
+Clock *(create_clock)(unsigned x, unsigned y) {
   Clock *clock = (Clock *) malloc(sizeof(Clock));
 
   xpm_image_t img;
@@ -152,7 +155,7 @@ void(draw_clock)(Clock *clock) {
   unsigned minutes = clock->count / 60;
   unsigned seconds = clock->count % 60;
 
-  unsigned clock_digits[4] = {minutes/10, minutes%10, seconds/10, seconds%10};
+  unsigned clock_digits[4] = {minutes / 10, minutes % 10, seconds / 10, seconds % 10};
   //printf("\nClock digits: {%d, %d, %d, %d}", clock_digits[0], clock_digits[1], clock_digits[2], clock_digits[3]);
 
   //draws pixmap
@@ -286,7 +289,7 @@ Game_button *(create_game_button)(const xpm_row_t *xpm_button, uint16_t x, uint1
  * @return pointer to a game_bar sprite
  * 
  */
-Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, uint16_t finalx, uint16_t finaly, int init_angle, int final_angle, int angular_speed, Game_button *bup) {
+Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, uint16_t finalx, uint16_t finaly, int init_angle, int final_angle, int angular_speed, Game_button *bups[], int n_bups) {
   Game_bar *bap = (Game_bar *) malloc(sizeof(Game_bar));
 
   xpm_map_t xpm[1] = {xpm_bar};
@@ -303,8 +306,12 @@ Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, ui
   bap->bar_sprite = sp;
   bap->final_angle = final_angle;
   bap->angular_speed = angular_speed;
-  bap->game_button = bup;
   bap->angle = init_angle;
+  bap->n_bups = n_bups;
+
+  for (int i = 0; i < n_bups; i++) {
+    bap->game_buttons[i] = bups[i];
+  }
 
   return bap;
 }
@@ -452,10 +459,12 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background) {
   //states when the bar should move or not
   bool moving = false;
 
-  if (bap->game_button->orientation_of_button == SOUTH)
-    moving = bap->game_button->south_pressed;
-  else
-    moving = bap->game_button->pressed;
+  for (int i = 0; i < bap->n_bups; i++) {
+    if (bap->game_buttons[i]->orientation_of_button == SOUTH)
+      moving = bap->game_buttons[i]->south_pressed;
+    else
+      moving = bap->game_buttons[i]->pressed;
+  }
 
   //angular movement
   if (bap->angular_speed != 0) {
@@ -615,4 +624,19 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
   }
 
   draw_sprite(game_box);
+}
+
+void(handle_win)(Sprite *firemi, Sprite *waternix, Sprite *level1_completed) {
+  if (collision_one_rect(waternix, 30, 30, 45, 65) && collision_one_rect(firemi, 105, 30, 45, 65)) {
+    draw_sprite(level1_completed);
+    sleep(3);
+  }
+}
+
+void(handle_lost)() {
+  xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
+  Sprite *game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
+  draw_sprite(game_over_title);
+  sleep(3);
+  delete_sprite(game_over_title);
 }

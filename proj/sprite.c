@@ -191,7 +191,7 @@ void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *
  * @param keys the array of 4 keys to be used
  * @return true if the sprite has changed state
  */
-bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map) {
+bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2) {
   int prev_x = sp->x;
   int prev_y = sp->y;
   bool changed = false;
@@ -205,25 +205,24 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map) {
   if (keys[1]) {
     sp->xspeed -= V_STEP + FRICTION;
      if(sp->yspeed == 0){
-      switch(*n_map){  //TODO: when we have the pixmaps change the array values to respective ones
+       *n_map_2 = 0;
+
+      switch(*n_map){  //TODO: when we have the pixmaps change the array values to respective 
         case 0:  
-          sp->map = sp->xpms[1];
-          break;
-        case 1:
           sp->map = sp->xpms[3];
           break;
-        case 2:
+        case 1:
           sp->map = sp->xpms[4];
           break;
-        case 3:
+        case 2:
           sp->map = sp->xpms[5];
           break;
         default:
           break;
       }
-      *n_map = (*n_map + 1) % 6;
+      *n_map = (*n_map + 1) % 3;
     }else{
-      sp->map = sp->xpms[1];
+      sp->map = sp->xpms[5];
     }
       changed = true;
 
@@ -232,25 +231,24 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map) {
   if (keys[3]) {
     sp->xspeed += V_STEP + FRICTION;
     if(sp->yspeed == 0){
+      *n_map_2 = 0;
+
       switch(*n_map){  //we can enlarge it to how many sprites we need to put it running
         case 0:  
-          sp->map = sp->xpms[2];
+          sp->map = sp->xpms[6];
           break;
         case 1:
-          sp->map = sp->xpms[3];
+          sp->map = sp->xpms[7];
           break;
         case 2:
-          sp->map = sp->xpms[4];
-          break;
-        case 3:
-          sp->map = sp->xpms[5];
+          sp->map = sp->xpms[8];
           break;
         default:
           break;
       }
-      *n_map = (*n_map + 1) % 6;
+       *n_map = (*n_map + 1) % 3;
     }else{
-      sp->map = sp->xpms[2];
+      sp->map = sp->xpms[8];
     }
       changed = true;
   
@@ -273,9 +271,26 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map) {
   if (sp->xspeed < -MAX_V)
     sp->xspeed = -MAX_V;
 
-  if (sp->xspeed == 0 && sp->map != sp->xpms[0]) {
+  if (sp->xspeed == 0) {
+    *n_map = 0; 
     sp->map = sp->xpms[0];
-    *n_map = 0;
+
+    /*
+    switch(*n_map_2){  
+        case 0:  
+          sp->map = sp->xpms[0];
+          break;
+        case 1:
+          sp->map = sp->xpms[1];
+          break;
+        case 2:
+          sp->map = sp->xpms[2];
+          break;
+        default:
+          break;
+      }
+       *n_map_2 = (*n_map_2 + 1) % 3;
+    */
     changed = true;
   }
 

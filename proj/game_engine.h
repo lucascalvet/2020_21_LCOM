@@ -3,6 +3,7 @@
 
 #include "sprite.h"
 #include "xpm_numbers.h"
+#include "xpm_titles.h"
 #include<time.h>
 #include "xpm_mouse.h"
 
@@ -62,11 +63,12 @@ typedef struct {
   int final_angle;                          //the angle that the bar does when moved
   int angle;
   int angular_speed;                  //the bar angular speed
-  Game_button *game_button;               //pointer to the button that triggers the bar movement
+  int n_bups;
+  Game_button *game_buttons[3];               //pointer to the buttons that triggers the bar movement
 } Game_bar;
 
 //handle a character's movement
-void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w);
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w);
 
 void (handle_slider_move)(Sprite * slider, Sprite *background);
 
@@ -93,7 +95,7 @@ void(delete_clock)(Clock * clock);
 Game_button *(create_game_button)(const xpm_row_t *xpm_button, uint16_t x, uint16_t y, enum orientation orientation_of_button);
 
 //creates a game_bar sprite for the game board
-Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, uint16_t finalx, uint16_t finaly, int init_angle, int final_angle, int angular_speed, Game_button *bup);
+Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, uint16_t finalx, uint16_t finaly, int init_angle, int final_angle, int angular_speed,  Game_button *bups[],  int n_bups);
 
 //deletes game_button sprite "object"
 void(delete_game_button)(Game_button *bup);
@@ -111,6 +113,12 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background);
 void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_quantity);
 
 void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite * game_box, Sprite *background);
+
+//handles the wins
+void(handle_win)(Sprite* firemi, Sprite* waternix, Sprite* level1_completed);
+
+//handles the losts
+void(handle_lost)();
 
 
 
