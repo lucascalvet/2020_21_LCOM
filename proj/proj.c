@@ -12,6 +12,7 @@
 #include "keyboard.h"
 #include "mouse.h"
 #include "video_gr.h"
+#include "rtc.h"
 #include "game_engine.h"
 #include "video_gr.h"
 
@@ -52,22 +53,22 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//xpm array encapsulation for sprite creation
-xpm_map_t xpm_leve1_array[1] = {xpm_level1_with_slope_red_lava};
-xpm_map_t xpm_firemi_array[6] = {xpm_firemi, firemi_run_l, firemi_run_r, xpm_waternix, waternix_run_l, waternix_run_r};
-xpm_map_t xpm_waternix_array[6] = {xpm_waternix, waternix_run_l, waternix_run_r, xpm_firemi, firemi_run_l, firemi_run_r}; //the last xpm are only to test the animated sprite
-xpm_map_t xpm_slider_array[1] = {xpm_slider};
-xpm_map_t xpm_box_array[1] = {xpm_box};
-
 /**
  * @brief game main loop, where the driver receive is called
  * @return 0 if no erros, 1 otherwise
  */
 int(proj_main_loop)(int argc, char *argv[]) {
   printf("Welcome to FireMi & WaterNix!!!\n");
-
+  
   //initiating the VBE
   vg_init(VBE_DIRECT_800_MODE);
+
+  //xpm array encapsulation for sprite creation
+  xpm_map_t xpm_leve1_array[1] = {xpm_level1_with_slope_red_lava};
+  xpm_map_t xpm_firemi_array[6] = {xpm_firemi, firemi_run_l, firemi_run_r, xpm_waternix, waternix_run_l, waternix_run_r};
+  xpm_map_t xpm_waternix_array[6] = {xpm_waternix, waternix_run_l, waternix_run_r, xpm_firemi, firemi_run_l, firemi_run_r}; //the last xpm are only to test the animated sprite
+  xpm_map_t xpm_slider_array[1] = {xpm_slider};
+  xpm_map_t xpm_box_array[1] = {xpm_box};
 
   //creating the clock element
   Clock *clock = create_clock(652, 20);
@@ -122,19 +123,23 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   int ipc_status;
   message msg;
-  uint8_t kbd_bit_no, timer_bit_no, mouse_bit_no;
+  uint8_t kbd_bit_no, timer_bit_no, mouse_bit_no, rtc_bit_no;
   timer_set_frequency(0, 60);
   int r, wait = 60 / FPS;
   struct packet mouse_packet;
+  rtc_time time;
 
   //subscribing the interrupt notifications for all devices needed
   if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
   if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
   if (mouse_subscribe_int(&mouse_bit_no) != OK) return 1;
+  if (rtc_subscribe_int(&rtc_bit_no) != OK) return 1;
+  rtc_enable_update_int();
 
   uint64_t kbd_irq_set = BIT(kbd_bit_no);
   uint64_t timer_irq_set = BIT(timer_bit_no);
   uint64_t mouse_irq_set = BIT(mouse_bit_no);
+  uint64_t rtc_irq_set = BIT(rtc_bit_no);
 
   //main driver receive loop
   while (bytes[0] != ESC && !game_over) {
@@ -207,6 +212,11 @@ int(proj_main_loop)(int argc, char *argv[]) {
             if (build_packet(&mouse_packet)){
               update_cursor(cursor, mouse_packet);
             }
+          }
+          if (msg.m_notify.interrupts & rtc_irq_set) {
+            rtc_ih();
+            rtc_get_time(&time);
+            rtc_print_time(time);
           }
           break;
         default:
