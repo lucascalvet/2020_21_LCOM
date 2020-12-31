@@ -452,13 +452,13 @@ void(handle_game_button)(Game_button *bup, Sprite *background, uint16_t n_objs, 
  * @param background pointer to the background sprite object
  * @param return none
  */
-void(handle_game_bar)(Game_bar *bap, Sprite *background) {
+void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_collide[], int n_objs) {
   //x axis speed when not in agular movement
   int speed = 2;
-
-  //states when the bar should move or not
   bool moving = false;
+  bool colliding = false;
 
+  //see if the bar has to move or no
   for (int i = 0; i < bap->n_bups; i++) {
     if (bap->game_buttons[i]->orientation_of_button == SOUTH)
       moving = bap->game_buttons[i]->south_pressed;
@@ -469,40 +469,127 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background) {
   //angular movement
   if (bap->angular_speed != 0) {
     if (moving) {
-      if (bap->angle != bap->final_angle)
-        bap->angle += bap->angular_speed;
+      if (bap->angle != bap->final_angle) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (check_collision_sprite_at_angle(bap->bar_sprite, bap->angle + bap->angular_speed, objects_to_collide[i]->x, objects_to_collide[i]->y, objects_to_collide[i]->width, objects_to_collide[i]->height))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->angle += bap->angular_speed;
+        else {
+          if (bap->angle != 0)
+            bap->angle -= bap->angular_speed;
+        }
+      }
     }
     else {
-      if (bap->angle != 0)
-        bap->angle -= bap->angular_speed;
+      if (bap->angle != 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (check_collision_sprite_at_angle(bap->bar_sprite, bap->angle - bap->angular_speed, objects_to_collide[i]->x, objects_to_collide[i]->y, objects_to_collide[i]->width, objects_to_collide[i]->height))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->angle -= bap->angular_speed;
+        else if (bap->angle != bap->final_angle)
+          bap->angle += bap->angular_speed;
+      }
     }
 
     draw_sprite_at_angle(bap->bar_sprite, bap->angle);
   }
   else {
     //horizontal movement
-    if (moving) {
-      if (bap->bar_sprite->x > bap->finalx) {
-        bap->bar_sprite->x -= speed;
+    if (moving && bap->finaly == bap->inity) {
+
+      if (bap->bar_sprite->x > bap->finalx && (bap->finalx - bap->initx) < 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->bar_sprite->x -= speed;
       }
-      else {
-        bap->bar_sprite->x += speed;
+      if (bap->bar_sprite->x < bap->finalx && (bap->finalx - bap->initx) > 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->bar_sprite->x += speed;
       }
     }
     else {
-      bap->bar_sprite->x = bap->initx;
+
+      if (bap->bar_sprite->x != bap->initx) {
+
+        if ((bap->finalx - bap->initx) > 0) {
+          //check bar collision with objects
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+              colliding = true;
+          }
+          if (!colliding)
+            bap->bar_sprite->x -= speed;
+        }
+
+        if ((bap->finalx - bap->initx) < 0) {
+          //check bar collision with objects
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+              colliding = true;
+          }
+          if (!colliding)
+            bap->bar_sprite->x += speed;
+        }
+      }
     }
     //vertical movement
-    if (moving) {
-      if (bap->bar_sprite->y > bap->finaly) {
-        bap->bar_sprite->y -= speed;
+    if (moving && bap->finalx == bap->initx) {
+
+      if (bap->bar_sprite->y < bap->finaly && (bap->finaly - bap->inity) > 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->bar_sprite->y += speed;
       }
-      else {
-        bap->bar_sprite->y += speed;
+      if (bap->bar_sprite->y > bap->finaly && (bap->finaly - bap->inity) < 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->bar_sprite->y -= speed;
       }
     }
     else {
-      bap->bar_sprite->y = bap->inity;
+      if (bap->bar_sprite->y != bap->inity) {
+
+        if ((bap->finaly - bap->inity) > 0)
+          //check bar collision with objects
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+              colliding = true;
+          }
+        if (!colliding)
+          bap->bar_sprite->y -= speed;
+
+        if ((bap->finaly - bap->inity) < 0)
+          //check bar collision with objects
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+              colliding = true;
+          }
+        if (!colliding)
+          bap->bar_sprite->y += speed;
+      }
     }
 
     draw_sprite(bap->bar_sprite);

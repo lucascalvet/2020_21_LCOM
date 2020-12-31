@@ -107,7 +107,7 @@ void(delete_game_bar)(Game_bar *bap);
 void(handle_game_button)(Game_button *bup, Sprite *background,  uint16_t n_objs, Sprite* objs[]);
 
 //
-void(handle_game_bar)(Game_bar *bap, Sprite *background);
+void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_collide[], int n_objs);
 
 //creates random 2d array of line of snow
 void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_quantity);

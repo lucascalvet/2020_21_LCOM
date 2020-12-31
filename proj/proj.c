@@ -108,7 +108,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
     Sprite *level1_completed = create_sprite(level1_completed_title_xpm_array, 0, 0, 1);
 
   //used to acknoledge the button of who ca trigger him TODO: can used for bar collision against them wich is not done yet
-  Sprite *objs_to_collide[3] = {firemi, waternix, box1};
+  Sprite *objs_to_collide[4] = {firemi, waternix, box1, box2};
 
   //EXPEIRMENTTTTTT
   /*
@@ -214,12 +214,12 @@ int(proj_main_loop)(int argc, char *argv[]) {
             timer_int_handler();
             if (timer_counter % wait == 0) {
               //level1 handlers
-              handle_game_button(game_button1, level_1, 3, objs_to_collide);
-              handle_game_bar(game_bar1, level_1);
-              handle_game_button(game_button2, level_1, 3, objs_to_collide);
-              handle_game_bar(game_bar2, level_1);
-              handle_game_button(game_button3, level_1, 3, objs_to_collide);
-              handle_game_bar(game_bar3, level_1);
+              handle_game_button(game_button1, level_1, 4, objs_to_collide);
+              handle_game_bar(game_bar1, level_1, objs_to_collide, 4);
+              handle_game_button(game_button2, level_1, 4, objs_to_collide);
+              handle_game_bar(game_bar2, level_1, objs_to_collide, 4);
+              handle_game_button(game_button3, level_1, 4, objs_to_collide);
+              handle_game_bar(game_bar3, level_1, objs_to_collide, 4);
               handle_slider_move(slider, level_1);
               handle_game_box(firemi, waternix, box1, level_1);
               handle_game_box(firemi, waternix, box2, level_1);

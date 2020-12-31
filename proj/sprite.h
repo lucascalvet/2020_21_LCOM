@@ -48,6 +48,9 @@ void(draw_sprite)(Sprite *sp);
 //draws Sprite "objects" in screen at a certain angle
 void(draw_sprite_at_angle)(Sprite *sp, int angle);
 
+//checks collisions of sprite at angle to a rectangle
+bool(check_collision_sprite_at_angle)(Sprite *sp, int angle, int x, int y, int width, int height);
+
 //draws a Sprite resized to new width and new height
 void(draw_resized_sprite)(Sprite *sp, int new_width, int new_height);
 
