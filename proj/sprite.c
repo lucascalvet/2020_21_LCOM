@@ -392,10 +392,18 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
 
   if (sp->xspeed == 0) {
 
-    //if(sp->x + sp->width > screen_width - 15) TODO:
+    if(sp->x + sp->width > screen_width - 7){
+      sp->x = screen_width - 7 - sp->width;
+    }
+    
+    if(sp->x < 7){
+      sp->x = 7;
+    }
+
     *n_map = 0;
     sp->map = sp->xpms[0];
 
+    //to change between idles
     /*
     switch(*n_map_2){  
         case 0:  
