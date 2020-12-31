@@ -20,7 +20,7 @@
 #define GRAVITY 3
 #define MAX_V 8
 #define FRICTION 1
-#define WALL_STEP 8
+#define SLOPE_STEP 8
 #define ON_LIMIT_HELP_SPEED 7
 
 typedef struct {

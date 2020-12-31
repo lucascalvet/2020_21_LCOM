@@ -195,8 +195,9 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
   int prev_x = sp->x;
   int prev_y = sp->y;
   bool changed = false;
-  bool wall_condition = false; //an horizontal line has to be black
+  bool slope_condition = false; //an horizontal line has to be black
   bool on_limit = false;
+  bool object_collision = false;
 
   if (keys[0]) {
     sp->y += 1; //checking if it is on the ground TODO: not very pretty, but it works...
@@ -206,28 +207,62 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
   }
   if (keys[1]) {
 
-    //checking for limits to not disturb the gameplay because of animated sprites may collide to wall when they are side to side with it, this prevents it
+    //checking for limits to not disturb the gameplay because of animated sprites may collide to walls or objects when they are side to side with them, this prevents it
 
     //right limit
-  
-    if(sp->x + sp->width > screen_width - 15) on_limit = true;
 
-    if(on_limit) sp->x -= ON_LIMIT_HELP_SPEED;
+    if (sp->x + sp->width > screen_width - 15)
+      on_limit = true;
+
+    if (on_limit)
+      sp->x -= ON_LIMIT_HELP_SPEED;
 
     on_limit = false;
 
-    //checking for wall
+    //checking for slope
     for (int i = sp->y + sp->height - 12; i < sp->y + sp->height - 1; i++) {
       if (vram_get_color_by_coordinates(sp->x - 1, i) == 0x00) {
-        wall_condition = true;
+        slope_condition = true;
       }
     }
 
-    if (wall_condition) {
-      sp->y -= WALL_STEP;
+    if (slope_condition && sp->x > 15 + 1 && sp->x + sp->width < screen_width - 15 - 1) {
+      sp->y -= SLOPE_STEP;
       //if actually collides gets back to normal
       if (check_sprite_collision_by_color(sp, 0x0)) {
-        sp->y += WALL_STEP;
+        sp->y += SLOPE_STEP;
+      }
+    }
+
+    int one_line1 = 0;
+
+    //checking for objects collision in front it only gives the help speed for when going back from object, not going front
+    for (int k = sp->x; k < sp->x + 15; k++) {
+      for (int i = sp->y; i < sp->y + sp->height - 1; i++) {
+        if (vram_get_color_by_coordinates(k, i) == 0x00) {
+          one_line1++;
+        }
+      }
+    }
+
+    if (one_line1 != sp->height - 1) {
+
+      int one_line = 0;
+
+      //checking for objects collision
+      for (int k = sp->x + sp->width; k > sp->x + sp->width - 15; k--) {
+        for (int i = sp->y; i < sp->y + sp->height - 1; i++) {
+          if (vram_get_color_by_coordinates(k, i) == 0x00) {
+            one_line++;
+          }
+        }
+      }
+
+      if (one_line == sp->height - 1)
+        object_collision = true;
+
+      if (object_collision && !slope_condition) {
+        sp->x -= ON_LIMIT_HELP_SPEED;
       }
     }
 
@@ -235,7 +270,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
     if (sp->yspeed == 0) {
       *n_map_2 = 0;
 
-      switch (*n_map) { 
+      switch (*n_map) {
         case 0:
           sp->map = sp->xpms[3];
           break;
@@ -255,28 +290,61 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
     }
     changed = true;
   }
-  //if(keys[2]) sp->yspeed += V_STEP;
+
   if (keys[3]) {
     //left limit
-    
-  if(sp->x < 15) on_limit = true;
-    
-    if(on_limit) sp->x += ON_LIMIT_HELP_SPEED;
+
+    if (sp->x < 15)
+      on_limit = true;
+
+    if (on_limit)
+      sp->x += ON_LIMIT_HELP_SPEED;
 
     on_limit = false;
 
-    //checking for wall
+    //checking for slope
     for (int i = sp->y + sp->height - 12; i < sp->y + sp->height - 1; i++) {
       if (vram_get_color_by_coordinates(sp->x + sp->width + 1, i) == 0x00) {
-        wall_condition = true;
+        slope_condition = true;
       }
     }
 
-    if (wall_condition) {
-      sp->y -= WALL_STEP;
+    if (slope_condition && sp->x > 15 + 1 && sp->x + sp->width < screen_width - 15 - 1) {
+      sp->y -= SLOPE_STEP;
       //if actually collides gets back to normal
       if (check_sprite_collision_by_color(sp, 0x0)) {
-        sp->y += WALL_STEP;
+        sp->y += SLOPE_STEP;
+      }
+    }
+    int one_line1 = 0;
+
+    //checking for objects collision in front it only gives the help speed for when going back from object, not going front
+    for (int k = sp->x + sp->width; k > sp->x + sp->width - 15; k--) {
+      for (int i = sp->y; i < sp->y + sp->height - 1; i++) {
+        if (vram_get_color_by_coordinates(k, i) == 0x00) {
+          one_line1++;
+        }
+      }
+    }
+
+    if (one_line1 != sp->height - 1) {
+
+      int one_line = 0;
+
+      //checking for objects collision
+      for (int k = sp->x; k < sp->x + 15; k++) {
+        for (int i = sp->y; i < sp->y + sp->height - 1; i++) {
+          if (vram_get_color_by_coordinates(k, i) == 0x00) {
+            one_line++;
+          }
+        }
+      }
+
+      if (one_line == sp->height - 1)
+        object_collision = true;
+
+      if (object_collision && !slope_condition) {
+        sp->x += ON_LIMIT_HELP_SPEED;
       }
     }
 
