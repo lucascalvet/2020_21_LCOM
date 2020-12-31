@@ -111,7 +111,7 @@ void(draw_sprite_at_angle)(Sprite *sp, int angle) {
   for (int row = 0; row < sp->height; row++) {
     for (int col = 0; col < sp->width; col++) {
       color = convert_BGR_to_RGB(color_assembler(sp->map, &map_index));
-      if (color != sp->transparency_color){
+      if (color != sp->transparency_color) {
         transformed_x = (double) col * cos(teta) + (double) row * sin(teta);
         transformed_y = (double) row * cos(teta) - (double) col * sin(teta);
 
@@ -127,27 +127,27 @@ void(draw_sprite_at_angle)(Sprite *sp, int angle) {
  * @brief draws a Sprite resized to new width and new height TODO: not working yet tentative of doing this algorithm: Nearest Neighbor Image Scaling
  * 
  */
-void(draw_resized_sprite)(Sprite *sp, int new_width, int new_height){
-    uint32_t color;
+void(draw_resized_sprite)(Sprite *sp, int new_width, int new_height) {
+  uint32_t color;
 
-    double x_ratio = (double) sp->width /  new_width;
-    double y_ratio = (double) sp->height / new_height;
+  double x_ratio = (double) sp->width / new_width;
+  double y_ratio = (double) sp->height / new_height;
 
-    uint16_t px, py;
+  uint16_t px, py;
 
-    for (int row = sp->y; row < sp->y + new_height; row++) {
-      for (int col = sp->x; col < sp->x + new_width; col++) {
-        px = (uint16_t) floor(col * x_ratio) ;
-        py = (uint16_t) floor(row * y_ratio) ;
+  for (int row = sp->y; row < sp->y + new_height; row++) {
+    for (int col = sp->x; col < sp->x + new_width; col++) {
+      px = (uint16_t) floor(col * x_ratio);
+      py = (uint16_t) floor(row * y_ratio);
 
-        //printf("VAluess: %d  %d", px, py);
+      //printf("VAluess: %d  %d", px, py);
 
-        color = convert_BGR_to_RGB(pixmap_get_color_by_coordinates(px, py, sp->map, sp->width));
+      color = convert_BGR_to_RGB(pixmap_get_color_by_coordinates(px, py, sp->map, sp->width));
 
-        if (color != sp->transparency_color)
-          draw_pixel(col, row, color);
+      if (color != sp->transparency_color)
+        draw_pixel(col, row, color);
     }
-  } 
+  }
 }
 
 /**
@@ -175,7 +175,7 @@ void(erase_sprite)(Sprite *sp) {
 void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background) {
   int map_index = 0; //to keep track of map index
 
-  if (x < 800 && y < 600){ //TODO: Change
+  if (x < 800 && y < 600) { //TODO: Change
     for (int row = y; row < y + height; row++) {
       for (int col = x; col < x + width; col++) {
         map_index = (col + 800 * row) * 3;
@@ -191,11 +191,13 @@ void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *
  * @param keys the array of 4 keys to be used
  * @return true if the sprite has changed state
  */
-bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2) {
+bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, int screen_width, int screen_height) {
   int prev_x = sp->x;
   int prev_y = sp->y;
   bool changed = false;
- 
+  bool wall_condition = false; //an horizontal line has to be black
+  bool on_limit = false;
+
   if (keys[0]) {
     sp->y += 1; //checking if it is on the ground TODO: not very pretty, but it works...
     if (check_sprite_collision_by_color(sp, 0x0))
@@ -203,12 +205,38 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2) {
     sp->y -= 1; //restoring y value
   }
   if (keys[1]) {
-    sp->xspeed -= V_STEP + FRICTION;
-     if(sp->yspeed == 0){
-       *n_map_2 = 0;
 
-      switch(*n_map){  //TODO: when we have the pixmaps change the array values to respective 
-        case 0:  
+    //checking for limits to not disturb the gameplay because of animated sprites may collide to wall when they are side to side with it, this prevents it
+
+    //right limit
+  
+    if(sp->x + sp->width > screen_width - 15) on_limit = true;
+
+    if(on_limit) sp->x -= ON_LIMIT_HELP_SPEED;
+
+    on_limit = false;
+
+    //checking for wall
+    for (int i = sp->y + sp->height - 12; i < sp->y + sp->height - 1; i++) {
+      if (vram_get_color_by_coordinates(sp->x - 1, i) == 0x00) {
+        wall_condition = true;
+      }
+    }
+
+    if (wall_condition) {
+      sp->y -= WALL_STEP;
+      //if actually collides gets back to normal
+      if (check_sprite_collision_by_color(sp, 0x0)) {
+        sp->y += WALL_STEP;
+      }
+    }
+
+    sp->xspeed -= V_STEP + FRICTION;
+    if (sp->yspeed == 0) {
+      *n_map_2 = 0;
+
+      switch (*n_map) { 
+        case 0:
           sp->map = sp->xpms[3];
           break;
         case 1:
@@ -221,20 +249,43 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2) {
           break;
       }
       *n_map = (*n_map + 1) % 3;
-    }else{
+    }
+    else {
       sp->map = sp->xpms[5];
     }
-      changed = true;
-
+    changed = true;
   }
   //if(keys[2]) sp->yspeed += V_STEP;
   if (keys[3]) {
+    //left limit
+    
+  if(sp->x < 15) on_limit = true;
+    
+    if(on_limit) sp->x += ON_LIMIT_HELP_SPEED;
+
+    on_limit = false;
+
+    //checking for wall
+    for (int i = sp->y + sp->height - 12; i < sp->y + sp->height - 1; i++) {
+      if (vram_get_color_by_coordinates(sp->x + sp->width + 1, i) == 0x00) {
+        wall_condition = true;
+      }
+    }
+
+    if (wall_condition) {
+      sp->y -= WALL_STEP;
+      //if actually collides gets back to normal
+      if (check_sprite_collision_by_color(sp, 0x0)) {
+        sp->y += WALL_STEP;
+      }
+    }
+
     sp->xspeed += V_STEP + FRICTION;
-    if(sp->yspeed == 0){
+    if (sp->yspeed == 0) {
       *n_map_2 = 0;
 
-      switch(*n_map){  //we can enlarge it to how many sprites we need to put it running
-        case 0:  
+      switch (*n_map) { //we can enlarge it to how many sprites we need to put it running
+        case 0:
           sp->map = sp->xpms[6];
           break;
         case 1:
@@ -246,12 +297,12 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2) {
         default:
           break;
       }
-       *n_map = (*n_map + 1) % 3;
-    }else{
+      *n_map = (*n_map + 1) % 3;
+    }
+    else {
       sp->map = sp->xpms[8];
     }
-      changed = true;
-  
+    changed = true;
   }
 
   if (sp->xspeed > 0) {
@@ -272,7 +323,9 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2) {
     sp->xspeed = -MAX_V;
 
   if (sp->xspeed == 0) {
-    *n_map = 0; 
+
+    //if(sp->x + sp->width > screen_width - 15) TODO:
+    *n_map = 0;
     sp->map = sp->xpms[0];
 
     /*
@@ -397,7 +450,7 @@ bool(collision_one_rect)(Sprite *sp, uint16_t x, uint16_t y, int width, int heig
   for (int row = sp->y; row < sp->y + sp->height; row++) {
     for (int col = sp->x; col < sp->x + sp->width; col++) {
       if (convert_BGR_to_RGB(pixmap_get_color_by_coordinates(col - sp->x, row - sp->y, sp->map, sp->width)) != sp->transparency_color) {
-        if(col <= x + width && col >= x && row >= y && row <= y + height){
+        if (col <= x + width && col >= x && row >= y && row <= y + height) {
           return true;
         }
       }

@@ -20,6 +20,8 @@
 #define GRAVITY 3
 #define MAX_V 8
 #define FRICTION 1
+#define WALL_STEP 8
+#define ON_LIMIT_HELP_SPEED 7
 
 typedef struct {
   int x, y;                     //current position
@@ -56,7 +58,7 @@ void(erase_sprite)(Sprite *sp);
 void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background);
 
 //sprite movement controlled with keyboard using a set of keys
-bool(sprite_keyboard_move)(Sprite *sp, bool keys[4],  int *n_map,  int *n_map_2);
+bool(sprite_keyboard_move)(Sprite *sp, bool keys[4],  int *n_map,  int *n_map_2, int screen_width, int screen_height);
 
 //checks collision between two sprites (treating both as a rectangle)
 bool(collision_two_rects)(Sprite *sp1, Sprite *sp2);

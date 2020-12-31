@@ -15,8 +15,8 @@ void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *backgroun
   int prev_char1_y = firemi->y;
   int prev_char2_y = waternix->y;
 
-  bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f, n_map_2_f);
-  bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w, n_map_2_w);
+  bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f, n_map_2_f, 800, 600);
+  bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w, n_map_2_w, 800, 600);
 
   if (change_char1)
     restore_background(prev_char1_x, prev_char1_y, firemi->width, firemi->height, background);
