@@ -93,6 +93,28 @@ void(draw_sprite)(Sprite *sp) {
 }
 
 /**
+ * @brief draw sprite cutted in width
+ * @param sp the sprite to be drawn
+ * @param width the width after cutted
+ * @return none
+ */
+void(draw_sprite_cutted)(Sprite *sp, int width) {
+  int map_index = 0; //to keep track of map index
+
+  uint32_t color;
+
+  //draws pixmap
+  for (int row = sp->y; row < sp->y + sp->height; row++) {
+    for (int col = sp->x ; col < sp->x + width; col++) {
+      color = convert_BGR_to_RGB(color_assembler(sp->map, &map_index));
+      if (color != sp->transparency_color)
+        draw_pixel(col, row, color);
+    }
+  }
+}
+
+
+/**
  * @brief draws Sprite "objects" in screen at the angle counting from the vector passed  as argument
  * @param angle the angle of the sprite in relation to the vector passed
  * @return none

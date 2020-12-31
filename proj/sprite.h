@@ -45,6 +45,9 @@ void(change_sprite_coords)(Sprite *sp, int x, int y);
 //draws Sprite "objects" in screen at their current coordinates
 void(draw_sprite)(Sprite *sp);
 
+//draws a sprite cutted in his width
+void(draw_sprite_cutted)(Sprite *sp, int width);
+
 //draws Sprite "objects" in screen at a certain angle
 void(draw_sprite_at_angle)(Sprite *sp, int angle);
 

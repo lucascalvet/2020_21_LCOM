@@ -565,8 +565,24 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
           if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
             colliding = true;
         }
-        if (!colliding)
+        if (!colliding){
           bap->bar_sprite->y -= speed;
+          bool on_top = false;
+          
+        //check if is anyone on top
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(objects_to_collide[i], bap->bar_sprite->x, bap->bar_sprite->y - 1, bap->bar_sprite->width, 2))
+            on_top = true;  
+        }
+        
+
+        if(on_top){
+          //it subs to all off themm because the handle characters is done after is they are actually on top they go down
+          for (int i = 0; i < n_objs; i++) {
+            objects_to_collide[i]->y -= speed;
+          }
+        }
+        }
       }
     }
     else {
@@ -713,17 +729,60 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
   draw_sprite(game_box);
 }
 
-void(handle_win)(Sprite *firemi, Sprite *waternix, Sprite *level1_completed) {
+/**
+ * @brief handles when user wins a level
+ * @param firemi the firemi character
+ * @param waternix the waternix character
+ * @param level_completed the title of the level
+ * @return none
+ */
+void(handle_win)(Sprite *firemi, Sprite *waternix, Sprite *level_completed) {
   if (collision_one_rect(waternix, 30, 30, 45, 65) && collision_one_rect(firemi, 105, 30, 45, 65)) {
-    draw_sprite(level1_completed);
+    draw_sprite(level_completed);
     sleep(3);
   }
 }
 
+/**
+ * @brief handles when user loses a level
+ * 
+ */
 void(handle_lost)() {
   xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
   Sprite *game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
   draw_sprite(game_over_title);
   sleep(3);
   delete_sprite(game_over_title);
+}
+
+/**
+ * @brief handles lava objects
+ * @param lava sprite of the lava object to handle
+ * @param background
+ * @return none
+ */
+void(handle_lava)(Sprite *lava, Sprite *background, int initx, bool *change, int width) {
+
+  restore_background(lava->x, lava->y, lava->width, lava->height, background);
+
+  draw_sprite(lava);
+
+  restore_background(initx - (width), lava->y, width, lava->height, background);
+  restore_background(initx + width, lava->y, (lava->width), lava->height, background);
+
+  if (!(*change)) {
+    if (abs(lava->x - initx) >= width) {
+      (*change) = !(*change);
+    }
+  }
+  else {
+    if (lava->x >= initx)
+      (*change) = !(*change);
+  }
+
+  if ((*change))
+    lava->x += LAVA_SPEED;
+  else {
+    lava->x -= LAVA_SPEED;
+  }
 }

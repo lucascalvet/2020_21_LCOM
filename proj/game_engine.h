@@ -14,6 +14,7 @@
 #define GAME_BLACK 0x000000
 #define NUMBERS_SEP 5
 #define CLOCK_WIDTH ((XPM_NUMBERS_WIDTH + NUMBERS_SEP)*4 + XPM_COLON_WIDTH)
+#define LAVA_SPEED 1
 //enum with all the directions
 enum orientation{
   NORTH, SOUTH, EAST, WEST
@@ -103,23 +104,25 @@ void(delete_game_button)(Game_button *bup);
 //deletes game_bar sprite "object"
 void(delete_game_bar)(Game_bar *bap);
 
-//
+//handles de buttons dynamics
 void(handle_game_button)(Game_button *bup, Sprite *background,  uint16_t n_objs, Sprite* objs[]);
 
-//
+//handles the bar's dynamics
 void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_collide[], int n_objs);
 
 //creates random 2d array of line of snow
 void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_quantity);
 
+//handles de boxes dynamics
 void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite * game_box, Sprite *background);
 
 //handles the wins
-void(handle_win)(Sprite* firemi, Sprite* waternix, Sprite* level1_completed);
+void(handle_win)(Sprite* firemi, Sprite* waternix, Sprite* level_completed);
 
 //handles the losts
 void(handle_lost)();
 
-
+//handles the lava objects
+void(handle_lava)(Sprite * lava, Sprite *background, int initx, bool *change, int width);
 
 #endif //GAME_ENGINE_H
