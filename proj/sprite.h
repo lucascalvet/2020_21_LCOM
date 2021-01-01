@@ -64,7 +64,7 @@ void(erase_sprite)(Sprite *sp);
 void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background);
 
 //sprite movement controlled with keyboard using a set of keys
-bool(sprite_keyboard_move)(Sprite *sp, bool keys[4],  int *n_map,  int *n_map_2, int screen_width, int screen_height);
+bool(sprite_keyboard_move)(Sprite *sp, bool keys[4],  int *n_map,  int *n_map_2, int screen_width, int screen_height, Sprite *level_collisisions);
 
 //checks collision between two sprites (treating both as a rectangle)
 bool(collision_two_rects)(Sprite *sp1, Sprite *sp2);
@@ -73,7 +73,7 @@ bool(collision_two_rects)(Sprite *sp1, Sprite *sp2);
 bool(collision_one_rect)(Sprite *sp1, uint16_t x, uint16_t y, int width, int height);
 
 //check collisions of sprite against a certain color in vram
-bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color);
+bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color, uint8_t *pixmap, bool vram);
 
 //moves Sprite in screen POSSIBILY DEPRECATED
 void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background);

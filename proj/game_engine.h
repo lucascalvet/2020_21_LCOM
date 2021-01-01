@@ -69,12 +69,12 @@ typedef struct {
 } Game_bar;
 
 //handle a character's movement
-void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w);
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w, Sprite *level_collisions);
 
-void (handle_slider_move)(Sprite * slider, Sprite *background);
+void (handle_slider_move)(Sprite * slider, Sprite *background, Sprite *level_collisions);
 
 //checks if characters are in lava or not
-bool(check_lava)(Sprite *firemi, Sprite *waternix);
+bool(check_lava)(Sprite *firemi, Sprite *waternix, Sprite *level_collisions);
 
 Cursor * (create_cursor)(unsigned x, unsigned y);
 
@@ -114,10 +114,10 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
 void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_quantity);
 
 //handles de boxes dynamics
-void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite * game_box, Sprite *background);
+void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite * game_box, Sprite *background, Sprite* level_collisions);
 
 //handles the wins
-void(handle_win)(Sprite* firemi, Sprite* waternix, Sprite* level_completed);
+void(handle_win)(Sprite* firemi, Sprite* waternix, Sprite* level_completed,  int xf, int yf, int xw, int yw, int width, int height);
 
 //handles the losts
 void(handle_lost)();

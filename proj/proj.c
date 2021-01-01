@@ -55,21 +55,16 @@ int main(int argc, char *argv[]) {
 }
 
 //xpm array encapsulation for sprite creation
-xpm_map_t xpm_leve1_array[1] = {xpm_level1_no_lava};
-//xpm_map_t xpm_leve1_array[1] = {xpm_level1_bricks};
-
+xpm_map_t xpm_leve1_array[1] = {xpm_level1};
+xpm_map_t xpm_leve1_collisions_array[1] = {xpm_level1_collisions};
 xpm_map_t xpm_firemi_array[11] = {idle1_firemi_xpm, idle2_firemi_xpm, idle3_firemi_xpm, l1_firemi_xpm, l2_firemi_xpm, l3_firemi_xpm, r1_firemi_xpm, r2_firemi_xpm, r3_firemi_xpm, push_left_firemi_xpm, push_right_firemi_xpm};
-
 xpm_map_t xpm_waternix_array[11] = {idle1_waternix_xpm, idle2_waternix_xpm, idle3_waternix_xpm, l1_waternix_xpm, l2_waternix_xpm, l3_waternix_xpm, r1_waternix_xpm, r2_waternix_xpm, r3_waternix_xpm, push_left_waternix_xpm, push_right_waternix_xpm};
-
 xpm_map_t xpm_slider_array[1] = {xpm_slider};
 xpm_map_t xpm_box1_array[1] = {xpm_box1};
 xpm_map_t xpm_box2_array[1] = {xpm_box2};
-
 xpm_map_t xpm_red_lava[1] = {lava_red};
 xpm_map_t xpm_purple_lava[1] = {lava_purple};
 xpm_map_t xpm_blue_lava[1] = {lava_blue};
-
 /**
  * @brief game main loop, where the driver receive is called
  * @return 0 if no erros, 1 otherwise
@@ -91,7 +86,10 @@ int(proj_main_loop)(int argc, char *argv[]) {
   Sprite *waternix = create_sprite(xpm_waternix_array, 50, 510, 11);
 
   //creating game board sprite elements for level1
+  Game_button *game_button5 = create_game_button(xpm_button_3, 246, 75, NORTH);
+  Game_button *game_button4 = create_game_button(xpm_button_2, 22, 165, NORTH);
   Sprite *level_1 = create_sprite(xpm_leve1_array, 0, 0, 1);
+  Sprite *level_1_collisions = create_sprite(xpm_leve1_collisions_array, 0, 0, 1);
   Sprite *slider = create_sprite(xpm_slider_array, 317, 90, 1);
   Sprite *box1 = create_sprite(xpm_box1_array, 390, 509, 1);
   Sprite *box2 = create_sprite(xpm_box2_array, 563, 354, 1);
@@ -99,25 +97,26 @@ int(proj_main_loop)(int argc, char *argv[]) {
   Game_button *buttons1[1] = {game_button1};
   Game_bar *game_bar1 = create_game_bar(xpm_bar_1, 555, 510, 0, 0, 0, -90, -1, buttons1, 1);
   Game_button *game_button2 = create_game_button(xpm_button_2, 705, 570, NORTH);
-  Game_button *buttons2[1] = {game_button2};
-  Game_bar *game_bar2 = create_game_bar(xpm_bar_2, 195, 270, 104, 270, 0, 0, 0, buttons2, 1);
+  Game_button *buttons2[2] = {game_button2, game_button4};
+  Game_bar *game_bar2 = create_game_bar(xpm_bar_2, 195, 270, 104, 270, 0, 0, 0, buttons2, 2);
   Game_button *game_button3 = create_game_button(xpm_button_3, 720, 255, NORTH);
-  Game_button *buttons3[1] = {game_button3};
-  Game_bar *game_bar3 = create_game_bar(xpm_bar_3, 645, 90, 554, 90, 0, 0, 0, buttons3, 1);
+  Game_button *buttons3[2] = {game_button3, game_button5};
+  Game_bar *game_bar3 = create_game_bar(xpm_bar_3, 645, 90, 554, 90, 0, 0, 0, buttons3, 2);
 
   Sprite *red_lava = create_sprite(xpm_red_lava, 255, 584, 1);
+  Sprite *red_lava2 = create_sprite(xpm_red_lava, 391, 405, 1);
   Sprite *blue_lava = create_sprite(xpm_blue_lava, 585, 584, 1);
-  Sprite *purple_lava = create_sprite(xpm_purple_lava, 391, 403, 1);
+  Sprite *purple_lava = create_sprite(xpm_purple_lava, 301, 270, 1);
   //to handle lava movement
-  bool lava_change = false;
+  bool red_lava_change = false;
+  bool red_lava2_change = false;
   bool lava_change_blue = false;
   bool lava_change_purple = false;
 
   //title elements
   xpm_map_t level1_completed_title_xpm_array[1] = {level1_completed_title};
   Sprite *level1_completed = create_sprite(level1_completed_title_xpm_array, 0, 0, 1);
-
-  //used to acknoledge the button of who ca trigger him TODO: can used for bar collision against them wich is not done yet
+  
   Sprite *objs_to_collide[4] = {firemi, waternix, box1, box2};
 
   //EXPEIRMENTTTTTT
@@ -143,6 +142,9 @@ int(proj_main_loop)(int argc, char *argv[]) {
   draw_sprite(game_bar2->bar_sprite);
   draw_sprite(game_button3->button_sprite);
   draw_sprite(game_bar3->bar_sprite);
+
+  draw_sprite(game_button4->button_sprite);
+  draw_sprite(game_button5->button_sprite);
 
   //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0};   //{W, A, S, D}
@@ -228,21 +230,28 @@ int(proj_main_loop)(int argc, char *argv[]) {
             timer_int_handler();
             if (timer_counter % wait == 0) {
               //level1 handlers
-              handle_lava(red_lava, level_1, 255, &lava_change, 120);
+              handle_lava(red_lava, level_1, 255, &red_lava_change, 120);
+              handle_lava(red_lava2, level_1, 391, &red_lava2_change, 105);
               handle_lava(blue_lava, level_1, 585, &lava_change_blue, 90);
-              handle_lava(purple_lava, level_1, 391, &lava_change_purple, 90);
+              handle_lava(purple_lava, level_1, 301, &lava_change_purple, 90);
               handle_game_button(game_button1, level_1, 4, objs_to_collide);
               handle_game_bar(game_bar1, level_1, objs_to_collide, 4);
               handle_game_button(game_button2, level_1, 4, objs_to_collide);
               handle_game_bar(game_bar2, level_1, objs_to_collide, 4);
               handle_game_button(game_button3, level_1, 4, objs_to_collide);
               handle_game_bar(game_bar3, level_1, objs_to_collide, 4);
-              handle_slider_move(slider, level_1);
-              handle_game_box(firemi, waternix, box1, level_1);
-              handle_game_box(firemi, waternix, box2, level_1);
-              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over, &n_maps_f, &n_maps_w, &n_map_2_f, &n_map_2_w);
+              handle_slider_move(slider, level_1, level_1_collisions);
+              handle_game_box(firemi, waternix, box1, level_1, level_1_collisions);
+              handle_game_box(firemi, waternix, box2, level_1, level_1_collisions);
+
+              handle_game_button(game_button4, level_1, 4, objs_to_collide);
+              handle_game_button(game_button5, level_1, 4, objs_to_collide);
+       
+
+              handle_characters_move(firemi, waternix, level_1, keys_firemi, keys_waternix, &game_over, &n_maps_f, &n_maps_w, &n_map_2_f, &n_map_2_w, level_1_collisions);
               draw_cursor(cursor, level_1);
-              handle_win(firemi, waternix, level1_completed);
+
+              handle_win(firemi, waternix, level1_completed, 105, 30, 30, 30, 45, 65);
               if (game_over) {
                 handle_lost();
                 exit_game = true;
@@ -284,6 +293,8 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   //freing the sprites memory
   delete_sprite(level_1);
+delete_sprite(level_1_collisions);
+
   delete_sprite(firemi);
   delete_sprite(waternix);
   delete_sprite(box1);
@@ -298,6 +309,9 @@ int(proj_main_loop)(int argc, char *argv[]) {
   delete_game_bar(game_bar2);
   delete_game_button(game_button3);
   delete_game_bar(game_bar3);
+
+    delete_game_button(game_button4); 
+    delete_game_button(game_button5);
 
   delete_sprite(level1_completed);
 

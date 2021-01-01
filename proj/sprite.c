@@ -105,14 +105,13 @@ void(draw_sprite_cutted)(Sprite *sp, int width) {
 
   //draws pixmap
   for (int row = sp->y; row < sp->y + sp->height; row++) {
-    for (int col = sp->x ; col < sp->x + width; col++) {
+    for (int col = sp->x; col < sp->x + width; col++) {
       color = convert_BGR_to_RGB(color_assembler(sp->map, &map_index));
       if (color != sp->transparency_color)
         draw_pixel(col, row, color);
     }
   }
 }
-
 
 /**
  * @brief draws Sprite "objects" in screen at the angle counting from the vector passed  as argument
@@ -250,7 +249,7 @@ void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *
  * @param keys the array of 4 keys to be used
  * @return true if the sprite has changed state
  */
-bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, int screen_width, int screen_height) {
+bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, int screen_width, int screen_height, Sprite *level_collisisions) {
   int prev_x = sp->x;
   int prev_y = sp->y;
   bool changed = false;
@@ -260,7 +259,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
 
   if (keys[0]) {
     sp->y += 1; //checking if it is on the ground TODO: not very pretty, but it works...
-    if (check_sprite_collision_by_color(sp, 0x0))
+    if (check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false))
       sp->yspeed -= JUMP_STEP;
     sp->y -= 1; //restoring y value
   }
@@ -280,7 +279,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
 
     //checking for slope
     for (int i = sp->y + sp->height - 12; i < sp->y + sp->height - 1; i++) {
-      if (vram_get_color_by_coordinates(sp->x - 1, i) == 0x00) {
+      if (pixmap_get_color_by_coordinates(sp->x - 1, i, level_collisisions->map, level_collisisions->width) == 0x00) { 
         slope_condition = true;
       }
     }
@@ -288,7 +287,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
     if (slope_condition && sp->x > 15 + 1 && sp->x + sp->width < screen_width - 15 - 1) {
       sp->y -= SLOPE_STEP;
       //if actually collides gets back to normal
-      if (check_sprite_collision_by_color(sp, 0x0)) {
+      if (check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false)) {
         sp->y += SLOPE_STEP;
       }
     }
@@ -363,7 +362,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
 
     //checking for slope
     for (int i = sp->y + sp->height - 12; i < sp->y + sp->height - 1; i++) {
-      if (vram_get_color_by_coordinates(sp->x + sp->width + 1, i) == 0x00) {
+      if (pixmap_get_color_by_coordinates(sp->x + sp->width + 1, i, level_collisisions->map, level_collisisions->width) == 0x00) {
         slope_condition = true;
       }
     }
@@ -371,7 +370,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
     if (slope_condition && sp->x > 15 + 1 && sp->x + sp->width < screen_width - 15 - 1) {
       sp->y -= SLOPE_STEP;
       //if actually collides gets back to normal
-      if (check_sprite_collision_by_color(sp, 0x0)) {
+      if (check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false)) {
         sp->y += SLOPE_STEP;
       }
     }
@@ -451,11 +450,11 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
 
   if (sp->xspeed == 0) {
 
-    if(sp->x + sp->width > screen_width - 7){
+    if (sp->x + sp->width > screen_width - 7) {
       sp->x = screen_width - 7 - sp->width;
     }
-    
-    if(sp->x < 7){
+
+    if (sp->x < 7) {
       sp->x = 7;
     }
 
@@ -484,12 +483,12 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
 
   if (sp->yspeed != 0) {
     sp->y += sp->yspeed;
-    if (check_sprite_collision_by_color(sp, 0x0)) {
+    if (check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false)) {
       sp->y = prev_y;
       if (sp->yspeed > 0) {
         for (int step = sp->yspeed - 1; step > 0; step--) {
           sp->y += step;
-          if (!check_sprite_collision_by_color(sp, 0x0)) {
+          if (!check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false)) {
             changed = true;
             break;
           }
@@ -499,7 +498,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
       else if (sp->yspeed < 0) {
         for (int step = sp->yspeed + 1; step < 0; step++) {
           sp->y += step;
-          if (!check_sprite_collision_by_color(sp, 0x0)) {
+          if (!check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false)) {
             changed = true;
             break;
           }
@@ -514,12 +513,12 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
 
   if (sp->xspeed != 0) {
     sp->x += sp->xspeed;
-    if (check_sprite_collision_by_color(sp, 0x0)) {
+    if (check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false)) {
       sp->x = prev_x;
       if (sp->xspeed > 0) {
         for (int step = sp->xspeed - 1; step > 0; step--) {
           sp->x += step;
-          if (!check_sprite_collision_by_color(sp, 0x0)) {
+          if (!check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false)) {
             changed = true;
             break;
           }
@@ -529,7 +528,7 @@ bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, i
       else if (sp->xspeed < 0) {
         for (int step = sp->xspeed + 1; step < 0; step++) {
           sp->x += step;
-          if (!check_sprite_collision_by_color(sp, 0x0)) {
+          if (!check_sprite_collision_by_color(sp, 0x0, level_collisisions->map, false)) {
             changed = true;
             break;
           }
@@ -600,12 +599,20 @@ bool(collision_one_rect)(Sprite *sp, uint16_t x, uint16_t y, int width, int heig
  * @param color color to check against with
  * @return true if collision and false otherwise
  */
-bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color) { //note: it must be used before the sprite is printed and the color is changed
+bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color, uint8_t *pixmap, bool vram) { //note: it must be used before the sprite is printed and the color is changed
   for (int row = sp->y; row < sp->y + sp->height; row++) {
     for (int col = sp->x; col < sp->x + sp->width; col++) {
       if (convert_BGR_to_RGB(pixmap_get_color_by_coordinates(col - sp->x, row - sp->y, sp->map, sp->width)) != sp->transparency_color) {
-        if (vram_get_color_by_coordinates(col, row) == color)
-          return true;
+        if (vram) {
+          if (vram_get_color_by_coordinates(col, row) == color)
+            return true;
+        }
+        else {
+          if (pixmap_get_color_by_coordinates(col, row, pixmap, 800) == color)
+            return true;
+          if (vram_get_color_by_coordinates(col, row) == color)
+            return true;
+        }
       }
     }
   }
@@ -628,7 +635,7 @@ void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, 
     sp->y += yspeed;
 
     //just for testing purpose
-    if (check_sprite_collision_by_color(sp, 0x0))
+    if (check_sprite_collision_by_color(sp, 0x0, background->map, false))
       break;
 
     restore_background(sp->x - xspeed, sp->y - yspeed, sp->width, sp->height, background);
