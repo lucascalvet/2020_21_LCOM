@@ -18,10 +18,10 @@
 
 //project header files - xpm's
 #include "xpm_firemi.h"
-#include "xpm_waternix.h"
 #include "xpm_game_elements.h"
 #include "xpm_levels.h"
 #include "xpm_slider.h"
+#include "xpm_waternix.h"
 //#include "xpm_titles.h"
 
 //global variables
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
  */
 int(proj_main_loop)(int argc, char *argv[]) {
   printf("Welcome to FireMi & WaterNix!!!\n");
-  
+
   //initiating the VBE
   vg_init(VBE_DIRECT_800_MODE);
   
@@ -91,10 +91,14 @@ int(proj_main_loop)(int argc, char *argv[]) {
   rtc_time time;
 
   //subscribing the interrupt notifications for all devices needed
-  if (keyboard_subscribe_int(&kbd_bit_no) != OK) return 1;
-  if (timer_subscribe_int(&timer_bit_no) != OK) return 1;
-  if (mouse_subscribe_int(&mouse_bit_no) != OK) return 1;
-  if (rtc_subscribe_int(&rtc_bit_no) != OK) return 1;
+  if (keyboard_subscribe_int(&kbd_bit_no) != OK)
+    return 1;
+  if (timer_subscribe_int(&timer_bit_no) != OK)
+    return 1;
+  if (mouse_subscribe_int(&mouse_bit_no) != OK)
+    return 1;
+  if (rtc_subscribe_int(&rtc_bit_no) != OK)
+    return 1;
   rtc_enable_update_int();
 
   uint64_t kbd_irq_set = BIT(kbd_bit_no);

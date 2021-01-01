@@ -6,14 +6,14 @@
 #include "xpm_titles.h"
 #include "xpm_mouse.h"
 
-//game reserved colors (BGR)
+//game reseved colors (BGR)
 #define LAVA_RED 0x2f08f2
 #define LAVA_BLUE 0xff3300
 #define LAVA_PURPLE 0x95095b
 #define GAME_BLACK 0x000000
 #define NUMBERS_SEP 5
 #define CLOCK_WIDTH ((XPM_NUMBERS_WIDTH + NUMBERS_SEP)*4 + XPM_COLON_WIDTH)
-
+#define LAVA_SPEED 1
 //enum with all the directions
 enum orientation{
   NORTH, SOUTH, EAST, WEST
@@ -68,12 +68,12 @@ typedef struct {
 } Game_bar;
 
 //handle a character's movement
-void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w);
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w, Sprite *level_collisions);
 
-void (handle_slider_move)(Sprite * slider, Sprite *background);
+void (handle_slider_move)(Sprite * slider, Sprite *background, Sprite *level_collisions);
 
 //checks if characters are in lava or not
-bool(check_lava)(Sprite *firemi, Sprite *waternix);
+bool(check_lava)(Sprite *firemi, Sprite *waternix, Sprite *level_collisions);
 
 Cursor * (create_cursor)(unsigned x, unsigned y);
 
@@ -103,23 +103,25 @@ void(delete_game_button)(Game_button *bup);
 //deletes game_bar sprite "object"
 void(delete_game_bar)(Game_bar *bap);
 
-//
+//handles de buttons dynamics
 void(handle_game_button)(Game_button *bup, Sprite *background,  uint16_t n_objs, Sprite* objs[]);
 
-//
-void(handle_game_bar)(Game_bar *bap, Sprite *background);
+//handles the bar's dynamics
+void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_collide[], int n_objs);
 
 //creates random 2d array of line of snow
 void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_quantity);
 
-void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite * game_box, Sprite *background);
+//handles de boxes dynamics
+void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite * game_box, Sprite *background, Sprite* level_collisions);
 
 //handles the wins
-void(handle_win)(Sprite* firemi, Sprite* waternix, Sprite* level1_completed);
+bool(handle_win)(Sprite* firemi, Sprite* waternix, Sprite* level_completed,  int xf, int yf, int xw, int yw, int width, int height);
 
 //handles the losts
 void(handle_lost)();
 
+//handles the lava objects
+void(handle_lava)(Sprite * lava, Sprite *background, int initx, bool *change, int width);
 
-
-#endif //GAME_ENGINE_H
+#endif //GAME_HANDLER_H

@@ -9,14 +9,14 @@
  * @param char1_keys the pressed keys for the movement of the first character
  * @param char2_keys the pressed keys for the movement of the second character
  */
-void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w) {
+void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w, Sprite *level_collisions) {
   int prev_char1_x = firemi->x;
   int prev_char2_x = waternix->x;
   int prev_char1_y = firemi->y;
   int prev_char2_y = waternix->y;
 
-  bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f, n_map_2_f);
-  bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w, n_map_2_w);
+  bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f, n_map_2_f, 800, 600, level_collisions);
+  bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w, n_map_2_w, 800, 600, level_collisions);
 
   if (change_char1)
     restore_background(prev_char1_x, prev_char1_y, firemi->width, firemi->height, background);
@@ -24,21 +24,21 @@ void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *backgroun
     restore_background(prev_char2_x, prev_char2_y, waternix->width, waternix->height, background);
 
   if (change_char1 || change_char2) {
-    *game_over = check_lava(firemi, waternix);
+    *game_over = check_lava(firemi, waternix, level_collisions);
 
     draw_sprite(waternix);
     draw_sprite(firemi);
-  }
+    }
 }
 
-void(handle_slider_move)(Sprite *slider, Sprite *background) {
+void(handle_slider_move)(Sprite *slider, Sprite *background, Sprite *level_collisions) {
   int prev_slider_x = slider->x;
   if (slider->xspeed == 0) {
     slider->xspeed = 2;
   }
   restore_background(prev_slider_x, slider->y, slider->width, slider->height, background);
   slider->x += slider->xspeed;
-  if (check_sprite_collision_by_color(slider, 0x0)) {
+  if (check_sprite_collision_by_color(slider, 0x0, level_collisions->map, false)) {
     slider->xspeed = -slider->xspeed;
     slider->x += slider->xspeed;
   }
@@ -218,14 +218,14 @@ void(delete_clock)(Clock *clock) {
  * @param waternix pointer to waternix sprite object
  * @return true if they are in lava, false otherwise
  */
-bool(check_lava)(Sprite *firemi, Sprite *waternix) {
-  if (check_sprite_collision_by_color(firemi, LAVA_BLUE))
+bool(check_lava)(Sprite *firemi, Sprite *waternix, Sprite *level_collisions) {
+  if (check_sprite_collision_by_color(firemi, LAVA_BLUE, level_collisions->map, false))
     return true;
-  if (check_sprite_collision_by_color(waternix, LAVA_RED))
+  if (check_sprite_collision_by_color(waternix, LAVA_RED, level_collisions->map, false))
     return true;
-  if (check_sprite_collision_by_color(firemi, LAVA_PURPLE))
+  if (check_sprite_collision_by_color(firemi, LAVA_PURPLE, level_collisions->map, false))
     return true;
-  if (check_sprite_collision_by_color(waternix, LAVA_PURPLE))
+  if (check_sprite_collision_by_color(waternix, LAVA_PURPLE, level_collisions->map, false))
     return true;
   return false;
 }
@@ -369,6 +369,8 @@ void(handle_game_button)(Game_button *bup, Sprite *background, uint16_t n_objs, 
 
   uint16_t rect_y = 0, rect_x = 0;
   int rect_width = 0, rect_height = 0;
+  int speed = 1;
+
   if (bup->orientation_of_button == NORTH) {
     rect_x = bup->button_sprite->x - 2;
     rect_y = bup->button_sprite->y - 2;
@@ -394,19 +396,16 @@ void(handle_game_button)(Game_button *bup, Sprite *background, uint16_t n_objs, 
     rect_height = bup->button_sprite->height;
   }
 
-  //TODO: optimize this code to only run this when one os the characters is close
-
   //checking collision of characters with imaginary rectangle representing the button, according its orientation
   bup->pressed = false;
   for (int i = 0; i < n_objs; i++) {
     bup->pressed |= collision_one_rect(objs[i], rect_x, rect_y, rect_width, rect_height);
   }
-  
 
   if (bup->pressed) {
     if (bup->orientation_of_button == NORTH) {
       if (bup->button_sprite->y != bup->finaly)
-        bup->button_sprite->y += 1;
+        bup->button_sprite->y += speed;
     }
     if (bup->orientation_of_button == SOUTH) {
       if (bup->south_pressed)
@@ -416,11 +415,11 @@ void(handle_game_button)(Game_button *bup, Sprite *background, uint16_t n_objs, 
     }
     if (bup->orientation_of_button == EAST) {
       if (bup->button_sprite->x != bup->finalx)
-        bup->button_sprite->x -= 1;
+        bup->button_sprite->x -= speed;
     }
     if (bup->orientation_of_button == WEST) {
       if (bup->button_sprite->x != bup->finalx)
-        bup->button_sprite->x += 1;
+        bup->button_sprite->x += speed;
     }
   }
   else {
@@ -433,15 +432,16 @@ void(handle_game_button)(Game_button *bup, Sprite *background, uint16_t n_objs, 
   if (bup->orientation_of_button == SOUTH) {
     if (bup->south_pressed) {
       if (bup->button_sprite->y != bup->finaly) {
-        bup->button_sprite->y -= 1;
+        bup->button_sprite->y -= speed;
       }
     }
     else {
       if (bup->button_sprite->y != bup->inity) {
-        bup->button_sprite->y += 1;
+        bup->button_sprite->y += speed;
       }
     }
   }
+
   draw_sprite(bup->button_sprite);
 }
 
@@ -451,13 +451,13 @@ void(handle_game_button)(Game_button *bup, Sprite *background, uint16_t n_objs, 
  * @param background pointer to the background sprite object
  * @param return none
  */
-void(handle_game_bar)(Game_bar *bap, Sprite *background) {
+void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_collide[], int n_objs) {
   //x axis speed when not in agular movement
   int speed = 2;
-
-  //states when the bar should move or not
   bool moving = false;
-  
+  bool colliding = false;
+
+  //see if the bar has to move or no
   for (int i = 0; i < bap->n_bups; i++) {
     if (bap->game_buttons[i]->orientation_of_button == SOUTH)
       moving |= bap->game_buttons[i]->south_pressed;
@@ -468,40 +468,142 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background) {
   //angular movement
   if (bap->angular_speed != 0) {
     if (moving) {
-      if (bap->angle != bap->final_angle)
-        bap->angle += bap->angular_speed;
+      if (bap->angle != bap->final_angle) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (check_collision_sprite_at_angle(bap->bar_sprite, bap->angle + bap->angular_speed, objects_to_collide[i]->x, objects_to_collide[i]->y, objects_to_collide[i]->width, objects_to_collide[i]->height))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->angle += bap->angular_speed;
+        else {
+          if (bap->angle != 0)
+            bap->angle -= bap->angular_speed;
+        }
+      }
     }
     else {
-      if (bap->angle != 0)
-        bap->angle -= bap->angular_speed;
+      if (bap->angle != 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (check_collision_sprite_at_angle(bap->bar_sprite, bap->angle - bap->angular_speed, objects_to_collide[i]->x, objects_to_collide[i]->y, objects_to_collide[i]->width, objects_to_collide[i]->height))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->angle -= bap->angular_speed;
+        else if (bap->angle != bap->final_angle)
+          bap->angle += bap->angular_speed;
+      }
     }
 
     draw_sprite_at_angle(bap->bar_sprite, bap->angle);
   }
   else {
     //horizontal movement
-    if (moving) {
-      if (bap->bar_sprite->x > bap->finalx) {
-        bap->bar_sprite->x -= speed;
+    if (moving && bap->finaly == bap->inity) {
+
+      if (bap->bar_sprite->x > bap->finalx && (bap->finalx - bap->initx) < 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->bar_sprite->x -= speed;
       }
-      else {
-        bap->bar_sprite->x += speed;
+      if (bap->bar_sprite->x < bap->finalx && (bap->finalx - bap->initx) > 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->bar_sprite->x += speed;
       }
     }
     else {
-      bap->bar_sprite->x = bap->initx;
+
+      if (bap->bar_sprite->x != bap->initx) {
+
+        if ((bap->finalx - bap->initx) > 0) {
+          //check bar collision with objects
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+              colliding = true;
+          }
+          if (!colliding)
+            bap->bar_sprite->x -= speed;
+        }
+
+        if ((bap->finalx - bap->initx) < 0) {
+          //check bar collision with objects
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+              colliding = true;
+          }
+          if (!colliding)
+            bap->bar_sprite->x += speed;
+        }
+      }
     }
     //vertical movement
-    if (moving) {
-      if (bap->bar_sprite->y > bap->finaly) {
-        bap->bar_sprite->y -= speed;
+    if (moving && bap->finalx == bap->initx) {
+
+      if (bap->bar_sprite->y < bap->finaly && (bap->finaly - bap->inity) > 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+            colliding = true;
+        }
+        if (!colliding)
+          bap->bar_sprite->y += speed;
       }
-      else {
-        bap->bar_sprite->y += speed;
+      if (bap->bar_sprite->y > bap->finaly && (bap->finaly - bap->inity) < 0) {
+        //check bar collision with objects
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+            colliding = true;
+        }
+        if (!colliding){
+          bap->bar_sprite->y -= speed;
+          bool on_top = false;
+          
+        //check if is anyone on top
+        for (int i = 0; i < n_objs; i++) {
+          if (collision_one_rect(objects_to_collide[i], bap->bar_sprite->x, bap->bar_sprite->y - 1, bap->bar_sprite->width, 2))
+            on_top = true;  
+        }
+        
+        if(on_top){
+          //it subs to all off themm because the handle characters is done after is they are actually on top they go down
+          for (int i = 0; i < n_objs; i++) {
+            objects_to_collide[i]->y -= speed;
+          }
+        }
+        }
       }
     }
     else {
-      bap->bar_sprite->y = bap->inity;
+      if (bap->bar_sprite->y != bap->inity) {
+
+        if ((bap->finaly - bap->inity) > 0)
+          //check bar collision with objects
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+              colliding = true;
+          }
+        if (!colliding)
+          bap->bar_sprite->y -= speed;
+
+        if ((bap->finaly - bap->inity) < 0)
+          //check bar collision with objects
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
+              colliding = true;
+          }
+        if (!colliding)
+          bap->bar_sprite->y += speed;
+      }
     }
 
     draw_sprite(bap->bar_sprite);
@@ -556,7 +658,7 @@ void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_
  * @param background the sprite of the backgroung to be restored in movement
  * @return none
  */
-void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite *background) {
+void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite *background, Sprite* level_collisions) {
 
   Sprite *chars[2] = {firemi, waternix};
   bool slope = false;
@@ -574,15 +676,15 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
       game_box->x -= speed;
 
       //if collides restores x
-      if (check_sprite_collision_by_color(game_box, 0x00))
+      if (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false))
         game_box->x += speed;
 
       //checks for slope
-      if (vram_get_color_by_coordinates(game_box->x - 1, game_box->y + game_box->height - 1) == 0x00) {
+      if (pixmap_get_color_by_coordinates(game_box->x - 1, game_box->y + game_box->height - 1, level_collisions->map, level_collisions->width) == 0x00) {
         game_box->y -= 1;
         slope = true;
         //if collides goes back
-        if (check_sprite_collision_by_color(game_box, 0x00)) {
+        if (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
           game_box->y += 1;
           slope = false;
         }
@@ -595,15 +697,15 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
       game_box->x += speed;
 
       //if collides restores x
-      if (check_sprite_collision_by_color(game_box, 0x00)) {
+      if (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
         game_box->x -= speed;
       }
 
       //checks for slope
-      if (vram_get_color_by_coordinates(game_box->x + game_box->width + 1, game_box->y + game_box->height - 1) == 0x00) {
+      if (pixmap_get_color_by_coordinates(game_box->x + game_box->width + 1, game_box->y + game_box->height - 1, level_collisions->map, level_collisions->width) == 0x00) {
         slope = true;
         game_box->y -= 1;
-        if (check_sprite_collision_by_color(game_box, 0x00)) {
+        if (check_sprite_collision_by_color(game_box, 0x00,  level_collisions->map, false)) {
           game_box->y += 1;
           slope = false;
         }
@@ -612,10 +714,10 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
 
     //gravity
     if (!slope) {
-      if (!check_sprite_collision_by_color(game_box, 0x00)) {
+      if (!check_sprite_collision_by_color(game_box, 0x00,  level_collisions->map, false)) {
         game_box->y += gravity;
         //not passing through the floor
-        while (check_sprite_collision_by_color(game_box, 0x00)) {
+        while (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
           game_box->y -= 1;
         }
       }
@@ -625,17 +727,64 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
   draw_sprite(game_box);
 }
 
-void(handle_win)(Sprite *firemi, Sprite *waternix, Sprite *level1_completed) {
-  if (collision_one_rect(waternix, 30, 30, 45, 65) && collision_one_rect(firemi, 105, 30, 45, 65)) {
-    draw_sprite(level1_completed);
-    sleep(3);
+/**
+ * @brief handles when user wins a level
+ * @param firemi the firemi character
+ * @param waternix the waternix character
+ * @param level_completed the title of the level
+ * @return none
+ */
+bool(handle_win)(Sprite *firemi, Sprite *waternix, Sprite *level_completed, int xf, int yf, int xw, int yw, int width, int height) {
+  if (collision_one_rect(waternix, xw, yw, width, height) && collision_one_rect(firemi, xf, yf, width, height)) {
+    draw_sprite(level_completed);
+    sleep(2);
+    return true;
   }
+  return false;
 }
 
+/**
+ * @brief handles when user loses a level
+ * 
+ */
 void(handle_lost)() {
   xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
   Sprite *game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
   draw_sprite(game_over_title);
-  sleep(1);
+  sleep(3);
   delete_sprite(game_over_title);
+}
+
+/**
+ * @brief handles lava objects
+ * @param lava sprite of the lava object to handle
+ * @param background
+ * @return none
+ */
+void(handle_lava)(Sprite *lava, Sprite *background, int initx, bool *change, int width) {
+
+  restore_background(lava->x, lava->y, lava->width, lava->height, background);
+
+  draw_sprite(lava);
+
+  restore_background(initx - (width), lava->y, width, lava->height, background);
+  restore_background(initx + width, lava->y, (lava->width), lava->height, background);
+
+  if (!(*change)) {
+    if (abs(lava->x - initx) >= width) {
+      (*change) = !(*change);
+    }
+  }
+  else {
+    if (lava->x >= initx)
+      (*change) = !(*change);
+  }
+
+  if ((*change)){
+    lava->x += LAVA_SPEED;
+    lava->x = initx;
+  }
+  else {
+    lava->x -= LAVA_SPEED;
+  }
 }
