@@ -1,3 +1,6 @@
+#ifndef XPM_SLIDER_H
+#define XPM_SLIDER_H
+
 /* XPM SLIDER*/
 static const xpm_row_t xpm_slider[] = {
 "70 15 2 1",
@@ -18,3 +21,5 @@ static const xpm_row_t xpm_slider[] = {
 "  ..................................................................  ",
 "                                                                      ",
 "                                                                      "};
+
+#endif

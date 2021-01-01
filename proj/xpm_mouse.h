@@ -1,3 +1,6 @@
+#ifndef XPM_MOUSE_H
+#define XPM_MOUSE_H
+
 /* XPM MOUSE */
 static const xpm_row_t xpm_mouse[] = {
 "15 20 91 2",
@@ -112,3 +115,5 @@ static const xpm_row_t xpm_mouse[] = {
 ". V z       . k ' .           ",
 "W y         . X J Y .         ",
 ".             . Z ` .         "};
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef XPM_WATERNIX_H
+#define XPM_WATERNIX_H
+
 /* XPM WATERNIX CHARACTER */
 
 static const xpm_row_t idle1_waternix_xpm[] = {
@@ -2826,3 +2829,4 @@ static const xpm_row_t r3_waternix_xpm[] = {
 "+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X+X"
 };
 
+#endif
