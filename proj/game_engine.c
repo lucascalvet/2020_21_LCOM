@@ -43,6 +43,7 @@ Game_button *buttons3[2];
 Game_bar *game_bar3;
 Game_button *game_button5;
 Game_button *game_button4;
+//Game_lever *lever;
 Sprite *level_completed;
 Sprite *objs_to_collide[4];
 
@@ -55,6 +56,8 @@ bool red_lava_change = false;
 bool red_lava2_change = false;
 bool lava_change_blue = false;
 bool lava_change_purple = false;
+
+struct packet prev_mouse_packet;
 
 //to handle the change of xpm to animate sprite when running
 int n_maps_f = 0, n_maps_w = 0;
@@ -109,6 +112,8 @@ void (create_level)(enum game_state state) {
     buttons3[0] = game_button3;
     buttons3[1] = game_button5;
     game_bar3 = create_game_bar(xpm_bar_3, 645, 90, 554, 90, 0, 0, 0, buttons3, 2);
+    //lever = create_game_lever(xpm_lever, xpm_lever_base, 50, 50);
+    memset(&prev_mouse_packet, 0, sizeof(struct packet));
 
     red_lava = create_sprite(xpm_red_lava, 255, 584, 1);
     red_lava2 = create_sprite(xpm_red_lava, 391, 405, 1);
@@ -153,6 +158,8 @@ void (draw_level)(enum game_state state) {
     draw_sprite(game_bar3->bar_sprite);
     draw_sprite(game_button4->button_sprite);
     draw_sprite(game_button5->button_sprite);
+    //draw_sprite(lever->lever_sprite);
+    //draw_sprite(lever->lever_base_sprite);
 
     draw_sprite(red_lava);
     draw_sprite(red_lava2);
@@ -202,8 +209,18 @@ void (handle_level)(enum game_state * state, bool keys_firemi[4], bool keys_wate
     handle_game_box(firemi, waternix, box2, level, level_collisions);
     handle_game_button(game_button4, level, 4, objs_to_collide);
     handle_game_button(game_button5, level, 4, objs_to_collide);
+    
+    //handle_game_lever(lever, prev_mouse_packet);
+
     draw_cursor(cursor, level);
+    draw_clock(game_clock);
     win = handle_win(firemi, waternix, level_completed, 105, 30, 30, 30, 45, 65);
+    if (win) {
+      delete_level(*state);
+      *state = LEVEL_2;
+      create_level(*state);
+      draw_level(*state);
+    }
   }
   if (*state != MAIN_MENU) {
     handle_characters_move(firemi, waternix, level, keys_firemi, keys_waternix, &game_over, &n_maps_f, &n_maps_w, &n_map_2_f, &n_map_2_w, level_collisions);
@@ -213,9 +230,6 @@ void (handle_level)(enum game_state * state, bool keys_firemi[4], bool keys_wate
       *state = MAIN_MENU;
       create_level(*state);
       draw_level(*state);
-    }
-    if (win) {
-      //Handle win
     }
   }
   copy_buffer_to_vram();
@@ -227,6 +241,7 @@ void (tick_game_clock)(){
 
 void (update_game_cursor)(enum game_state * state, struct packet packet) {
   update_cursor(cursor, packet);
+  prev_mouse_packet = packet;
   if (*state == MAIN_MENU && packet.lb){
     if (cursor->x >= play_button->x && cursor->x <= play_button->x + play_button->width && cursor->y >= play_button->y && cursor->y <= play_button->y + play_button->height){
       delete_level(*state);
@@ -268,6 +283,7 @@ void (delete_level)(enum game_state state) {
     delete_game_bar(game_bar3);
     delete_game_button(game_button4);
     delete_game_button(game_button5);
+    //delete_game_lever(lever);
     delete_sprite(slider);
 
     delete_sprite(level_completed);

@@ -271,7 +271,6 @@ Game_button *(create_game_button)(const xpm_row_t *xpm_button, uint16_t x, uint1
     bup->finalx = bup->button_sprite->x + bup->button_sprite->width - 1;
     bup->finaly = bup->button_sprite->y;
   }
-
   return bup;
 }
 
@@ -317,6 +316,34 @@ Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, ui
 }
 
 /**
+ * @brief Creates a lever
+ * @param xpm_lever a xpm of the lever
+ * @param xpm_level_base a xpm of the lever's base
+ * @param x the x coordinate of the lever
+ * @param y the y coordinate of the lever
+ * @return pointer to the created Game_lever
+ */
+Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm_lever_base, uint16_t x, uint16_t y) {
+  Game_lever *lever = (Game_lever *) malloc(sizeof(Game_lever));
+
+  xpm_map_t xpm_lever_array[1] = {xpm_lever};
+  xpm_map_t xpm_lever_base_array[1] = {xpm_lever_base};
+
+  if (lever == NULL)
+    return NULL;
+
+  Sprite *lever_sprite = create_sprite(xpm_lever_array, x, y, 1);
+  Sprite *lever_base_sprite = create_sprite(xpm_lever_base_array, x, y, 1);
+
+  lever->lever_sprite = lever_sprite;
+  lever->lever_base_sprite = lever_base_sprite;
+  lever->active = false;
+  lever->angle = 10;
+
+  return lever;
+}
+
+/**
  * @brief deletes game_button sprite
  * @param sp pointer to game_button "object" to be deleted
  * @return none
@@ -350,6 +377,21 @@ void(delete_game_bar)(Game_bar *bap) {
   free(bap);
   bap = NULL; // XXX: pointer is passed by value
   // should do this @ the caller
+}
+
+/**
+ * @brief deletes a Game_lever object
+ * @param lever pointer to the lever to be deleted
+ */
+void(delete_game_lever)(Game_lever *lever) {
+  if (lever == NULL)
+    return;
+  if (lever->lever_sprite)
+    delete_sprite(lever->lever_sprite);
+  if (lever->lever_base_sprite)
+    delete_sprite(lever->lever_base_sprite);
+  free(lever);
+  lever = NULL;
 }
 
 /**
@@ -610,6 +652,11 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
   }
 }
 
+void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet) {
+  draw_sprite_at_angle(lever->lever_sprite, lever->angle, 15, 0);
+  draw_sprite(lever->lever_base_sprite);
+}
+
 /**
  * @brief draws a random snow pattern
  * @param min_size the snow flake minimum diameter size
@@ -738,6 +785,7 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
 bool(handle_win)(Sprite *firemi, Sprite *waternix, Sprite *level_completed, int xf, int yf, int xw, int yw, int width, int height) {
   if (collision_one_rect(waternix, xw, yw, width, height) && collision_one_rect(firemi, xf, yf, width, height)) {
     draw_sprite(level_completed);
+    copy_buffer_to_vram();
     sleep(2);
     return true;
   }
@@ -753,7 +801,7 @@ void(handle_lost)() {
   Sprite *game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
   draw_sprite(game_over_title);
   copy_buffer_to_vram();
-  sleep(3);
+  sleep(2);
   delete_sprite(game_over_title);
 }
 

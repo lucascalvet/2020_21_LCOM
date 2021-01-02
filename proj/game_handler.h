@@ -67,6 +67,14 @@ typedef struct {
   Game_button *game_buttons[3];               //pointer to the buttons that triggers the bar movement
 } Game_bar;
 
+//game levers
+typedef struct {
+  Sprite *lever_sprite;       //pointer to the correspondent lever
+  Sprite *lever_base_sprite;  //pointer to the lever base sprite
+  int angle;           //lever angle
+  bool active;         //state of the lever
+} Game_lever;
+
 //handle a character's movement
 void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w, Sprite *level_collisions);
 
@@ -97,17 +105,26 @@ Game_button *(create_game_button)(const xpm_row_t *xpm_button, uint16_t x, uint1
 //creates a game_bar sprite for the game board
 Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, uint16_t finalx, uint16_t finaly, int init_angle, int final_angle, int angular_speed,  Game_button *bups[],  int n_bups);
 
+//creates a game lever
+Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm_lever_base, uint16_t x, uint16_t y);
+
 //deletes game_button sprite "object"
 void(delete_game_button)(Game_button *bup);
 
 //deletes game_bar sprite "object"
 void(delete_game_bar)(Game_bar *bap);
 
+//deletes game_bar sprite "object"
+void(delete_game_lever)(Game_lever *lever);
+
 //handles de buttons dynamics
 void(handle_game_button)(Game_button *bup, Sprite *background,  uint16_t n_objs, Sprite* objs[]);
 
 //handles the bar's dynamics
 void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_collide[], int n_objs);
+
+//handles the lever's dynamics
+void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet);
 
 //creates random 2d array of line of snow
 void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_quantity);
