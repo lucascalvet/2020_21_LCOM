@@ -159,9 +159,11 @@ void (draw_level)(enum game_state state) {
     draw_sprite(blue_lava);
     draw_sprite(purple_lava);
   }
+  copy_buffer_to_vram();
 }
 
 void (handle_level)(enum game_state * state, bool keys_firemi[4], bool keys_waternix[4]) {
+  copy_to_buffer(level->map);
   bool game_over = false;
   bool win = false;
   if (*state == MAIN_MENU) {
@@ -216,6 +218,7 @@ void (handle_level)(enum game_state * state, bool keys_firemi[4], bool keys_wate
       //Handle win
     }
   }
+  copy_buffer_to_vram();
 }
 
 void (tick_game_clock)(){

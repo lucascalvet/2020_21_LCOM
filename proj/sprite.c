@@ -115,10 +115,12 @@ void(draw_sprite_cutted)(Sprite *sp, int width) {
 
 /**
  * @brief draws Sprite "objects" in screen at the angle counting from the vector passed  as argument
- * @param angle the angle of the sprite in relation to the vector passed
+ * @param angle the angle of the sprite
+ * @param x the x coordinate of the rotation anchor
+ * @param y the y coordinate of the rotation anchor
  * @return none
  */
-void(draw_sprite_at_angle)(Sprite *sp, int angle) {
+void(draw_sprite_at_angle)(Sprite *sp, int angle, unsigned x, unsigned y) {
   int map_index = 0; //to keep track of map index
 
   uint32_t color;
@@ -133,8 +135,8 @@ void(draw_sprite_at_angle)(Sprite *sp, int angle) {
     for (int col = 0; col < sp->width; col++) {
       color = convert_BGR_to_RGB(color_assembler(sp->map, &map_index));
       if (color != sp->transparency_color) {
-        transformed_x = (double) col * cos(teta) + (double) row * sin(teta);
-        transformed_y = (double) row * cos(teta) - (double) col * sin(teta);
+        transformed_x = (double) (col - x) * cos(teta) + (double) (row - y) * sin(teta);
+        transformed_y = (double) (row - y) * cos(teta) - (double) (col - x) * sin(teta);
 
         //printf("X: %d Y: %d", transformed_x, transformed_y);
         if (transformed_x + sp->x >= 0 && transformed_y + sp->y >= 0)

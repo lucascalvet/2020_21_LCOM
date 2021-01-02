@@ -496,7 +496,7 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
       }
     }
 
-    draw_sprite_at_angle(bap->bar_sprite, bap->angle);
+    draw_sprite_at_angle(bap->bar_sprite, bap->angle, 0, 0);
   }
   else {
     //horizontal movement
@@ -656,6 +656,7 @@ void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_
  * @param waternix the waternix character sprite
  * @param game_box the box beeing handled
  * @param background the sprite of the backgroung to be restored in movement
+ * @param level_collisions the level mask for collisions
  * @return none
  */
 void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite *background, Sprite* level_collisions) {
@@ -751,6 +752,7 @@ void(handle_lost)() {
   xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
   Sprite *game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
   draw_sprite(game_over_title);
+  copy_buffer_to_vram();
   sleep(3);
   delete_sprite(game_over_title);
 }

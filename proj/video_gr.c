@@ -6,6 +6,9 @@
 #include <stdio.h>
 
 static uint8_t *video_mem;      //virtual vram address
+static uint8_t *secondary_buffer; //secondary buffer for double buffering
+unsigned int vram_size;
+
 static unsigned h_res;          //horizontal resolution in pixels
 static unsigned v_res;          //vertical resolution in pixels
 static unsigned bits_per_pixel; //number of VRAM bits per pixel
@@ -58,6 +61,7 @@ void(get_vbe_mode_info)(uint16_t mode, vbe_mode_info_t *mode_info) {
   mmap_t mmap; //memory info of vbe_mode_info_t struct info
 
   lm_alloc(sizeof(vbe_mode_info_t), &mmap);
+  
 
   //vbe_get_info(mmap.phys);
 
@@ -170,7 +174,6 @@ void *(vg_init)(uint16_t mode) {
 
   struct minix_mem_range mr;
   unsigned int vram_base; // VRAM's physical addresss
-  unsigned int vram_size; // VRAM's size, but you can use the frame-buffer size, instead
   int r;
 
   vbe_mode_info_t mode_info;
@@ -189,6 +192,10 @@ void *(vg_init)(uint16_t mode) {
 
   //Mapping memory
   video_mem = vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
+
+  //Allocating memory for secondary buffer
+  secondary_buffer = malloc(vram_size);
+  memset(secondary_buffer, 0, vram_size);
 
   reg86_t reg86;
   memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
@@ -262,7 +269,7 @@ uint32_t(convert_BGR_to_RGB)(int color) {
 uint32_t(vram_get_color_by_coordinates)(uint16_t x, uint16_t y) {
   uint32_t color = 0;
 
-  uint8_t *pointer = video_mem; //pointer to video memory address
+  uint8_t *pointer = secondary_buffer; //pointer to video memory address
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change
 
@@ -301,6 +308,14 @@ uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixma
   return color;
 }
 
+void(copy_buffer_to_vram)() {
+  memcpy(video_mem, secondary_buffer, vram_size);
+}
+
+void(copy_to_buffer)(uint8_t * map) {
+  memcpy(secondary_buffer, map, vram_size);
+}
+
 /**
  * @brief changes a pixel color in coordinates x and y of screen
  * @param x the x coordinate of screen from left to right
@@ -311,7 +326,7 @@ uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixma
  */
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
-  uint8_t *pointer = video_mem; //pointer to video memory address
+  uint8_t *pointer = secondary_buffer; //pointer to buffer address
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change according to x, y and bytes per pixel
 
