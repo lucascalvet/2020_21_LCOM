@@ -1,3 +1,9 @@
+Makecode: 0x39
+Breakcode: 0xb9
+Makecode: 0x39
+Breakcode: 0xb9
+Makecode: 0x39
+Breakcode: 0xb9
 Makecode: 0x01
 Breakcode: 0x81
-Counter: 4
+Counter: 16

@@ -137,7 +137,6 @@ void(create_level)(enum game_state state) {
     buttons3[0] = game_button3;
     buttons3[1] = game_button5;
     game_bar3 = create_game_bar(xpm_bar_3, 645, 90, 554, 90, 0, 0, 0, buttons3, 2);
-    lever = create_game_lever(xpm_lever, xpm_lever_base, 50, 50);
     memset(&prev_mouse_packet, 0, sizeof(struct packet));
 
     red_lava = create_sprite(xpm_red_lava, 255, 584, 1);
@@ -202,6 +201,8 @@ void(create_level)(enum game_state state) {
     game_bar4 = create_game_bar(xpm_bar_1, 601, 328, 0, 0, 0, 90, 1, buttons3, 1);
     game_bar5 = create_game_bar(xpm_bar4_level2, 224, 210, 224, 90, 0, 0, 0, buttons6, 1);
     game_bar6 = create_game_bar(xpm_bar5_level2, 495, 210, 495, 90, 0, 0, 0, buttons5, 1);
+
+    lever = create_game_lever(xpm_lever, xpm_lever_base, 563, 282);
   }
   if (state == LEVEL_3) {
     xpm_map_t xpm_wind[6] = {xpm_wind1, xpm_wind2, xpm_wind3, xpm_wind4, xpm_wind5, xpm_wind6};
@@ -327,8 +328,6 @@ void(draw_level)(enum game_state state) {
     draw_sprite(game_bar3->bar_sprite);
     draw_sprite(game_button4->button_sprite);
     draw_sprite(game_button5->button_sprite);
-    draw_sprite(lever->lever_sprite);
-    draw_sprite(lever->lever_base_sprite);
 
     draw_sprite(red_lava);
     draw_sprite(red_lava2);
@@ -359,6 +358,9 @@ void(draw_level)(enum game_state state) {
     draw_sprite(game_bar4->bar_sprite);
     draw_sprite(game_bar5->bar_sprite);
     draw_sprite(game_bar6->bar_sprite);
+
+    draw_sprite(lever->lever_sprite);
+    draw_sprite(lever->lever_base_sprite);
   }
   if (state == LEVEL_3) {
     draw_sprite(level);
@@ -456,8 +458,6 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_button(game_button4, level, 4, objs_to_collide);
     handle_game_button(game_button5, level, 4, objs_to_collide);
 
-    handle_game_lever(lever, prev_mouse_packet);
-
     draw_cursor(cursor, level);
     draw_clock(game_clock);
     win = handle_win(firemi, waternix, level_completed, 105, 30, 30, 30, 45, 65);
@@ -491,6 +491,8 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_bar(game_bar4, level, objs_to_collide, 2);
     handle_game_bar(game_bar5, level, objs_to_collide, 2);
     handle_game_bar(game_bar6, level, objs_to_collide, 2);
+
+    handle_game_lever(lever, prev_mouse_packet);
 
     draw_cursor(cursor, level);
 
@@ -668,7 +670,6 @@ void(delete_level)(enum game_state state) {
     delete_game_bar(game_bar3);
     delete_game_button(game_button4);
     delete_game_button(game_button5);
-    delete_game_lever(lever);
     delete_sprite(slider);
 
     delete_sprite(level_completed);
@@ -701,6 +702,8 @@ void(delete_level)(enum game_state state) {
     delete_game_bar(game_bar4);
     delete_game_bar(game_bar5);
     delete_game_bar(game_bar6);
+
+    delete_game_lever(lever);
   }
   if (state == LEVEL_3) {
     delete_sprite(level_collisions);
