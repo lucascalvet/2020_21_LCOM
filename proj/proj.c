@@ -65,7 +65,8 @@ int(proj_main_loop)(int argc, char *argv[]) {
   //initiating the VBE
   vg_init(VBE_DIRECT_800_MODE);
   
-  enum game_state state = MAIN_MENU;
+  enum game_state state = LEVEL_2;
+  enum game_state prev_state = MAIN_MENU;
   create_level(state);
   draw_level(state);
 
@@ -152,14 +153,19 @@ int(proj_main_loop)(int argc, char *argv[]) {
               if (bytes[1] == KEY_BREAK_ARROW_RIGHT)
                 keys_waternix[3] = false;
             }
+
+            if(bytes[0] == BACKSPACE && state != MAIN_MENU){
+              prev_state = state;
+              state = PAUSE;
+            }
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
             if (timer_counter % wait == 0) {
-              handle_level(&state, keys_firemi, keys_waternix);
+              handle_level(&state, &prev_state, keys_firemi, keys_waternix);
             }
             if (timer_counter % 60 == 0) {
-              if (state != MAIN_MENU) tick_game_clock();
+              if (state != MAIN_MENU && state != PAUSE) tick_game_clock();
               timer_counter = 0;
             }
           }

@@ -824,11 +824,17 @@ void(handle_lava)(Sprite *lava, Sprite *background, int initx, bool *change, int
 
   draw_sprite(lava);
 
-  restore_background(initx - (width), lava->y, width, lava->height, background);
-  restore_background(initx + width, lava->y, (lava->width), lava->height, background);
+  if (initx - width >= 0) {
+    restore_background(initx - (width), lava->y, width, lava->height, background);
+    restore_background(initx + width, lava->y, (lava->width), lava->height, background);
+  }
+  else {
+    restore_background(0, lava->y, initx, lava->height, background);
+    restore_background(initx + width, lava->y, (lava->width), lava->height, background);
+  }
 
   if (!(*change)) {
-    if (abs(lava->x - initx) >= width) {
+    if ((abs(lava->x - initx) >= width) || lava->x <= 0) {
       (*change) = !(*change);
     }
   }
@@ -843,5 +849,95 @@ void(handle_lava)(Sprite *lava, Sprite *background, int initx, bool *change, int
   }
   else {
     lava->x -= LAVA_SPEED;
+  }
+}
+
+/**
+ * @brief handles wind object
+ * @param wind the wind sprite object
+ * @param x the x of the rectangle the defines the action space of the wind
+ * @param y the where the wind starts
+ * @param width the width of the rectangle the defines the action space of the wind
+ * @param max_y the maximum that characters can reache with wind
+ */
+void(handle_wind)(Sprite *wind, int init_y, int max_y, Sprite *firemi, Sprite *waternix, int *map_wind, int *speed, int *speed2, Sprite *level_collisions) {
+  bool in_wind_f = false;
+  bool in_wind_w = false;
+
+  int y_draw_max = wind->y;
+  int wind_acelaration = 5;
+
+  for (int i = firemi->x; i < firemi->x + firemi->width; i++) {
+    if (i > wind->x + 10 && i < wind->x + wind->width) {
+      in_wind_f = true;
+      break;
+    }
+  }
+
+  for (int i = waternix->x; i < waternix->x + waternix->width; i++) {
+    if (i > wind->x + 10 && i < wind->x + wind->width) {
+      in_wind_w = true;
+      break;
+    }
+  }
+
+  if (in_wind_f && firemi->y >= max_y && firemi->y <= init_y) {
+    firemi->y -= (*speed);
+    if ((*speed) < 50) {
+      (*speed) += wind_acelaration;
+    }
+    /*
+    if((*speed) > 20 && check_sprite_collision_by_color(firemi, 0x00, level_collisions->map, false) == 0x00){
+      firemi->y += (*speed);
+      (*speed) = 0;
+    }
+    */
+  }
+  else {
+    (*speed) = 0;
+  }
+
+  if (in_wind_w && waternix->y >= max_y && waternix->y <= init_y) {
+    waternix->y -= (*speed2);
+    if ((*speed2) < 50) {
+      (*speed2) += wind_acelaration;
+    }
+    /*
+    if((*speed2) > 20 && check_sprite_collision_by_color(waternix, 0x00, level_collisions->map, false) == 0x00){
+      waternix->y += (*speed2);
+      (*speed2) = 0;
+    }
+    */
+  }
+  else {
+    (*speed2) = 0;
+  }
+
+  if (((in_wind_f && firemi->y > max_y && firemi->y <= init_y) || (in_wind_w && waternix->y > max_y && waternix->y <= init_y)) && (firemi->y > y_draw_max || waternix->y > y_draw_max)) {
+    switch ((*map_wind)) {
+      case 0:
+        wind->map = wind->xpms[0];
+        break;
+      case 1:
+        wind->map = wind->xpms[1];
+        break;
+      case 2:
+        wind->map = wind->xpms[2];
+        break;
+      case 3:
+        wind->map = wind->xpms[3];
+        break;
+      case 4:
+        wind->map = wind->xpms[4];
+        break;
+      case 5:
+        wind->map = wind->xpms[5];
+        break;
+      default:
+        break;
+    }
+    (*map_wind) = ((*map_wind) + 1) % 6;
+
+    draw_sprite(wind);
   }
 }

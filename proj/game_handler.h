@@ -143,4 +143,7 @@ void(handle_lost)();
 //handles the lava objects
 void(handle_lava)(Sprite * lava, Sprite *background, int initx, bool *change, int width);
 
+//handles wind object
+void(handle_wind)(Sprite *wind, int init_y, int max_y, Sprite *firemi, Sprite *waternix, int *map_wind, int* speed,  int* speed2, Sprite* level_collisions);
+
 #endif //GAME_HANDLER_H
