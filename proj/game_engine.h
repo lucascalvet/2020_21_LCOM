@@ -6,7 +6,7 @@
 
 //enum with the possible game states
 enum game_state {
-  MAIN_MENU, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4
+  MAIN_MENU, RULES_MENU, PAUSED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4
 };
 
 void (create_level)(enum game_state state);
