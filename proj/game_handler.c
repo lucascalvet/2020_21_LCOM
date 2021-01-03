@@ -28,7 +28,7 @@ void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *backgroun
 
     draw_sprite(waternix);
     draw_sprite(firemi);
-    }
+  }
 }
 
 void(handle_slider_move)(Sprite *slider, Sprite *background, Sprite *level_collisions) {
@@ -564,22 +564,22 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
           if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
             colliding = true;
         }
-        if (!colliding){
+        if (!colliding) {
           bap->bar_sprite->y -= speed;
           bool on_top = false;
-          
-        //check if is anyone on top
-        for (int i = 0; i < n_objs; i++) {
-          if (collision_one_rect(objects_to_collide[i], bap->bar_sprite->x, bap->bar_sprite->y - 1, bap->bar_sprite->width, 2))
-            on_top = true;  
-        }
-        
-        if(on_top){
-          //it subs to all off themm because the handle characters is done after is they are actually on top they go down
+
+          //check if is anyone on top
           for (int i = 0; i < n_objs; i++) {
-            objects_to_collide[i]->y -= speed;
+            if (collision_one_rect(objects_to_collide[i], bap->bar_sprite->x, bap->bar_sprite->y - 1, bap->bar_sprite->width, 2))
+              on_top = true;
           }
-        }
+
+          if (on_top) {
+            //it subs to all off themm because the handle characters is done after is they are actually on top they go down
+            for (int i = 0; i < n_objs; i++) {
+              objects_to_collide[i]->y -= speed;
+            }
+          }
         }
       }
     }
@@ -658,7 +658,7 @@ void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_
  * @param background the sprite of the backgroung to be restored in movement
  * @return none
  */
-void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite *background, Sprite* level_collisions) {
+void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite *background, Sprite *level_collisions) {
 
   Sprite *chars[2] = {firemi, waternix};
   bool slope = false;
@@ -705,7 +705,7 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
       if (pixmap_get_color_by_coordinates(game_box->x + game_box->width + 1, game_box->y + game_box->height - 1, level_collisions->map, level_collisions->width) == 0x00) {
         slope = true;
         game_box->y -= 1;
-        if (check_sprite_collision_by_color(game_box, 0x00,  level_collisions->map, false)) {
+        if (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
           game_box->y += 1;
           slope = false;
         }
@@ -714,7 +714,7 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
 
     //gravity
     if (!slope) {
-      if (!check_sprite_collision_by_color(game_box, 0x00,  level_collisions->map, false)) {
+      if (!check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
         game_box->y += gravity;
         //not passing through the floor
         while (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
@@ -751,7 +751,7 @@ void(handle_lost)() {
   xpm_map_t game_over_title_xpm_array[1] = {game_over_title_xpm};
   Sprite *game_over_title = create_sprite(game_over_title_xpm_array, 0, 0, 1);
   draw_sprite(game_over_title);
-  sleep(3);
+  sleep(2);
   delete_sprite(game_over_title);
 }
 
@@ -767,11 +767,17 @@ void(handle_lava)(Sprite *lava, Sprite *background, int initx, bool *change, int
 
   draw_sprite(lava);
 
-  restore_background(initx - (width), lava->y, width, lava->height, background);
-  restore_background(initx + width, lava->y, (lava->width), lava->height, background);
+  if (initx - width >= 0) {
+    restore_background(initx - (width), lava->y, width, lava->height, background);
+    restore_background(initx + width, lava->y, (lava->width), lava->height, background);
+  }
+  else {
+    restore_background(0, lava->y, initx, lava->height, background);
+    restore_background(initx + width, lava->y, (lava->width), lava->height, background);
+  }
 
   if (!(*change)) {
-    if (abs(lava->x - initx) >= width) {
+    if ((abs(lava->x - initx) >= width) || lava->x <= 0) {
       (*change) = !(*change);
     }
   }
@@ -780,11 +786,101 @@ void(handle_lava)(Sprite *lava, Sprite *background, int initx, bool *change, int
       (*change) = !(*change);
   }
 
-  if ((*change)){
+  if ((*change)) {
     lava->x += LAVA_SPEED;
     lava->x = initx;
   }
   else {
     lava->x -= LAVA_SPEED;
+  }
+}
+
+/**
+ * @brief handles wind object
+ * @param wind the wind sprite object
+ * @param x the x of the rectangle the defines the action space of the wind
+ * @param y the where the wind starts
+ * @param width the width of the rectangle the defines the action space of the wind
+ * @param max_y the maximum that characters can reache with wind
+ */
+void(handle_wind)(Sprite *wind, int init_y, int max_y, Sprite *firemi, Sprite *waternix, int *map_wind, int *speed, int *speed2, Sprite *level_collisions) {
+  bool in_wind_f = false;
+  bool in_wind_w = false;
+
+  int y_draw_max = wind->y;
+  int wind_acelaration = 5;
+
+  for (int i = firemi->x; i < firemi->x + firemi->width; i++) {
+    if (i > wind->x + 10 && i < wind->x + wind->width) {
+      in_wind_f = true;
+      break;
+    }
+  }
+
+  for (int i = waternix->x; i < waternix->x + waternix->width; i++) {
+    if (i > wind->x + 10 && i < wind->x + wind->width) {
+      in_wind_w = true;
+      break;
+    }
+  }
+
+  if (in_wind_f && firemi->y >= max_y && firemi->y <= init_y) {
+    firemi->y -= (*speed);
+    if ((*speed) < 50) {
+      (*speed) += wind_acelaration;
+    }
+    /*
+    if((*speed) > 20 && check_sprite_collision_by_color(firemi, 0x00, level_collisions->map, false) == 0x00){
+      firemi->y += (*speed);
+      (*speed) = 0;
+    }
+    */
+  }
+  else {
+    (*speed) = 0;
+  }
+
+  if (in_wind_w && waternix->y >= max_y && waternix->y <= init_y) {
+    waternix->y -= (*speed2);
+    if ((*speed2) < 50) {
+      (*speed2) += wind_acelaration;
+    }
+    /*
+    if((*speed2) > 20 && check_sprite_collision_by_color(waternix, 0x00, level_collisions->map, false) == 0x00){
+      waternix->y += (*speed2);
+      (*speed2) = 0;
+    }
+    */
+  }
+  else {
+    (*speed2) = 0;
+  }
+
+  if (((in_wind_f && firemi->y > max_y && firemi->y <= init_y) || (in_wind_w && waternix->y > max_y && waternix->y <= init_y)) && (firemi->y > y_draw_max || waternix->y > y_draw_max)) {
+    switch ((*map_wind)) {
+      case 0:
+        wind->map = wind->xpms[0];
+        break;
+      case 1:
+        wind->map = wind->xpms[1];
+        break;
+      case 2:
+        wind->map = wind->xpms[2];
+        break;
+      case 3:
+        wind->map = wind->xpms[3];
+        break;
+      case 4:
+        wind->map = wind->xpms[4];
+        break;
+      case 5:
+        wind->map = wind->xpms[5];
+        break;
+      default:
+        break;
+    }
+    (*map_wind) = ((*map_wind) + 1) % 6;
+
+    draw_sprite(wind);
   }
 }
