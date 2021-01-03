@@ -60,6 +60,12 @@ uint32_t (vram_get_color_by_coordinates)(uint16_t x, uint16_t y);
 //returns the color at a certain coordinate in a pixmap
 uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixmap, int width);
 
+//copies the secondary buffer to the vram
+void(copy_buffer_to_vram)();
+
+//copy a pixel map directly to the buffer
+void(copy_to_buffer)(uint8_t * map);
+
 //draws a pixel in screen
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
 

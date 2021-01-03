@@ -49,7 +49,7 @@ void(draw_sprite)(Sprite *sp);
 void(draw_sprite_cutted)(Sprite *sp, int width);
 
 //draws Sprite "objects" in screen at a certain angle
-void(draw_sprite_at_angle)(Sprite *sp, int angle);
+void(draw_sprite_at_angle)(Sprite *sp, int angle, unsigned x, unsigned y);
 
 //checks collisions of sprite at angle to a rectangle
 bool(check_collision_sprite_at_angle)(Sprite *sp, int angle, int x, int y, int width, int height);
@@ -72,8 +72,11 @@ bool(collision_two_rects)(Sprite *sp1, Sprite *sp2);
 //checks collision between a sprite and rectangle
 bool(collision_one_rect)(Sprite *sp1, uint16_t x, uint16_t y, int width, int height);
 
-//check collisions of sprite against a certain color in vram
+//check collisions of sprite against a certain color in the frame buffer and/or a pixmap
 bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color, uint8_t *pixmap, bool vram);
+
+//check collisions of sprite's first xpm against a certain color in the frame buffer and/or a pixmap
+bool(check_sprite_xpm0_collision_by_color)(Sprite *sp, uint32_t color, uint8_t *pixmap, bool vram);
 
 //moves Sprite in screen POSSIBILY DEPRECATED
 void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background);
