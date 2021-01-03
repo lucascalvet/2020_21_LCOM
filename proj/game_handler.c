@@ -10,19 +10,22 @@
  * @param char2_keys the pressed keys for the movement of the second character
  */
 void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w, Sprite *level_collisions) {
+  /*
   int prev_char1_x = firemi->x;
   int prev_char2_x = waternix->x;
   int prev_char1_y = firemi->y;
   int prev_char2_y = waternix->y;
+  */
 
   bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f, n_map_2_f, 800, 600, level_collisions);
   bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w, n_map_2_w, 800, 600, level_collisions);
 
+/*
   if (change_char1)
     restore_background(prev_char1_x, prev_char1_y, firemi->width, firemi->height, background);
   if (change_char2)
     restore_background(prev_char2_x, prev_char2_y, waternix->width, waternix->height, background);
-
+*/
   if (change_char1 || change_char2) {
     *game_over = check_lava(firemi, waternix, level_collisions);
 
@@ -73,10 +76,10 @@ Cursor *(create_cursor)(unsigned x, unsigned y) {
 void(update_cursor)(Cursor *cursor, struct packet packet) {
   cursor->x += packet.delta_x;
   cursor->y -= packet.delta_y;
-  if (!(cursor->x < (int) 800))
-    cursor->x = 800 - 1;
-  if (!(cursor->y < (int) 600))
-    cursor->y = 600 - 1;
+  if (cursor->x >= H_RES)
+    cursor->x = H_RES - 1;
+  if (cursor->y >= V_RES)
+    cursor->y = V_RES - 1;
   if (cursor->x < 0)
     cursor->x = 0;
   if (cursor->y < 0)
@@ -88,7 +91,7 @@ void(update_cursor)(Cursor *cursor, struct packet packet) {
  * @param cursor the cursor to draw
  */
 void(draw_cursor)(Cursor *cursor, Sprite *background) {
-  restore_background(cursor->prev_x, cursor->prev_y, cursor->width, cursor->height, background);
+  //restore_background(cursor->prev_x, cursor->prev_y, cursor->width, cursor->height, background);
   cursor->prev_x = cursor->x;
   cursor->prev_y = cursor->y;
 
@@ -100,8 +103,10 @@ void(draw_cursor)(Cursor *cursor, Sprite *background) {
   for (int row = cursor->y; row < cursor->y + (int) cursor->height; row++) {
     for (int col = cursor->x; col < cursor->x + (int) cursor->width; col++) {
       color = convert_BGR_to_RGB(color_assembler(cursor->map, &map_index));
-      if (color != cursor->transparency_color)
-        draw_pixel(col, row, color);
+      if (col < H_RES && row < V_RES) {
+        if (color != cursor->transparency_color)
+          draw_pixel(col, row, color);
+      }
     }
   }
 }
@@ -338,7 +343,7 @@ Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm
   lever->lever_sprite = lever_sprite;
   lever->lever_base_sprite = lever_base_sprite;
   lever->active = false;
-  lever->angle = 10;
+  lever->angle = 0;
 
   return lever;
 }
@@ -653,8 +658,10 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
 }
 
 void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet) {
-  draw_sprite_at_angle(lever->lever_sprite, lever->angle, 15, 0);
-  draw_sprite(lever->lever_base_sprite);
+  lever->angle += 1;
+  lever->angle %= 360;
+  draw_sprite_at_angle(lever->lever_sprite, lever->angle, 18, 23);
+  //draw_sprite(lever->lever_base_sprite);
 }
 
 /**

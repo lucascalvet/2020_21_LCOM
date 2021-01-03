@@ -14,6 +14,8 @@
 #define NUMBERS_SEP 5
 #define CLOCK_WIDTH ((XPM_NUMBERS_WIDTH + NUMBERS_SEP)*4 + XPM_COLON_WIDTH)
 #define LAVA_SPEED 1
+#define H_RES 800
+#define V_RES 600
 //enum with all the directions
 enum orientation{
   NORTH, SOUTH, EAST, WEST

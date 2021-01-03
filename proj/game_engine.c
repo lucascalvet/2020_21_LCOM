@@ -5,7 +5,7 @@
 #include "xpm_firemi.h"
 #include "xpm_game_elements.h"
 #include "xpm_levels.h"
-#include "xpm_main_menu.h"
+#include "xpm_menus.h"
 #include "xpm_slider.h"
 #include "xpm_waternix.h"
 
@@ -23,6 +23,7 @@ Sprite *play_button;
 Sprite *play_letters;
 Sprite *rules_button;
 Sprite *rules_letters;
+Sprite *exit_button;
 
 //creating main character sprites
 Sprite *firemi;
@@ -45,7 +46,7 @@ Game_button *buttons3[3];
 Game_bar *game_bar3;
 Game_button *game_button5;
 Game_button *game_button4;
-//Game_lever *lever;
+Game_lever *lever;
 Sprite *level_completed;
 Sprite *objs_to_collide[4];
 Game_bar *game_bar4;
@@ -98,12 +99,18 @@ void(create_level)(enum game_state state) {
     xpm_map_t xpm_play_letters[1] = {xpm_play_button_letters};
     xpm_map_t xpm_rules_letters[1] = {xpm_rules_button_letters};
     level = create_sprite(xpm_menu_array, 0, 0, 1);
-    play_button = create_sprite(xpm_play_button, 40, 400, 2);
-    rules_button = create_sprite(xpm_rules_button, 40, 460, 2);
-    play_letters = create_sprite(xpm_play_letters, 40, 400, 1);
-    rules_letters = create_sprite(xpm_rules_letters, 40, 460, 1);
+    play_button = create_sprite(xpm_play_button, 25, 451, 2);
+    rules_button = create_sprite(xpm_rules_button, 25, 502, 2);
+    play_letters = create_sprite(xpm_play_letters, 25, 451, 1);
+    rules_letters = create_sprite(xpm_rules_letters, 25, 502, 1);
   }
-  if (state == LEVEL_1) {
+  else if (state == RULES_MENU) {
+    xpm_map_t xpm_menu_array[1] = {xpm_rules_menu};
+    xpm_map_t xpm_exit_buttons[2] = {xpm_exit_button, xpm_exit_button_colored};
+    level = create_sprite(xpm_menu_array, 0, 0, 1);
+    exit_button = create_sprite(xpm_exit_buttons, 747, 17, 2);
+  }
+  else if (state == LEVEL_1) {
     xpm_map_t xpm_slider_array[1] = {xpm_slider};
     xpm_map_t xpm_box1_array[1] = {xpm_box1};
     xpm_map_t xpm_box2_array[1] = {xpm_box2};
@@ -130,7 +137,7 @@ void(create_level)(enum game_state state) {
     buttons3[0] = game_button3;
     buttons3[1] = game_button5;
     game_bar3 = create_game_bar(xpm_bar_3, 645, 90, 554, 90, 0, 0, 0, buttons3, 2);
-    //lever = create_game_lever(xpm_lever, xpm_lever_base, 50, 50);
+    lever = create_game_lever(xpm_lever, xpm_lever_base, 50, 50);
     memset(&prev_mouse_packet, 0, sizeof(struct packet));
 
     red_lava = create_sprite(xpm_red_lava, 255, 584, 1);
@@ -306,7 +313,12 @@ void(draw_level)(enum game_state state) {
     draw_sprite(rules_letters);
     draw_cursor(cursor, level);
   }
-  if (state == LEVEL_1) {
+  else if (state == RULES_MENU) {
+    draw_sprite(level);
+    draw_sprite(exit_button);
+    draw_cursor(cursor, level);
+  }
+  else if (state == LEVEL_1) {
     //drawing level1 elements
     draw_sprite(level);
     draw_clock(game_clock);
@@ -324,8 +336,8 @@ void(draw_level)(enum game_state state) {
     draw_sprite(game_bar3->bar_sprite);
     draw_sprite(game_button4->button_sprite);
     draw_sprite(game_button5->button_sprite);
-    //draw_sprite(lever->lever_sprite);
-    //draw_sprite(lever->lever_base_sprite);
+    draw_sprite(lever->lever_sprite);
+    draw_sprite(lever->lever_base_sprite);
 
     draw_sprite(red_lava);
     draw_sprite(red_lava2);
@@ -414,7 +426,6 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
   if (*state == MAIN_MENU) {
     if (cursor->x >= play_button->x && cursor->x <= play_button->x + play_button->width && cursor->y >= play_button->y && cursor->y <= play_button->y + play_button->height)
       play_button->map = play_button->xpms[1];
-
     else
       play_button->map = play_button->xpms[0];
 
@@ -429,7 +440,16 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     draw_sprite(rules_letters);
     draw_cursor(cursor, level);
   }
-  if (*state == LEVEL_1) {
+  else if (*state == RULES_MENU) {
+    if (cursor->x >= exit_button->x && cursor->x <= exit_button->x + exit_button->width && cursor->y >= exit_button->y && cursor->y <= exit_button->y + exit_button->height)
+      exit_button->map = exit_button->xpms[1];
+    else
+      exit_button->map = exit_button->xpms[0];
+
+    draw_sprite(exit_button);
+    draw_cursor(cursor, level);
+  }
+  else if (*state == LEVEL_1) {
     //level1 handlers
     handle_lava(red_lava, level, 255, &red_lava_change, 120);
     handle_lava(red_lava2, level, 391, &red_lava2_change, 105);
@@ -448,8 +468,8 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_box(firemi, waternix, box2, level, level_collisions);
     handle_game_button(game_button4, level, 4, objs_to_collide);
     handle_game_button(game_button5, level, 4, objs_to_collide);
-    
-    //handle_game_lever(lever, prev_mouse_packet);
+
+    handle_game_lever(lever, prev_mouse_packet);
 
     draw_cursor(cursor, level);
     draw_clock(game_clock);
@@ -609,10 +629,24 @@ void(tick_game_clock)() {
 void(update_game_cursor)(enum game_state *state, struct packet packet) {
   update_cursor(cursor, packet);
   prev_mouse_packet = packet;
-  if (*state == MAIN_MENU && packet.lb){
-    if (cursor->x >= play_button->x && cursor->x <= play_button->x + play_button->width && cursor->y >= play_button->y && cursor->y <= play_button->y + play_button->height){
+  if (*state == MAIN_MENU && packet.lb) {
+    if (cursor->x >= play_button->x && cursor->x <= play_button->x + play_button->width && cursor->y >= play_button->y && cursor->y <= play_button->y + play_button->height) {
       delete_level(*state);
       *state = LEVEL_1;
+      create_level(*state);
+      draw_level(*state);
+    }
+    if (cursor->x >= rules_button->x && cursor->x <= rules_button->x + rules_button->width && cursor->y >= rules_button->y && cursor->y <= rules_button->y + rules_button->height) {
+      delete_level(*state);
+      *state = RULES_MENU;
+      create_level(*state);
+      draw_level(*state);
+    }
+  }
+  else if (*state == RULES_MENU && packet.lb) {
+    if (cursor->x >= exit_button->x && cursor->x <= exit_button->x + exit_button->width && cursor->y >= exit_button->y && cursor->y <= exit_button->y + exit_button->height) {
+      delete_level(*state);
+      *state = MAIN_MENU;
       create_level(*state);
       draw_level(*state);
     }
@@ -628,7 +662,11 @@ void(delete_level)(enum game_state state) {
     delete_sprite(play_letters);
     delete_sprite(rules_letters);
   }
-  if (state == LEVEL_1) {
+  if (state == RULES_MENU) {
+    delete_cursor(cursor);
+    delete_sprite(exit_button);
+  } 
+  else if (state == LEVEL_1) {
     delete_sprite(level_collisions);
     delete_sprite(firemi);
     delete_sprite(waternix);
@@ -650,7 +688,7 @@ void(delete_level)(enum game_state state) {
     delete_game_bar(game_bar3);
     delete_game_button(game_button4);
     delete_game_button(game_button5);
-    //delete_game_lever(lever);
+    delete_game_lever(lever);
     delete_sprite(slider);
 
     delete_sprite(level_completed);
