@@ -109,7 +109,6 @@ static const xpm_row_t xpm_lever[] = {
 "                                    ",
 "                                    "};
 
-
 static const xpm_row_t xpm_lever_base[] = {
 "36 30 138 2",
 "  	c None",
@@ -281,8 +280,6 @@ static const xpm_row_t xpm_lever_base[] = {
 "  (.X B B B B B B _.p :.<.[ > [.' }.}.! ~ 4 |.k 1.w 2.* B B B B B Q 3.  ",
 "  = 4.4.4.4.4.4.4.5.6.7.2.8.9.0.1.j j a.0 v m b.c.d.e.4.4.4.4.4.4.4.f.g."};
 
-
-/* XPM SLIDER*/
 static const xpm_row_t xpm_slider[] = {
 "70 15 2 1",
 " 	c #000000",

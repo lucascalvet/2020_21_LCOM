@@ -294,6 +294,15 @@ void(create_level)(enum game_state state) {
     purple_lava = create_sprite(xpm_purple_lava, 466, 587, 1);
     purple_lava2 = create_sprite(xpm_purple_lava, 300, 586, 1);
   }
+  if(state == PAUSE){
+    xpm_map_t xpm_pause_array[1] = {pause_xpm};
+
+    level = create_sprite(xpm_pause_array, 0, 0, 1);
+
+    xpm_map_t xpm_play_button[2] = {pause_button1_xpm, pause_button2_xpm};
+
+    play_button = create_sprite(xpm_play_button, 300, 481, 2);
+  }
 }
 
 void(draw_level)(enum game_state state) {
@@ -405,6 +414,10 @@ void(draw_level)(enum game_state state) {
     draw_sprite(game_bar2->bar_sprite);
     draw_sprite(game_bar3->bar_sprite);
   }
+  if(state == PAUSE){
+    draw_sprite(level);
+    draw_sprite(play_button);
+  }
   copy_buffer_to_vram();
 }
 
@@ -495,6 +508,7 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_lever(lever, prev_mouse_packet);
 
     draw_cursor(cursor, level);
+     draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 424, 138, 350, 138, 45, 65);
   }
@@ -521,6 +535,7 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_bar(game_bar4, level, objs_to_collide, 2);
 
     draw_cursor(cursor, level);
+     draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 433, 530, 359, 530, 45, 65);
   }
@@ -542,6 +557,7 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_bar(game_bar3, level, objs_to_collide, 4);
 
     draw_cursor(cursor, level);
+     draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 275, 108, 201, 108, 45, 65);
   }
@@ -593,12 +609,16 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     }
   }
 
-  if(*state == PAUSE){
-    xpm_map_t xpm_pause_array[1] = {final_menssage_title};
+  if (*state == PAUSE) {
+    if (cursor->x >= play_button->x && cursor->x <= play_button->x + play_button->width && cursor->y >= play_button->y && cursor->y <= play_button->y + play_button->height)
+      play_button->map = play_button->xpms[1];
 
-    Sprite *pause = create_sprite(xpm_pause_array, 0, 0, 1);
+    else
+      play_button->map = play_button->xpms[0];
 
-    draw_sprite(pause);
+
+    draw_sprite(play_button);
+    draw_cursor(cursor, level);
   }
   copy_buffer_to_vram();
 }
@@ -608,7 +628,7 @@ void(tick_game_clock)() {
     tick_clock(game_clock, level);
 }
 
-void(update_game_cursor)(enum game_state *state, struct packet packet) {
+void(update_game_cursor)(enum game_state *state, struct packet packet, enum game_state prev_state) {
   update_cursor(cursor, packet);
   prev_mouse_packet = packet;
   if (*state == MAIN_MENU && packet.lb) {
@@ -629,6 +649,14 @@ void(update_game_cursor)(enum game_state *state, struct packet packet) {
     if (cursor->x >= exit_button->x && cursor->x <= exit_button->x + exit_button->width && cursor->y >= exit_button->y && cursor->y <= exit_button->y + exit_button->height) {
       delete_level(*state);
       *state = MAIN_MENU;
+      create_level(*state);
+      draw_level(*state);
+    }
+  }
+  else if(*state == PAUSE && packet.lb){
+      if (cursor->x >= play_button->x && cursor->x <= play_button->x + play_button->width && cursor->y >= play_button->y && cursor->y <= play_button->y + play_button->height) {
+      delete_level(*state);
+      *state = prev_state;
       create_level(*state);
       draw_level(*state);
     }
