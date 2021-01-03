@@ -157,6 +157,8 @@ int(proj_main_loop)(int argc, char *argv[]) {
             if(bytes[0] == BACKSPACE && state != MAIN_MENU){
               prev_state = state;
               state = PAUSE;
+              create_level(state);
+              draw_level(state);
             }
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
@@ -172,7 +174,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
           if (msg.m_notify.interrupts & mouse_irq_set) {
             mouse_ih();
             if (build_packet(&mouse_packet)) {
-              update_game_cursor(&state, mouse_packet);
+              update_game_cursor(&state, mouse_packet, prev_state);
             }
           }
           if (msg.m_notify.interrupts & rtc_irq_set) {

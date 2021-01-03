@@ -626,7 +626,7 @@ void(tick_game_clock)() {
     tick_clock(game_clock, level);
 }
 
-void(update_game_cursor)(enum game_state *state, struct packet packet) {
+void(update_game_cursor)(enum game_state *state, struct packet packet, enum game_state prev_state) {
   update_cursor(cursor, packet);
   prev_mouse_packet = packet;
   if (*state == MAIN_MENU && packet.lb) {
@@ -647,6 +647,14 @@ void(update_game_cursor)(enum game_state *state, struct packet packet) {
     if (cursor->x >= exit_button->x && cursor->x <= exit_button->x + exit_button->width && cursor->y >= exit_button->y && cursor->y <= exit_button->y + exit_button->height) {
       delete_level(*state);
       *state = MAIN_MENU;
+      create_level(*state);
+      draw_level(*state);
+    }
+  }
+  else if(*state == PAUSE && packet.lb){
+      if (cursor->x >= play_button->x && cursor->x <= play_button->x + play_button->width && cursor->y >= play_button->y && cursor->y <= play_button->y + play_button->height) {
+      delete_level(*state);
+      *state = prev_state;
       create_level(*state);
       draw_level(*state);
     }

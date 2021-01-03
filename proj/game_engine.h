@@ -17,7 +17,7 @@ void (handle_level)(enum game_state * state, enum game_state * prev_state, bool 
 
 void (tick_game_clock)();
 
-void (update_game_cursor)(enum game_state * state, struct packet packet);
+void (update_game_cursor)(enum game_state * state, struct packet packet, enum game_state prev_state);
 
 void (delete_level)(enum game_state state);
 
