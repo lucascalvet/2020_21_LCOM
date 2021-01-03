@@ -8290,7 +8290,7 @@ static const xpm_row_t xpm_bar4_level2[] = {
 "s.	c #4A4B4B",
 "t.	c #312D34",
 "u.	c #494A4B",
-"v.	c ##FFA07A",
+"v.	c #FFA07A",
 "w.	c #4A4A4B",
 "x.	c #505050",
 "y.	c #585858",
