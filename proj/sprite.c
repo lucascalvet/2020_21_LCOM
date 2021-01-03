@@ -138,7 +138,7 @@ void(draw_sprite_at_angle)(Sprite *sp, int angle, int x0, int y0) {
         transformed_x = (int)((double) (col - x0) * cos(teta) + (double) (row - y0) * sin(teta) + x0);
         transformed_y = (int)((double) (row - y0) * cos(teta) - (double) (col - x0) * sin(teta) + y0);
         if (transformed_x + sp->x >= 0 && transformed_y + sp->y >= 0)
-          draw_pixel(transformed_x, transformed_y, color);
+          draw_pixel(transformed_x + sp->x, transformed_y + sp->y, color);
       }
     }
   }
