@@ -9,7 +9,6 @@
 //c header files
 #include <stdint.h>
 #include <stdio.h>
-#include <math.h>
 
 #include "video_gr.h"
 

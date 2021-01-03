@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <lcom/lab4.h>
+#include "rtc.h"
 
 //enum with the possible game states
 enum game_state {
@@ -18,6 +19,8 @@ void (handle_level)(enum game_state * state, enum game_state * prev_state, bool 
 void (tick_game_clock)();
 
 void (update_game_cursor)(enum game_state * state, struct packet packet, enum game_state prev_state);
+
+void (update_game_time)(enum game_state state, rtc_time time);
 
 void (delete_level)(enum game_state state);
 

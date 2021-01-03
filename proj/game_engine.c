@@ -10,79 +10,87 @@
 #include "xpm_waternix.h"
 
 //creating the clock element
-Clock *game_clock = NULL;
+static Clock *game_clock = NULL;
 
 //creating the cursor
-Cursor *cursor;
+static Cursor *cursor;
 
-Sprite *level;
-Sprite *level_collisions;
+static Sprite *level;
+static Sprite *level_collisions;
 
 //creating menu buttons
-Sprite *play_button;
-Sprite *play_letters;
-Sprite *rules_button;
-Sprite *rules_letters;
-Sprite *exit_button;
+static Sprite *play_button;
+static Sprite *play_letters;
+static Sprite *rules_button;
+static Sprite *rules_letters;
+static Sprite *exit_button;
 
 //creating main character sprites
-Sprite *firemi;
-Sprite *waternix;
+static Sprite *firemi;
+static Sprite *waternix;
 
 //creating game board sprite elements for levels
-Sprite *wind;
-Sprite *wind2;
-Sprite *slider;
-Sprite *box1;
-Sprite *box2;
-Game_button *game_button1;
-Game_button *buttons1[1];
-Game_bar *game_bar1;
-Game_button *game_button2;
-Game_button *buttons2[2];
-Game_bar *game_bar2;
-Game_button *game_button3;
-Game_button *buttons3[3];
-Game_bar *game_bar3;
-Game_button *game_button5;
-Game_button *game_button4;
-Game_lever *lever;
-Sprite *level_completed;
-Sprite *objs_to_collide[4];
-Game_bar *game_bar4;
-Game_bar *game_bar5;
-Game_bar *game_bar6;
-Game_button *game_button6;
-Game_button *game_button7;
+static Sprite *wind;
+static Sprite *wind2;
+static Sprite *slider;
+static Sprite *box1;
+static Sprite *box2;
+static Game_button *game_button1;
+static Game_button *buttons1[1];
+static Game_bar *game_bar1;
+static Game_button *game_button2;
+static Game_button *buttons2[2];
+static Game_bar *game_bar2;
+static Game_button *game_button3;
+static Game_button *buttons3[3];
+static Game_bar *game_bar3;
+static Game_button *game_button5;
+static Game_button *game_button4;
+static Game_lever *lever;
+static Sprite *level_completed;
+static Sprite *objs_to_collide[4];
+static Game_bar *game_bar4;
+static Game_bar *game_bar5;
+static Game_bar *game_bar6;
+static Game_button *game_button6;
+static Game_button *game_button7;
 
-Game_button *buttons4[2];
-Game_button *buttons5[1];
-Game_button *buttons6[1];
+static Game_button *buttons4[2];
+static Game_button *buttons5[1];
+static Game_button *buttons6[1];
 
-Sprite *red_lava;
-Sprite *red_lava2;
-Sprite *blue_lava;
-Sprite *blue_lava2;
-Sprite *purple_lava;
-Sprite *purple_lava2;
+static Sprite *red_lava;
+static Sprite *red_lava2;
+static Sprite *blue_lava;
+static Sprite *blue_lava2;
+static Sprite *purple_lava;
+static Sprite *purple_lava2;
 
-bool red_lava_change = false;
-bool red_lava2_change = false;
-bool lava_change_blue = false;
-bool lava_change_blue2 = false;
-bool lava_change_purple = false;
+static uint8_t *numbers_map = NULL;
+xpm_image_t img;
 
-struct packet prev_mouse_packet;
+static bool red_lava_change = false;
+static bool red_lava2_change = false;
+static bool lava_change_blue = false;
+static bool lava_change_blue2 = false;
+static bool lava_change_purple = false;
+
+static struct packet prev_mouse_packet;
+static rtc_time prev_time;
 
 //to handle the change of xpm to animate sprite when running
-int n_maps_f = 0, n_maps_w = 0;
-int n_map_2_f = 0, n_map_2_w = 0;
-int map_wind = 0, map_wind2 = 0;
-int wind_speed = 0, wind_speed2 = 0;
-int wind_speed_2 = 0, wind_speed2_2 = 0;
+static int n_maps_f = 0, n_maps_w = 0;
+static int n_map_2_f = 0, n_map_2_w = 0;
+static int map_wind = 0, map_wind2 = 0;
+static int wind_speed = 0, wind_speed2 = 0;
+static int wind_speed_2 = 0, wind_speed2_2 = 0;
 
 void(create_level)(enum game_state state) {
   cursor = create_cursor(400, 300);
+
+  if (numbers_map == NULL) {
+    numbers_map = xpm_load(xpm_numbers, XPM_8_8_8, &img);
+  }
 
   xpm_map_t xpm_firemi_array[11] = {idle1_firemi_xpm, idle2_firemi_xpm, idle3_firemi_xpm, l1_firemi_xpm, l2_firemi_xpm, l3_firemi_xpm, r1_firemi_xpm, r2_firemi_xpm, r3_firemi_xpm, push_left_firemi_xpm, push_right_firemi_xpm};
 
@@ -137,7 +145,6 @@ void(create_level)(enum game_state state) {
     buttons3[0] = game_button3;
     buttons3[1] = game_button5;
     game_bar3 = create_game_bar(xpm_bar_3, 645, 90, 554, 90, 0, 0, 0, buttons3, 2);
-    memset(&prev_mouse_packet, 0, sizeof(struct packet));
 
     red_lava = create_sprite(xpm_red_lava, 255, 584, 1);
     red_lava2 = create_sprite(xpm_red_lava, 391, 405, 1);
@@ -312,6 +319,7 @@ void(draw_level)(enum game_state state) {
     draw_sprite(rules_button);
     draw_sprite(play_letters);
     draw_sprite(rules_letters);
+    draw_date(prev_time, 400, 400, numbers_map, img);
     draw_cursor(cursor, level);
   }
   else if (state == RULES_MENU) {
@@ -441,6 +449,7 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     draw_sprite(play_letters);
     draw_sprite(rules_letters);
     draw_cursor(cursor, level);
+    draw_date(prev_time, 550, 470, numbers_map, img);
   }
   else if (*state == RULES_MENU) {
     if (cursor->x >= exit_button->x && cursor->x <= exit_button->x + exit_button->width && cursor->y >= exit_button->y && cursor->y <= exit_button->y + exit_button->height)
@@ -490,6 +499,7 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_lava(blue_lava, level, 577, &lava_change_blue, 120);
     handle_lava(blue_lava2, level, 615, &lava_change_blue2, 90);
     handle_lava(purple_lava, level, 343, &lava_change_purple, 120);
+    handle_game_lever(lever, prev_mouse_packet, cursor, firemi, waternix);
 
     handle_game_button(game_button1, level, 2, objs_to_collide);
     handle_game_button(game_button2, level, 2, objs_to_collide);
@@ -498,17 +508,16 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_button(game_button5, level, 2, objs_to_collide);
     handle_game_button(game_button6, level, 2, objs_to_collide);
 
+    game_button2->pressed = game_button2->pressed || lever->active;
+
     handle_game_bar(game_bar1, level, objs_to_collide, 2);
     handle_game_bar(game_bar2, level, objs_to_collide, 2);
     handle_game_bar(game_bar3, level, objs_to_collide, 2);
     handle_game_bar(game_bar4, level, objs_to_collide, 2);
     handle_game_bar(game_bar5, level, objs_to_collide, 2);
     handle_game_bar(game_bar6, level, objs_to_collide, 2);
-
-    handle_game_lever(lever, prev_mouse_packet);
-
     draw_cursor(cursor, level);
-     draw_clock(game_clock);
+    draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 424, 138, 350, 138, 45, 65);
   }
@@ -535,13 +544,13 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_bar(game_bar4, level, objs_to_collide, 2);
 
     draw_cursor(cursor, level);
-     draw_clock(game_clock);
+    draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 433, 530, 359, 530, 45, 65);
   }
   if (*state == LEVEL_4) {
     handle_wind(wind, 586, 186, firemi, waternix, &map_wind, &wind_speed, &wind_speed2, level_collisions);
-   
+
     handle_lava(purple_lava2, level, 300, &lava_change_blue, 90); //to recicle varaiables, used lava_change_blue here
     handle_lava(purple_lava, level, 466, &lava_change_purple, 80);
 
@@ -557,12 +566,12 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_bar(game_bar3, level, objs_to_collide, 4);
 
     draw_cursor(cursor, level);
-     draw_clock(game_clock);
+    draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 275, 108, 201, 108, 45, 65);
   }
 
-  if (*state != MAIN_MENU && *state != PAUSE) {
+  if (*state != MAIN_MENU && *state != PAUSE && *state != RULES_MENU) {
     handle_characters_move(firemi, waternix, level, keys_firemi, keys_waternix, &game_over, &n_maps_f, &n_maps_w, &n_map_2_f, &n_map_2_w, level_collisions);
     if (game_over) {
       handle_lost();
@@ -612,10 +621,8 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
   if (*state == PAUSE) {
     if (cursor->x >= play_button->x && cursor->x <= play_button->x + play_button->width && cursor->y >= play_button->y && cursor->y <= play_button->y + play_button->height)
       play_button->map = play_button->xpms[1];
-
     else
       play_button->map = play_button->xpms[0];
-
 
     draw_sprite(play_button);
     draw_cursor(cursor, level);
@@ -663,6 +670,10 @@ void(update_game_cursor)(enum game_state *state, struct packet packet, enum game
   }
 }
 
+void update_game_time(enum game_state state, rtc_time time) {
+  prev_time = time;
+}
+
 void(delete_level)(enum game_state state) {
   delete_sprite(level);
   if (state == MAIN_MENU) {
@@ -675,7 +686,7 @@ void(delete_level)(enum game_state state) {
   if (state == RULES_MENU) {
     delete_cursor(cursor);
     delete_sprite(exit_button);
-  } 
+  }
   else if (state == LEVEL_1) {
     delete_sprite(level_collisions);
     delete_sprite(firemi);
@@ -732,6 +743,9 @@ void(delete_level)(enum game_state state) {
     delete_game_bar(game_bar6);
 
     delete_game_lever(lever);
+
+    delete_sprite(wind);
+    delete_sprite(wind2);
   }
   if (state == LEVEL_3) {
     delete_sprite(level_collisions);
@@ -760,6 +774,9 @@ void(delete_level)(enum game_state state) {
     delete_game_bar(game_bar2);
     delete_game_bar(game_bar3);
     delete_game_bar(game_bar4);
+
+    delete_sprite(wind);
+    delete_sprite(wind2);
   }
   if (state == LEVEL_4) {
     delete_sprite(level_collisions);
@@ -784,5 +801,7 @@ void(delete_level)(enum game_state state) {
     delete_game_bar(game_bar1);
     delete_game_bar(game_bar2);
     delete_game_bar(game_bar3);
+
+    delete_sprite(wind);
   }
 }

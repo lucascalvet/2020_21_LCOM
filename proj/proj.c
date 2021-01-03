@@ -28,8 +28,6 @@
 unsigned timer_counter = 0;
 extern uint8_t bytes[2];
 extern bool making_scancode;
-bool exit_game = false;
-bool game_over = false;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -60,12 +58,10 @@ int main(int argc, char *argv[]) {
  * @return 0 if no erros, 1 otherwise
  */
 int(proj_main_loop)(int argc, char *argv[]) {
-  printf("Welcome to FireMi & WaterNix!!!\n");
-
   //initiating the VBE
   vg_init(VBE_DIRECT_800_MODE);
   
-  enum game_state state = LEVEL_2;
+  enum game_state state = MAIN_MENU;
   enum game_state prev_state = MAIN_MENU;
   create_level(state);
   draw_level(state);
@@ -108,7 +104,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
   uint64_t rtc_irq_set = BIT(rtc_bit_no);
 
   //main driver receive loop
-  while (bytes[0] != ESC && !exit_game) {
+  while (bytes[0] != ESC) {
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != OK) {
       printf("driver_receive failed with: %d", r);
       continue;
@@ -180,7 +176,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
           if (msg.m_notify.interrupts & rtc_irq_set) {
             rtc_ih();
             rtc_get_time(&time);
-            rtc_print_time(time);
+            update_game_time(state, time);
           }
           break;
         default:

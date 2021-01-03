@@ -1,4 +1,5 @@
 #include "game_handler.h"
+#include <math.h>
 
 /**
  * @brief handle a character's movement
@@ -35,11 +36,11 @@ void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *backgroun
 }
 
 void(handle_slider_move)(Sprite *slider, Sprite *background, Sprite *level_collisions) {
-  int prev_slider_x = slider->x;
+  //int prev_slider_x = slider->x;
   if (slider->xspeed == 0) {
     slider->xspeed = 2;
   }
-  restore_background(prev_slider_x, slider->y, slider->width, slider->height, background);
+  //restore_background(prev_slider_x, slider->y, slider->width, slider->height, background);
   slider->x += slider->xspeed;
   if (check_sprite_collision_by_color(slider, 0x0, level_collisions->map, false)) {
     slider->xspeed = -slider->xspeed;
@@ -189,6 +190,60 @@ void(draw_clock)(Clock *clock) {
   }
 }
 
+void (draw_date)(rtc_time time, int x, int y, uint8_t *map, xpm_image_t img) {
+  int map_index = 0;
+  unsigned date_digits[12] = {time.hours / 10, time.hours % 10,
+                              time.minutes / 10, time.minutes % 10, 
+                              time.seconds / 10, time.seconds % 10, 
+                              time.month_day / 10, time.month_day % 10, 
+                              time.month / 10, time.month % 10, 
+                              time.year / 10, time.year % 10};
+  uint32_t color;
+  uint32_t transparency_color = xpm_transparency_color(img.type);
+  for (int i = 0; i < 12; i++) {
+    for (unsigned row = 0; row < 30; row++) {
+      for (unsigned col = 0; col < XPM_NUMBERS_WIDTH; col++) {
+        map_index = (row * 320 + XPM_NUMBERS_STEP * date_digits[i] + col) * bits_to_bytes();
+        color = convert_BGR_to_RGB(color_assembler(map, &map_index));
+        if (color != transparency_color) {
+          if (i < 2)
+            draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * i, row + y, color);
+          else if (i < 4)
+            draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * i + XPM_COLON_WIDTH + NUMBERS_SEP, row + y, color);
+          else if (i < 6)
+            draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * i + 2 * (XPM_COLON_WIDTH + NUMBERS_SEP), row + y, color);
+          else if (i < 8)
+            draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * (i - 6), row + 30 + NUMBERS_SEP + y, color);
+          else if (i < 10)
+            draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * (i - 6) + XPM_COLON_WIDTH + NUMBERS_SEP, row + 30 + NUMBERS_SEP + y, color);
+          else
+            draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * (i - 6) + 2 * (XPM_COLON_WIDTH + NUMBERS_SEP), row + 30 + NUMBERS_SEP + y, color);
+        }
+      }
+    }
+  }
+  for (unsigned row = 0; row < 30; row++) {
+    for (unsigned col = 0; col < XPM_COLON_WIDTH; col++) {
+      map_index = (row * 320 + XPM_NUMBERS_STEP * 10 + col) * bits_to_bytes();
+      color = convert_BGR_to_RGB(color_assembler(map, &map_index));
+      if (color != transparency_color) {
+        draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * 2, row + y - 3, color);
+        draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * 4 + NUMBERS_SEP + XPM_COLON_WIDTH, row + y - 3, color);
+      }
+    }
+  }
+  for (unsigned row = 0; row < 30; row++) {
+    for (unsigned col = 0; col < XPM_SLASH_WIDTH; col++) {
+      map_index = (row * 320 + XPM_NUMBERS_STEP * 10 + XPM_COLON_WIDTH + 2 * NUMBERS_SEP + col) * bits_to_bytes();
+      color = convert_BGR_to_RGB(color_assembler(map, &map_index));
+      if (color != transparency_color) {
+        draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * 2 - 5, row + y + 30 + NUMBERS_SEP, color);
+        draw_pixel(col + x + (XPM_NUMBERS_WIDTH + NUMBERS_SEP) * 4 - 5 + NUMBERS_SEP + XPM_COLON_WIDTH, row + y + 30 + NUMBERS_SEP, color);
+      }
+    }
+  }
+}
+
 /**
  * @brief Adds one second to the clock
  * @param clock the clock to tick
@@ -196,7 +251,7 @@ void(draw_clock)(Clock *clock) {
  */
 void(tick_clock)(Clock *clock, Sprite *background) {
   clock->count++;
-  restore_background(clock->x, clock->y, clock->width, clock->height, background);
+  //restore_background(clock->x, clock->y, clock->width, clock->height, background);
   draw_clock(clock);
 }
 
@@ -343,6 +398,7 @@ Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm
   lever->lever_sprite = lever_sprite;
   lever->lever_base_sprite = lever_base_sprite;
   lever->active = false;
+  lever->clicked = false;
   lever->angle = 0;
 
   return lever;
@@ -408,11 +464,11 @@ void(delete_game_lever)(Game_lever *lever) {
  * @return none
  */
 void(handle_game_button)(Game_button *bup, Sprite *background, uint16_t n_objs, Sprite *objs[]) {
-  int prev_button_x = bup->button_sprite->x;
-  int prev_button_y = bup->button_sprite->y;
+  //int prev_button_x = bup->button_sprite->x;
+  //int prev_button_y = bup->button_sprite->y;
 
   //restoring the button background after it moves
-  restore_background(prev_button_x, prev_button_y, bup->button_sprite->width, bup->button_sprite->height, background);
+  //restore_background(prev_button_x, prev_button_y, bup->button_sprite->width, bup->button_sprite->height, background);
 
   uint16_t rect_y = 0, rect_x = 0;
   int rect_width = 0, rect_height = 0;
@@ -496,7 +552,9 @@ void(handle_game_button)(Game_button *bup, Sprite *background, uint16_t n_objs, 
  * @brief handles the movement of a game bar object, it can be either angular or linear
  * @param bap pointer to game bar object
  * @param background pointer to the background sprite object
- * @param return none
+ * @param objects_to_collide objects that stop the bar from moving
+ * @param n_objs number of objects to collide
+ * @return none
  */
 void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_collide[], int n_objs) {
   //x axis speed when not in agular movement
@@ -545,9 +603,9 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
 
     draw_sprite_at_angle(bap->bar_sprite, bap->angle, 0, 0);
   }
-  else {
+  else if (bap->finaly == bap->inity) {
     //horizontal movement
-    if (moving && bap->finaly == bap->inity) {
+    if (moving) {
 
       if (bap->bar_sprite->x > bap->finalx && (bap->finalx - bap->initx) < 0) {
         //check bar collision with objects
@@ -593,9 +651,11 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
         }
       }
     }
-    //vertical movement
-    if (moving && bap->finalx == bap->initx) {
-
+    draw_sprite(bap->bar_sprite);
+  }
+  //vertical movement
+  else if (bap->finalx == bap->initx) {
+    if (moving) {
       if (bap->bar_sprite->y < bap->finaly && (bap->finaly - bap->inity) > 0) {
         //check bar collision with objects
         for (int i = 0; i < n_objs; i++) {
@@ -652,16 +712,48 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
           bap->bar_sprite->y += speed;
       }
     }
-
     draw_sprite(bap->bar_sprite);
   }
 }
 
-void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet) {
-  lever->angle += 1;
-  lever->angle %= 360;
-  draw_sprite_at_angle(lever->lever_sprite, lever->angle, 18, 23);
-  //draw_sprite(lever->lever_base_sprite);
+void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet, Cursor * cursor, Sprite * firemi, Sprite * waternix) {
+  int cursor_x = cursor->x;
+  int cursor_y = cursor->y;
+  int lever_x = lever->lever_sprite->x;
+  int lever_y = lever->lever_sprite->y;
+  if (mouse_packet.lb && cursor_x >= lever_x + 13 && cursor_x <= lever_x + 22 && cursor_y >= lever_y && cursor_y <= lever_y + 7) {
+    lever->clicked = true;
+  }
+  if (!mouse_packet.lb) {
+    if (lever->clicked) {
+      if (lever->angle == 40) {
+        lever->active = true;
+      }
+      else {
+        lever->active = false;
+      }
+    }
+    lever->clicked = false;
+  }
+  if (lever->clicked) {
+    if (cursor_y >= lever_y + 23) {
+      lever->clicked = false;
+    }
+    if (cursor_x == lever_x + 18) lever->angle = 90;
+    else {
+      lever->angle = atan((double) (lever_y + 23 - cursor_y) / (double) (cursor_x - (lever_x + 18)))*180 / M_PI;
+      if (lever->angle < 0) lever->angle += 180;
+      if (lever->angle > 140) lever->angle = 140;
+      else if (lever->angle < 40) lever->angle = 40;
+    }
+  }
+  else {
+    if (lever->active) lever->angle = 40;
+    else lever->angle = 140;
+  }
+  draw_sprite_at_angle(lever->lever_sprite, lever->angle - 90, 18, 23);
+  draw_sprite(lever->lever_base_sprite);
+  //printf("Active: %d", lever->active);
 }
 
 /**
@@ -722,7 +814,7 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
   int gravity = 3;
 
   //restoring the background
-  restore_background(game_box->x, game_box->y, game_box->width, game_box->height, background);
+  //restore_background(game_box->x, game_box->y, game_box->width, game_box->height, background);
 
   for (int i = 0; i < 2; i++) {
     //left movement

@@ -1,6 +1,7 @@
 #ifndef GAME_HANDLER_H
 #define GAME_HANDLER_H
 
+#include "rtc.h"
 #include "sprite.h"
 #include "xpm_numbers.h"
 #include "xpm_titles.h"
@@ -75,6 +76,7 @@ typedef struct {
   Sprite *lever_base_sprite;  //pointer to the lever base sprite
   int angle;           //lever angle
   bool active;         //state of the lever
+  bool clicked;
 } Game_lever;
 
 //handle a character's movement
@@ -96,6 +98,8 @@ void(delete_cursor)(Cursor *cursor);
 Clock * (create_clock)(unsigned x, unsigned y);
 
 void (draw_clock)(Clock * clock);
+
+void (draw_date)(rtc_time time, int x, int y, uint8_t* map, xpm_image_t img);
 
 void (tick_clock)(Clock * clock, Sprite * background);
 
@@ -126,7 +130,7 @@ void(handle_game_button)(Game_button *bup, Sprite *background,  uint16_t n_objs,
 void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_collide[], int n_objs);
 
 //handles the lever's dynamics
-void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet);
+void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet, Cursor * cursor, Sprite * firemi, Sprite * waternix);
 
 //creates random 2d array of line of snow
 void(draw_snow)(int min_size, int max_size, int width, int height, int vertical_quantity);
