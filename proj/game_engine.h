@@ -20,7 +20,7 @@ void (tick_game_clock)();
 
 void (update_game_cursor)(enum game_state * state, struct packet packet, enum game_state prev_state);
 
-void (update_game_time)(enum game_state state, rtc_time time);
+void (update_game_time)(rtc_time time);
 
 void (change_levels)(enum game_state * state, uint8_t change_level);
 

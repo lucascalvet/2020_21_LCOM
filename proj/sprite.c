@@ -7,7 +7,7 @@
  * @param x x coordinate to initiate the sprite with
  * @param y y coordinate to initiate the sprite with
  * @param n_xpms number os xpm maps that form the sprite
- * @return pointer to Sprite "object" created, in fact to a structer of type Sprite
+ * @return pointer to Sprite "object" created, in fact to a struct of type Sprite
  */
 Sprite *(create_sprite)(xpm_map_t xpm[], int x, int y, int n_xpms) {
   //allocates space for the "object"
@@ -76,6 +76,7 @@ void(change_sprite_coords)(Sprite *sp, int x, int y) {
 
 /**
  * @brief draws Sprite "objects" in screen at their current coordinates
+ * @param sp the sprite to be drawn
  * @return none
  */
 void(draw_sprite)(Sprite *sp) {
@@ -115,10 +116,11 @@ void(draw_sprite_cutted)(Sprite *sp, int width) {
 }
 
 /**
- * @brief draws Sprite "objects" in screen at the angle counting from the vector passed  as argument
+ * @brief draws Sprite "objects" in screen at an angle
+ * @param sp the sprite to be drawn
  * @param angle the angle of the sprite
- * @param x the x coordinate of the rotation anchor
- * @param y the y coordinate of the rotation anchor
+ * @param x0 the x coordinate of the rotation anchor
+ * @param y0 the y coordinate of the rotation anchor
  * @return none
  */
 void(draw_sprite_at_angle)(Sprite *sp, int angle, int x0, int y0) {
@@ -147,6 +149,7 @@ void(draw_sprite_at_angle)(Sprite *sp, int angle, int x0, int y0) {
 
 /**
  * @brief checks collisions of sprite at angle to a rectangle
+ * @param sp the sprite to be checked
  * @param angle the angle where the sprite is drawn
  * @param x the x position of the rectangle
  * @param y the y position of the rectangle
@@ -184,7 +187,9 @@ bool(check_collision_sprite_at_angle)(Sprite *sp, int angle, int x, int y, int w
 
 /**
  * @brief draws a Sprite resized to new width and new height Not working yet tentative of doing this algorithm: Nearest Neighbor Image Scaling
- * 
+ * @param sp the sprite to be resized
+ * @param new_width the sprite's new width
+ * @param new_height the sprite's new height
  */
 void(draw_resized_sprite)(Sprite *sp, int new_width, int new_height) {
   uint32_t color;
@@ -229,6 +234,7 @@ void(erase_sprite)(Sprite *sp) {
  * @param y y coordinate of the area to be restored
  * @param width width of that same area
  * @param height height of that same area
+ * @param background the background to be restored
  * @return none
  */
 void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *background) {
@@ -248,6 +254,10 @@ void(restore_background)(uint16_t x, uint16_t y, int width, int height, Sprite *
  * @brief handles a sprite movement using keyboard and a set of 4 keys
  * @param sp the sprite to handle the movement
  * @param keys the array of 4 keys to be used
+ * @param n_map control the xpm animation
+ * @param n_map_2 control the xpm animation when idle
+ * @param screen_width the screen's width
+ * @param 
  * @return true if the sprite has changed state
  */
 bool(sprite_keyboard_move)(Sprite *sp, bool keys[4], int *n_map, int *n_map_2, int screen_width, int screen_height, Sprite *level_collisisions) {
@@ -597,6 +607,7 @@ bool(check_sprite_xpm0_collision_by_color)(Sprite *sp, uint32_t color, uint8_t *
  * @param final_y the destination y coordinate of Sprite
  * @param xspeed displacement in pixels between consecutive frames, in the x axis
  * @param yspeed displacement in pixels between consecutive frames, in the y axis
+ * @param background the background to be restored
  * @return none
  */
 void(move_sprite)(Sprite *sp, int final_x, int final_y, int xspeed, int yspeed, Sprite *background) {

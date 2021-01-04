@@ -6,6 +6,12 @@
 extern unsigned timer_counter;
 int hook_id_timer;
 
+/**
+ * @brief Set the timer's frequency
+ * @param timer the timer to be set
+ * @param freq the frequency to be set
+ * @return 0 upon success, non zero otherwise
+ */
 int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
   uint8_t ctrl;
   if (timer_get_conf(timer, &ctrl) != OK)
@@ -47,6 +53,12 @@ void (timer_int_handler)() {
   timer_counter++;
 }
 
+/**
+ * @brief Get the timer's configuration
+ * @param timer the timer to get the configuration
+ * @param st value to save the configuration
+ * @return 0 upon success, non zero otherwise
+ */
 int (timer_get_conf)(uint8_t timer, uint8_t *st) {
   if(timer < 0 || timer > 2)
       return 1;
@@ -60,6 +72,12 @@ int (timer_get_conf)(uint8_t timer, uint8_t *st) {
   return 0;
 }
 
+/**
+ * @brief Display the timer's configuration
+ * @param timer the timer to be displayed
+ * @param st the timer's status
+ * @param field the field to be displayed
+ */
 int (timer_display_conf)(uint8_t timer, uint8_t st,
                         enum timer_status_field field) {
   union timer_status_field_val conf;

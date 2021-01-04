@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
 /**
  * @brief game main loop, where the driver receive is called
- * @return 0 if no erros, 1 otherwise
+ * @return zero upon success, non zero otherwise
  */
 int(proj_main_loop)(int argc, char *argv[]) {
   //initiating the VBE
@@ -173,7 +173,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
           if (msg.m_notify.interrupts & rtc_irq_set) {
             rtc_ih();
             rtc_get_time(&time);
-            update_game_time(state, time);
+            update_game_time(time);
           }
           break;
         default:

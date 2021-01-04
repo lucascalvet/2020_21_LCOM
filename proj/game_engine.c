@@ -84,6 +84,10 @@ static int map_wind = 0, map_wind2 = 0;
 static int wind_speed = 0, wind_speed2 = 0;
 static int wind_speed_2 = 0, wind_speed2_2 = 0;
 
+/**
+ * @brief Create a game state
+ * @param state the state to be created
+ */
 void(create_level)(enum game_state state) {
   cursor = create_cursor(400, 300);
 
@@ -312,6 +316,10 @@ void(create_level)(enum game_state state) {
   }
 }
 
+/**
+ * @brief Draw a game state
+ * @param state the current game state
+ */
 void(draw_level)(enum game_state state) {
   if (state == MAIN_MENU) {
     draw_sprite(level);
@@ -430,6 +438,13 @@ void(draw_level)(enum game_state state) {
   //switch_display_start();
 }
 
+/**
+ * @brief Handle all game states
+ * @param state the current game state
+ * @param prev_state the previous game state (for when paused)
+ * @param keys_firemi the pressed keys for firemi
+ * @param keys_waternix the pressed keys for waternix
+ */
 void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool keys_firemi[4], bool keys_waternix[4]) {
   copy_to_buffer(level->map);
   bool game_over = false;
@@ -630,11 +645,21 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
   //switch_display_start();
 }
 
+/**
+ * @brief tick the game clock by one second
+ * 
+ */
 void(tick_game_clock)() {
   if (game_clock != NULL)
     tick_clock(game_clock, level);
 }
 
+/**
+ * @brief Update the game cursor with the latest packet
+ * @param state the state to be possibly changed
+ * @param packet the mouse packet to update
+ * @param prev_state the previous state of the game (for when paused)
+ */
 void(update_game_cursor)(enum game_state *state, struct packet packet, enum game_state prev_state) {
   update_cursor(cursor, packet);
   prev_mouse_packet = packet;
@@ -670,10 +695,19 @@ void(update_game_cursor)(enum game_state *state, struct packet packet, enum game
   }
 }
 
-void update_game_time(enum game_state state, rtc_time time) {
+/**
+ * @brief Update the prev_time rtc_time struct with the current time
+ * @param time the time to be updated
+ */
+void update_game_time(rtc_time time) {
   prev_time = time;
 }
 
+/**
+ * @brief Change to a certain level (for development purposes)
+ * @param state the current state to be changes
+ * @param change_level the level to change to
+ */
 void (change_levels)(enum game_state * state, uint8_t change_level) {
   if (change_level != 0 && *state != PAUSE) {
     if (change_level == 1 && *state != LEVEL_1) {
@@ -703,6 +737,10 @@ void (change_levels)(enum game_state * state, uint8_t change_level) {
   }
 }
 
+/**
+ * @brief Delete all sprites from a state
+ * @param state the current state
+ */
 void(delete_level)(enum game_state state) {
   delete_sprite(level);
   if (state == MAIN_MENU) {

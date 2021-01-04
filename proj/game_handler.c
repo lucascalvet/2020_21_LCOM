@@ -9,6 +9,12 @@
  * @param background the game's background (to be restored)
  * @param char1_keys the pressed keys for the movement of the first character
  * @param char2_keys the pressed keys for the movement of the second character
+ * @param game_over return if the game is over
+ * @param n_maps_f the xpm used in firemi
+ * @param n_maps_w the xpm used in waternix
+ * @param n_map_2_f the xpm used in firemi when idle
+ * @param n_map_2_w the xpm used in waternix when idle
+ * @param level_collisions the level collisions mask
  */
 void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *background, bool char1_keys[4], bool char2_keys[4], bool *game_over, int *n_maps_f, int *n_maps_w, int *n_map_2_f, int *n_map_2_w, Sprite *level_collisions) {
   /*
@@ -35,6 +41,12 @@ void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *backgroun
   }
 }
 
+/**
+ * @brief Handle the movement of a slider
+ * @param slider the slider to be handled
+ * @param background the background to be restored
+ * @param level_collisions the level collisions mask
+ */
 void(handle_slider_move)(Sprite *slider, Sprite *background, Sprite *level_collisions) {
   //int prev_slider_x = slider->x;
   if (slider->xspeed == 0) {
@@ -50,8 +62,10 @@ void(handle_slider_move)(Sprite *slider, Sprite *background, Sprite *level_colli
 }
 
 /**
- * @brief Creates a minutes:seconds clock
- * @return the created clock
+ * @brief Creates a cursor
+ * @param x the x coordinate of the cursor
+ * @param y the y coordinate of the cursor
+ * @return the created cursor
  */
 Cursor *(create_cursor)(unsigned x, unsigned y) {
   Cursor *cursor = (Cursor *) malloc(sizeof(Cursor));
@@ -90,6 +104,7 @@ void(update_cursor)(Cursor *cursor, struct packet packet) {
 /**
  * @brief Draws the cursor
  * @param cursor the cursor to draw
+ * @param background the background to be restored
  */
 void(draw_cursor)(Cursor *cursor, Sprite *background) {
   //restore_background(cursor->prev_x, cursor->prev_y, cursor->width, cursor->height, background);
@@ -114,7 +129,7 @@ void(draw_cursor)(Cursor *cursor, Sprite *background) {
 
 /**
  * @brief deletes a cursor object
- * @param sp pointer to cursor "object" to be deleted
+ * @param cursor pointer to cursor "object" to be deleted
  * @return none
  */
 void(delete_cursor)(Cursor *cursor) {
@@ -131,6 +146,8 @@ void(delete_cursor)(Cursor *cursor) {
 
 /**
  * @brief Creates a minutes:seconds clock
+ * @param x the x coordinate of the clock
+ * @param y the y coordinate of the clock
  * @return the created clock
  */
 Clock *(create_clock)(unsigned x, unsigned y) {
@@ -257,7 +274,7 @@ void(tick_clock)(Clock *clock, Sprite *background) {
 
 /**
  * @brief deletes a clock object
- * @param sp pointer to clock "object" to be deleted
+ * @param clock pointer to clock "object" to be deleted
  * @return none
  */
 void(delete_clock)(Clock *clock) {
@@ -276,6 +293,7 @@ void(delete_clock)(Clock *clock) {
  * @brief checks if characters are in lava or not
  * @param firemi pointer to firemi sprite object
  * @param waternix pointer to waternix sprite object
+ * @param level_collisions the level collisions mask
  * @return true if they are in lava, false otherwise
  */
 bool(check_lava)(Sprite *firemi, Sprite *waternix, Sprite *level_collisions) {
@@ -344,9 +362,9 @@ Game_button *(create_game_button)(const xpm_row_t *xpm_button, uint16_t x, uint1
  * @param init_angle the initial angle for the bar
  * @param final_angle the final angle after the bar moves
  * @param angular_speed the angular speed for the bar movement
- * @param game_button pointer to the game_button that triggers the bar to move
+ * @param bups array of pointers to the game buttons that trigger the bar to move
+ * @param n_bups number of elements in the bups array
  * @return pointer to a game_bar sprite
- * 
  */
 Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, uint16_t finalx, uint16_t finaly, int init_angle, int final_angle, int angular_speed, Game_button *bups[], int n_bups) {
   Game_bar *bap = (Game_bar *) malloc(sizeof(Game_bar));
@@ -378,6 +396,7 @@ Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, ui
 /**
  * @brief Creates a lever
  * @param xpm_lever a xpm of the lever
+ * @param xpm_lever_red a xpm of the lever when not clickable
  * @param xpm_level_base a xpm of the lever's base
  * @param x the x coordinate of the lever
  * @param y the y coordinate of the lever
@@ -406,7 +425,7 @@ Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm
 
 /**
  * @brief deletes game_button sprite
- * @param sp pointer to game_button "object" to be deleted
+ * @param bup pointer to game_button "object" to be deleted
  * @return none
  */
 void(delete_game_button)(Game_button *bup) {
@@ -424,7 +443,7 @@ void(delete_game_button)(Game_button *bup) {
 
 /**
  * @brief deletes game_bar sprite
- * @param sp pointer to game_bar "object" to be deleted
+ * @param bap pointer to game_bar "object" to be deleted
  * @return none
  */
 void(delete_game_bar)(Game_bar *bap) {
@@ -959,8 +978,14 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
  * @brief handles when user wins a level
  * @param firemi the firemi character
  * @param waternix the waternix character
- * @param level_completed the title of the level
- * @return none
+ * @param level_completed the title of the level completed
+ * @param xf the x coordinate of the door for firemi
+ * @param yf the y coordinate of the door for firemi
+ * @param xw the x coordinate of the door for waternix
+ * @param yw the y coordinate of the door for waternix
+ * @param width the width of the door
+ * @param height the height of the door
+ * @return true if the players won the level, false otherwise
  */
 bool(handle_win)(Sprite *firemi, Sprite *waternix, Sprite *level_completed, int xf, int yf, int xw, int yw, int width, int height) {
   if (collision_one_rect(waternix, xw, yw, width, height) && collision_one_rect(firemi, xf, yf, width, height)) {
@@ -988,7 +1013,10 @@ void(handle_lost)() {
 /**
  * @brief handles lava objects
  * @param lava sprite of the lava object to handle
- * @param background
+ * @param background the background to be restored
+ * @param initx the x coordinate of the lava
+ * @param change check to change the direction of the lava
+ * @param width the width of the lava
  * @return none
  */
 void(handle_lava)(Sprite *lava, Sprite *background, int initx, bool *change, int width) {
@@ -1028,10 +1056,14 @@ void(handle_lava)(Sprite *lava, Sprite *background, int initx, bool *change, int
 /**
  * @brief handles wind object
  * @param wind the wind sprite object
- * @param x the x of the rectangle the defines the action space of the wind
- * @param y the where the wind starts
- * @param width the width of the rectangle the defines the action space of the wind
+ * @param init_y the y coordinate of the wind
  * @param max_y the maximum that characters can reache with wind
+ * @param firemi the firemi sprite
+ * @param waternix the waternix sprite
+ * @param map_wind the pixmap of the wind
+ * @param speed the speed for firemi
+ * @param speed2 the speed for waternix
+ * @param level_collisions the level collisions mask
  */
 void(handle_wind)(Sprite *wind, int init_y, int max_y, Sprite *firemi, Sprite *waternix, int *map_wind, int *speed, int *speed2, Sprite *level_collisions) {
   bool in_wind_f = false;

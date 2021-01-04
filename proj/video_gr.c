@@ -319,6 +319,8 @@ uint32_t(vram_get_color_by_coordinates)(uint16_t x, uint16_t y) {
  * @param x the x coordinate of screen from left to right
  * @param y the y coordinate of screen from top to bottom
  * @param pixmap the pixmap to get color from
+ * @param width the width of the pixmap
+ * @return the respective color
  */
 uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixmap, int width) {
   uint32_t color = 0; //TODO: change "none" value
@@ -354,10 +356,18 @@ void(switch_display_start)() {
 }
 */
 
+/**
+ * @brief Copies the secondary buffer to the vram
+ * 
+ */
 void(copy_buffer_to_vram)() {
   memcpy(video_mem, secondary_buffer, vram_size);
 }
 
+/**
+ * @brief Copies a pixmap directly to the frame buffer, using memcpy
+ * @param map the pixmap to be copied
+ */
 void(copy_to_buffer)(uint8_t * map) {
   memcpy(secondary_buffer, map, vram_size);
   /*uint8_t *pointer = video_mem;
@@ -372,7 +382,6 @@ void(copy_to_buffer)(uint8_t * map) {
  * @param x the x coordinate of screen from left to right
  * @param y the y coordinate of screen from top to bottom
  * @param color the color to be set in pixel
- * @return
  * 
  */
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
@@ -396,10 +405,11 @@ void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
 /**
  * @brief draws an horizontal line in screen
- * @param init_x the starting x coordinate of the line
- * @param init_y the starting x coordinate of the line
+ * @param x the starting x coordinate of the line
+ * @param y the starting x coordinate of the line
+ * @param len the pixel length of the line
  * @param color the color of the line
- * @return 0 if everything ok, 1 otherwise
+ * @return 0 upon success, non zero otherwise
  */
 int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
   for (int i = 0; i < len; i++) {
@@ -409,13 +419,13 @@ int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 }
 
 /**
- * @brief draws an rectangle in screen
- * @param init_x the upper corner x coordinate of rectangle 
- * @param init_y the upper corner y coordinate of the rectangle
+ * @brief draws a rectangle in screen
+ * @param x the upper left corner x coordinate of rectangle 
+ * @param y the upper left corner y coordinate of the rectangle
  * @param width the width of the rectangle
  * @param height the height of the rectangle
  * @param color the color of the rectangle
- * @return 0 if everything ok, 1 otherwise
+ * @return 0 upon success, non zero otherwise
  */
 int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
   for (int i = y; i < y + height; i++) {
@@ -431,7 +441,7 @@ int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, 
  * @param left_corner_y the y coordinate of top left corner of the rectangle that embeddeds the circle
  * @param radius the radius of the circle
  * @param color the color of the circle
- * @return 0 if no errors, 1 otherwise
+ * @return 0 upon success, non zero otherwise
  */
 int(vg_draw_circle)(uint16_t left_corner_x, uint16_t left_corner_y, uint16_t radius, uint32_t color) {
   //calculating the circle center
@@ -456,7 +466,6 @@ int(vg_draw_circle)(uint16_t left_corner_x, uint16_t left_corner_y, uint16_t rad
  * @param step sepcifies color change step
  * @param mode the vbe mode to be initialized with
  * @param no_rectangles number of rectangles to draw in screen
- * 
  */
 int(draw_rectangle_pattern)(uint32_t first, uint8_t step, uint16_t mode, uint8_t no_rectangles) { //pattern of matrix of n x n rectangles
   int width = h_res / no_rectangles;
