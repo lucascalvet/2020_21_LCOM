@@ -1,11 +1,3 @@
-Makecode: 0x02
-Breakcode: 0x82
-Makecode: 0x03
-Breakcode: 0x83
-Makecode: 0x04
-Breakcode: 0x84
-Makecode: 0x05
-Breakcode: 0x85
 Makecode: 0x01
 Breakcode: 0x81
-Counter: 20
+Counter: 4

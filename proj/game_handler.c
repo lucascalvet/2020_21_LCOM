@@ -636,8 +636,15 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
           if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
             colliding = true;
         }
-        if (!colliding)
+        if (!colliding) {
           bap->bar_sprite->x += speed;
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1)) {
+              bap->bar_sprite->x -= speed;
+              break;
+            }
+          }
+        }
       }
     }
     else {
@@ -650,8 +657,15 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
             if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
               colliding = true;
           }
-          if (!colliding)
+          if (!colliding) {
             bap->bar_sprite->x -= speed;
+            for (int i = 0; i < n_objs; i++) {
+              if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1)) {
+                bap->bar_sprite->x += speed;
+                break;
+              }
+            }
+          }
         }
 
         if ((bap->finalx - bap->initx) < 0) {
@@ -660,8 +674,15 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
             if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
               colliding = true;
           }
-          if (!colliding)
+          if (!colliding) {
             bap->bar_sprite->x += speed;
+            for (int i = 0; i < n_objs; i++) {
+              if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1)) {
+                bap->bar_sprite->x -= speed;
+                break;
+              }
+            }
+          }
         }
       }
     }
@@ -676,8 +697,15 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
           if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
             colliding = true;
         }
-        if (!colliding)
+        if (!colliding) {
           bap->bar_sprite->y += speed;
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1)) {
+              bap->bar_sprite->y -= speed;
+              break;
+            }
+          }
+        }
       }
       if (bap->bar_sprite->y > bap->finaly && (bap->finaly - bap->inity) < 0) {
         //check bar collision with objects
@@ -713,8 +741,15 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
             if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
               colliding = true;
           }
-        if (!colliding)
+        if (!colliding) {
           bap->bar_sprite->y -= speed;
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1)) {
+              bap->bar_sprite->y += speed;
+              break;
+            }
+          }
+        }
 
         if ((bap->finaly - bap->inity) < 0)
           //check bar collision with objects
@@ -722,8 +757,15 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
             if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1))
               colliding = true;
           }
-        if (!colliding)
+        if (!colliding) {
           bap->bar_sprite->y += speed;
+          for (int i = 0; i < n_objs; i++) {
+            if (collision_one_rect(bap->bar_sprite, objects_to_collide[i]->x + 1, objects_to_collide[i]->y - 1, objects_to_collide[i]->width - 1, objects_to_collide[i]->height - 1)) {
+              bap->bar_sprite->y -= speed;
+              break;
+            }
+          }
+        }
       }
     }
     draw_sprite(bap->bar_sprite);
@@ -848,8 +890,8 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
   bool slope = false;
 
   int speed = 1;
-  int gravity = 3;
-
+  int gravity = 6;
+  bool down = false;
   //restoring the background
   //restore_background(game_box->x, game_box->y, game_box->width, game_box->height, background);
 
@@ -895,20 +937,19 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
         }
       }
     }
-
-    //gravity
-    if (!slope) {
-      game_box->y += 1;
-      if (!check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
-        game_box->y += gravity - 1;
-        //not passing through the floor
-        while (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
-          game_box->y -= 1;
-        }
-      }
-      else
+    down = down || slope;
+  }
+  if (!down) {
+    game_box->y += 1;
+    if (!check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false) && !collision_one_rect(chars[0], game_box->x, game_box->y + game_box->height + 1, game_box->width, 1) && !collision_one_rect(chars[1], game_box->x, game_box->y + game_box->height + 1, game_box->width, 1)) {
+      game_box->y += gravity - 1;
+      //not passing through the floor
+      while (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
         game_box->y -= 1;
+      }
     }
+    else
+      game_box->y -= 1;
   }
 
   draw_sprite(game_box);

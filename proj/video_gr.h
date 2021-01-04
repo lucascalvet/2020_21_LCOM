@@ -14,6 +14,7 @@
 #define VBE_GET_CONTROLLER_INFO_FUNCTION 0x4F00 //gets VBE controller info
 #define VBE_GET_MODE_INFO_FUNCTION 0x4F01       //gets the info of a mode
 #define VBE_SET_MODE_FUNCTION 0x4F02            //sets graphics mode
+#define VBE_SET_DISPLAY_START_FUNCTION 0x4F07
 #define VBE_GET_CURRENT_MODE_FUNCTION 0x4F03    //gets current mode function
 
 //Activate linear frame buffer model, when setting VBE mode
@@ -47,6 +48,12 @@ void(vbe_mode_info_variables_init)(vbe_mode_info_t *mode_info);
 
 //initializes the graphics card with given mode, using VBE
 void *(vg_init)(uint16_t mode);
+
+//sets the first display line
+//void(set_display_start)(uint16_t scan_line);
+
+//switches the display start
+//void(switch_display_start)();
 
 //assembles color bytes of an map starting at given position, according to nº bits_per_pixel
 uint32_t (color_assembler)(const uint8_t *map, int *map_position);

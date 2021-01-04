@@ -17,6 +17,10 @@ int(rtc_unsubscribe_int)() {
   return 0;
 }
 
+/**
+ * @brief Enable rtc update-ended interrupts
+ * @return 0 upon success and non-zero otherwise
+ */
 int(rtc_enable_update_int)() {
   uint8_t reg_b;
   if (sys_outb(RTC_ADDR_REG, RTC_REG_B) != OK) return 1;

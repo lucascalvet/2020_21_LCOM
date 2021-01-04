@@ -7,15 +7,16 @@
 
 static uint8_t *video_mem;      //virtual vram address
 static uint8_t *secondary_buffer; //secondary buffer for double buffering
-unsigned int vram_size;
+static unsigned int vram_size;
+//static bool display_start; //false if at the beggining, true if at the middle
 
 static unsigned h_res;          //horizontal resolution in pixels
 static unsigned v_res;          //vertical resolution in pixels
 static unsigned bits_per_pixel; //number of VRAM bits per pixel
-uint8_t red_mask_size = 0;
-uint8_t green_mask_size = 0;
-uint8_t blue_mask_size = 0;
-uint8_t red_field_position = 0, green_field_position = 0, blue_field_position = 0;
+static uint8_t red_mask_size = 0;
+static uint8_t green_mask_size = 0;
+static uint8_t blue_mask_size = 0;
+static uint8_t red_field_position = 0, green_field_position = 0, blue_field_position = 0;
 
 /**
  * @brief converts number of bits to it's correspondant number of bytes
@@ -61,7 +62,7 @@ void(get_vbe_mode_info)(uint16_t mode, vbe_mode_info_t *mode_info) {
   mmap_t mmap; //memory info of vbe_mode_info_t struct info
 
   lm_alloc(sizeof(vbe_mode_info_t), &mmap);
-  
+
 
   //vbe_get_info(mmap.phys);
 
@@ -76,7 +77,7 @@ void(get_vbe_mode_info)(uint16_t mode, vbe_mode_info_t *mode_info) {
 
   //making kernell call in real mode (momentaneous switch from minix protected mode)
   if (sys_int86(&reg86) != OK) {
-    printf("\tget_vbe_mode_infoget_vbe_mode_info(): sys_int86() failed \n");
+    printf("\tget_vbe_mode_info(): sys_int86() failed \n");
   }
 
   sys_int86_print_errors(reg86);
@@ -175,10 +176,13 @@ void *(vg_init)(uint16_t mode) {
   struct minix_mem_range mr;
   unsigned int vram_base; // VRAM's physical addresss
   int r;
+  //display_start = false;
+  //set_display_start(0);
 
   vbe_mode_info_t mode_info;
   get_vbe_mode_info(mode, &mode_info);
   vram_base = mode_info.PhysBasePtr;
+  //vram_size = 2 * mode_info.XResolution * mode_info.YResolution * mode_info.BitsPerPixel / 8;
   vram_size = mode_info.XResolution * mode_info.YResolution * mode_info.BitsPerPixel / 8;
 
   vbe_mode_info_variables_init(&mode_info);
@@ -196,6 +200,7 @@ void *(vg_init)(uint16_t mode) {
   //Allocating memory for secondary buffer
   secondary_buffer = malloc(vram_size);
   memset(secondary_buffer, 0, vram_size);
+
 
   reg86_t reg86;
   memset(&reg86, 0, sizeof(reg86)); //cleanning registers previous to function call to avoid errors
@@ -217,6 +222,24 @@ void *(vg_init)(uint16_t mode) {
 
   return video_mem;
 }
+
+/**
+ * @brief Set the first scan line to be displayed
+ * @param pixel_position the first pixel to be displayed
+ */
+/*void(set_display_start)(uint16_t pixel_position) {
+  reg86_t reg86;
+  memset(&reg86, 0, sizeof(reg86)); //cleaning registers previous to function call to avoid errors
+
+  reg86.intno = VBE_INTERRUPT_INSTRUCTION;
+  reg86.ax = VBE_GET_MODE_INFO_FUNCTION;
+  reg86.cx = pixel_position;
+
+  //making kernell call in real mode (momentaneous switch from minix protected mode)
+  if (sys_int86(&reg86) != OK) {
+    printf("\tget_vbe_mode_info(): sys_int86() failed \n");
+  }
+}*/
 
 /**
  * @brief assembles color bytes of an map starting at given position, according to nº bytes per pixel, and changes to next position map_position
@@ -270,6 +293,12 @@ uint32_t(vram_get_color_by_coordinates)(uint16_t x, uint16_t y) {
   uint32_t color = 0;
 
   uint8_t *pointer = secondary_buffer; //pointer to video memory address
+  
+  /*if (!display_start)
+  {
+    pointer += h_res * v_res;
+  }*/
+  
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change
 
@@ -308,12 +337,34 @@ uint32_t(pixmap_get_color_by_coordinates)(uint16_t x, uint16_t y, uint8_t *pixma
   return color;
 }
 
+/**
+ * @brief switch displayed frame buffer
+ * 
+ */
+/*
+void(switch_display_start)() {
+  if (display_start) {
+    set_display_start(0);
+  }
+  else
+  {
+    set_display_start(h_res * v_res);
+  }
+  display_start = !display_start;
+}
+*/
+
 void(copy_buffer_to_vram)() {
   memcpy(video_mem, secondary_buffer, vram_size);
 }
 
 void(copy_to_buffer)(uint8_t * map) {
   memcpy(secondary_buffer, map, vram_size);
+  /*uint8_t *pointer = video_mem;
+  if (!display_start) {
+    pointer += h_res * v_res;
+  }
+  memcpy(pointer, map, vram_size / 2);*/
 }
 
 /**
@@ -327,6 +378,11 @@ void(copy_to_buffer)(uint8_t * map) {
 void(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
   uint8_t *pointer = secondary_buffer; //pointer to buffer address
+  /*
+  if (!display_start) {
+    pointer += h_res * v_res;
+  }
+  */
 
   pointer += (x + h_res * y) * bits_to_bytes(); //gets correct position of memory map to change according to x, y and bytes per pixel
 

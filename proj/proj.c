@@ -91,7 +91,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
   uint64_t timer_irq_set = BIT(timer_bit_no);
   uint64_t mouse_irq_set = BIT(mouse_bit_no);
   uint64_t rtc_irq_set = BIT(rtc_bit_no);
-
+  
   //main driver receive loop
   while (bytes[0] != ESC) {
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != OK) {
