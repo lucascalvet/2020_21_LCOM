@@ -293,11 +293,12 @@ void(create_level)(enum game_state state) {
     buttons2[0] = game_button2;
     buttons3[0] = game_button3;
 
+    purple_lava = create_sprite(xpm_purple_lava, 466, 587, 1);
+
     game_bar1 = create_game_bar(xpm_bar1_level4, 435, 180, 0, 0, 0, -90, -1, buttons1, 1);
     game_bar2 = create_game_bar(xpm_bar2_level4, 600, 272, 509, 272, 0, 0, 0, buttons2, 1);
     game_bar3 = create_game_bar(xpm_bar3_level4, 165, 15, 0, 0, 0, 90, 1, buttons3, 1);
-
-    purple_lava = create_sprite(xpm_purple_lava, 466, 587, 1);
+    
     purple_lava2 = create_sprite(xpm_purple_lava, 300, 586, 1);
   }
   if(state == PAUSE){
@@ -426,6 +427,7 @@ void(draw_level)(enum game_state state) {
     draw_sprite(play_button);
   }
   copy_buffer_to_vram();
+  //switch_display_start();
 }
 
 void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool keys_firemi[4], bool keys_waternix[4]) {
@@ -480,7 +482,6 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_button(game_button4, level, 4, objs_to_collide);
     handle_game_button(game_button5, level, 4, objs_to_collide);
 
-    draw_cursor(cursor, level);
     draw_clock(game_clock);
     win = handle_win(firemi, waternix, level_completed, 105, 30, 30, 30, 45, 65);
     if (win) {
@@ -516,7 +517,6 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_bar(game_bar4, level, objs_to_collide, 2);
     handle_game_bar(game_bar5, level, objs_to_collide, 2);
     handle_game_bar(game_bar6, level, objs_to_collide, 2);
-    draw_cursor(cursor, level);
     draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 424, 138, 350, 138, 45, 65);
@@ -543,7 +543,6 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_bar(game_bar3, level, objs_to_collide, 2);
     handle_game_bar(game_bar4, level, objs_to_collide, 2);
 
-    draw_cursor(cursor, level);
     draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 433, 530, 359, 530, 45, 65);
@@ -554,9 +553,6 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_lava(purple_lava2, level, 300, &lava_change_blue, 90); //to recicle varaiables, used lava_change_blue here
     handle_lava(purple_lava, level, 466, &lava_change_purple, 80);
 
-    handle_game_box(firemi, waternix, box1, level, level_collisions);
-    handle_game_box(firemi, waternix, box2, level, level_collisions);
-
     handle_game_button(game_button1, level, 4, objs_to_collide);
     handle_game_button(game_button2, level, 4, objs_to_collide);
     handle_game_button(game_button3, level, 4, objs_to_collide);
@@ -565,7 +561,9 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     handle_game_bar(game_bar2, level, objs_to_collide, 4);
     handle_game_bar(game_bar3, level, objs_to_collide, 4);
 
-    draw_cursor(cursor, level);
+    handle_game_box(firemi, waternix, box1, level, level_collisions);
+    handle_game_box(firemi, waternix, box2, level, level_collisions);
+
     draw_clock(game_clock);
 
     win = handle_win(firemi, waternix, level_completed, 275, 108, 201, 108, 45, 65);
@@ -573,6 +571,7 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
 
   if (*state != MAIN_MENU && *state != PAUSE && *state != RULES_MENU) {
     handle_characters_move(firemi, waternix, level, keys_firemi, keys_waternix, &game_over, &n_maps_f, &n_maps_w, &n_map_2_f, &n_map_2_w, level_collisions);
+    draw_cursor(cursor, level);
     if (game_over) {
       handle_lost();
       delete_level(*state);
@@ -628,6 +627,7 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     draw_cursor(cursor, level);
   }
   copy_buffer_to_vram();
+  //switch_display_start();
 }
 
 void(tick_game_clock)() {
