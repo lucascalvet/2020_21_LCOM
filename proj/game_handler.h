@@ -112,7 +112,7 @@ Game_button *(create_game_button)(const xpm_row_t *xpm_button, uint16_t x, uint1
 Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, uint16_t finalx, uint16_t finaly, int init_angle, int final_angle, int angular_speed,  Game_button *bups[],  int n_bups);
 
 //creates a game lever
-Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm_lever_base, uint16_t x, uint16_t y);
+Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm_lever_red, const xpm_row_t *xpm_lever_base, uint16_t x, uint16_t y);
 
 //deletes game_button sprite "object"
 void(delete_game_button)(Game_button *bup);

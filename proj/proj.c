@@ -16,14 +16,6 @@
 #include "rtc.h"
 #include "video_gr.h"
 
-//project header files - xpm's
-#include "xpm_firemi.h"
-#include "xpm_game_elements.h"
-#include "xpm_levels.h"
-#include "xpm_slider.h"
-#include "xpm_waternix.h"
-//#include "xpm_titles.h"
-
 //global variables
 unsigned timer_counter = 0;
 extern uint8_t bytes[2];

@@ -6,7 +6,6 @@
 #include "xpm_game_elements.h"
 #include "xpm_levels.h"
 #include "xpm_menus.h"
-#include "xpm_slider.h"
 #include "xpm_waternix.h"
 
 //creating the clock element
@@ -209,7 +208,7 @@ void(create_level)(enum game_state state) {
     game_bar5 = create_game_bar(xpm_bar4_level2, 224, 210, 224, 90, 0, 0, 0, buttons6, 1);
     game_bar6 = create_game_bar(xpm_bar5_level2, 495, 210, 495, 90, 0, 0, 0, buttons5, 1);
 
-    lever = create_game_lever(xpm_lever, xpm_lever_base, 563, 282);
+    lever = create_game_lever(xpm_lever, xpm_lever_red, xpm_lever_base, 563, 282);
   }
   if (state == LEVEL_3) {
     xpm_map_t xpm_wind[6] = {xpm_wind1, xpm_wind2, xpm_wind3, xpm_wind4, xpm_wind5, xpm_wind6};
@@ -319,7 +318,7 @@ void(draw_level)(enum game_state state) {
     draw_sprite(rules_button);
     draw_sprite(play_letters);
     draw_sprite(rules_letters);
-    draw_date(prev_time, 400, 400, numbers_map, img);
+    draw_date(prev_time, 550, 470, numbers_map, img);
     draw_cursor(cursor, level);
   }
   else if (state == RULES_MENU) {
@@ -448,8 +447,8 @@ void(handle_level)(enum game_state *state,  enum game_state * prev_state, bool k
     draw_sprite(rules_button);
     draw_sprite(play_letters);
     draw_sprite(rules_letters);
-    draw_cursor(cursor, level);
     draw_date(prev_time, 550, 470, numbers_map, img);
+    draw_cursor(cursor, level);
   }
   else if (*state == RULES_MENU) {
     if (cursor->x >= exit_button->x && cursor->x <= exit_button->x + exit_button->width && cursor->y >= exit_button->y && cursor->y <= exit_button->y + exit_button->height)

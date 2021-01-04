@@ -383,16 +383,16 @@ Game_bar *(create_game_bar)(const xpm_row_t *xpm_bar, uint16_t x, uint16_t y, ui
  * @param y the y coordinate of the lever
  * @return pointer to the created Game_lever
  */
-Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm_lever_base, uint16_t x, uint16_t y) {
+Game_lever *(create_game_lever)(const xpm_row_t *xpm_lever, const xpm_row_t *xpm_lever_red, const xpm_row_t *xpm_lever_base, uint16_t x, uint16_t y) {
   Game_lever *lever = (Game_lever *) malloc(sizeof(Game_lever));
 
-  xpm_map_t xpm_lever_array[1] = {xpm_lever};
+  xpm_map_t xpm_lever_array[2] = {xpm_lever, xpm_lever_red};
   xpm_map_t xpm_lever_base_array[1] = {xpm_lever_base};
 
   if (lever == NULL)
     return NULL;
 
-  Sprite *lever_sprite = create_sprite(xpm_lever_array, x, y, 1);
+  Sprite *lever_sprite = create_sprite(xpm_lever_array, x, y, 2);
   Sprite *lever_base_sprite = create_sprite(xpm_lever_base_array, x, y, 1);
 
   lever->lever_sprite = lever_sprite;
@@ -716,13 +716,30 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
   }
 }
 
+/**
+ * @brief Handles the lever game object
+ * @param lever pointer to the lever to be handled
+ * @param mouse_packet the last received mouse packet
+ * @param cursor a pointer to the game cursor
+ * @param firemi pointer to the firemi character (for allowing interaction with the lever)
+ * @param waternix pointer to the waternix character (for allowing interaction with the lever)
+ */
 void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet, Cursor * cursor, Sprite * firemi, Sprite * waternix) {
   int cursor_x = cursor->x;
   int cursor_y = cursor->y;
   int lever_x = lever->lever_sprite->x;
   int lever_y = lever->lever_sprite->y;
-  if (mouse_packet.lb && cursor_x >= lever_x + 13 && cursor_x <= lever_x + 22 && cursor_y >= lever_y && cursor_y <= lever_y + 7) {
-    lever->clicked = true;
+  if ((firemi->x + firemi->width > lever_x - 30 && firemi->x < lever_x + lever->lever_sprite->width + 30 && firemi->y + firemi->height < lever_y + lever->lever_sprite->height + 3 && firemi->y + 20 > lever_y - 10) || (waternix->x + waternix->width > lever_x - 30 && waternix->x < lever_x + lever->lever_sprite->width + 30 && waternix->y + waternix->height < lever_y + lever->lever_sprite->height + 3 && waternix->y + 20 > lever_y - 10)) {
+    lever->lever_sprite->map = lever->lever_sprite->xpms[0];
+    if (mouse_packet.lb) {
+      if (!lever->active && cursor_x >= lever_x && cursor_x <= lever_x + 10 && cursor_y >= lever_y + 7 && cursor_y <= lever_y + 14)
+        lever->clicked = true;
+      if (lever->active && cursor_x >= lever_x + 26 && cursor_x <= lever_x + 36 && cursor_y >= lever_y + 7 && cursor_y <= lever_y + 14)
+        lever->clicked = true;
+    }
+  }
+  else {
+    lever->lever_sprite->map = lever->lever_sprite->xpms[1];
   }
   if (!mouse_packet.lb) {
     if (lever->clicked) {
