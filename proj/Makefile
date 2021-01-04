@@ -8,4 +8,3 @@ DPADD += ${LIBLCF}
 LDADD += -llcf
 
 .include <minix.lcom.mk>
-

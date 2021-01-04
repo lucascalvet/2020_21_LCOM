@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 //project header files - modulos
-#include "game_handler.h"
 #include "game_engine.h"
+#include "game_handler.h"
 #include "keyboard.h"
 #include "mouse.h"
 #include "rtc.h"
@@ -52,24 +52,21 @@ int main(int argc, char *argv[]) {
 int(proj_main_loop)(int argc, char *argv[]) {
   //initiating the VBE
   vg_init(VBE_DIRECT_800_MODE);
-  
-  enum game_state state = MAIN_MENU;
-  enum game_state prev_state = MAIN_MENU;
+
+  enum game_state state = MAIN_MENU; //change to LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, to start on those specific levels
+
+  enum game_state prev_state = MAIN_MENU; //for knowing where to come back to, when the game is paused
   create_level(state);
   draw_level(state);
-
-  //EXPEIRMENTTTTTT
-  /*
-  Sprite * firemi = create_sprite(xpm_firemi_array, 200, 310, 6);
-  draw_resized_sprite(firemi, 100, 100);
-  sleep(4);
-  */
 
   //draw_snow(1, 5, 800, 600, 130);
 
   //set of keys to the two main characters
   bool keys_firemi[4] = {0, 0, 0, 0};   //{W, A, S, D}
   bool keys_waternix[4] = {0, 0, 0, 0}; //{^, <-, v, ->}
+
+  //for easily changing levels (for development purposes)
+  uint8_t change_level = 0;
 
   int ipc_status;
   message msg;
@@ -142,12 +139,19 @@ int(proj_main_loop)(int argc, char *argv[]) {
                 keys_waternix[3] = false;
             }
 
-            if(bytes[0] == BACKSPACE && state != MAIN_MENU){
+            if (bytes[0] == SPACEBAR && state != MAIN_MENU) {
               prev_state = state;
               state = PAUSE;
               create_level(state);
               draw_level(state);
             }
+
+            if (bytes[0] == KEY_MAKE_1) change_level = 1;
+            else if (bytes[0] == KEY_MAKE_2) change_level = 2;
+            else if (bytes[0] == KEY_MAKE_3) change_level = 3;
+            else if (bytes[0] == KEY_MAKE_4) change_level = 4;
+            else change_level = 0;
+            change_levels(&state, change_level);
           }
           if (msg.m_notify.interrupts & timer_irq_set) {
             timer_int_handler();
@@ -155,7 +159,8 @@ int(proj_main_loop)(int argc, char *argv[]) {
               handle_level(&state, &prev_state, keys_firemi, keys_waternix);
             }
             if (timer_counter % 60 == 0) {
-              if (state != MAIN_MENU && state != PAUSE) tick_game_clock();
+              if (state != MAIN_MENU && state != PAUSE)
+                tick_game_clock();
               timer_counter = 0;
             }
           }

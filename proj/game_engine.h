@@ -22,6 +22,8 @@ void (update_game_cursor)(enum game_state * state, struct packet packet, enum ga
 
 void (update_game_time)(enum game_state state, rtc_time time);
 
+void (change_levels)(enum game_state * state, uint8_t change_level);
+
 void (delete_level)(enum game_state state);
 
 #endif

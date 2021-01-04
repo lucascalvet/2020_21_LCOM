@@ -40,7 +40,7 @@ file instead of kbc.h to be easier to read */
 //scan codes
 #define TWO_BYTE_SCNCODE_PREFIX 0xE0
 #define ESC 0x81
-#define BACKSPACE 0x39
+#define SPACEBAR 0x39
 #define KEY_MAKE_W 0x11
 #define KEY_BREAK_W 0x91
 #define KEY_MAKE_A 0x1e
@@ -58,6 +58,11 @@ file instead of kbc.h to be easier to read */
 #define KEY_BREAK_ARROW_DOWN 0xd0
 #define KEY_MAKE_ARROW_RIGHT 0x4d
 #define KEY_BREAK_ARROW_RIGHT 0xcd
+
+#define KEY_MAKE_1 0x02
+#define KEY_MAKE_2 0x03
+#define KEY_MAKE_3 0x04
+#define KEY_MAKE_4 0x05
 
 #define KEY_MAKE_I 0x17
 #define KEY_MAKE_J 0x24

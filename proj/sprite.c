@@ -538,7 +538,7 @@ bool(collision_one_rect)(Sprite *sp, uint16_t x, uint16_t y, int width, int heig
  * @param sp sprite "object" to check for collision
  * @param color color to check against with
  * @param pixmap pixmap to check for collision
- * @param vram check only on vram
+ * @param vram check only on frame buffer
  * @return true if collision and false otherwise
  */
 bool(check_sprite_collision_by_color)(Sprite *sp, uint32_t color, uint8_t *pixmap, bool vram) { //note: it must be used before the sprite is printed and the color is changed

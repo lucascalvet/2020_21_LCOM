@@ -21,7 +21,7 @@ void(handle_characters_move)(Sprite *firemi, Sprite *waternix, Sprite *backgroun
   bool change_char1 = sprite_keyboard_move(firemi, char1_keys, n_maps_f, n_map_2_f, 800, 600, level_collisions);
   bool change_char2 = sprite_keyboard_move(waternix, char2_keys, n_maps_w, n_map_2_w, 800, 600, level_collisions);
 
-/*
+  /*
   if (change_char1)
     restore_background(prev_char1_x, prev_char1_y, firemi->width, firemi->height, background);
   if (change_char2)
@@ -190,13 +190,13 @@ void(draw_clock)(Clock *clock) {
   }
 }
 
-void (draw_date)(rtc_time time, int x, int y, uint8_t *map, xpm_image_t img) {
+void(draw_date)(rtc_time time, int x, int y, uint8_t *map, xpm_image_t img) {
   int map_index = 0;
   unsigned date_digits[12] = {time.hours / 10, time.hours % 10,
-                              time.minutes / 10, time.minutes % 10, 
-                              time.seconds / 10, time.seconds % 10, 
-                              time.month_day / 10, time.month_day % 10, 
-                              time.month / 10, time.month % 10, 
+                              time.minutes / 10, time.minutes % 10,
+                              time.seconds / 10, time.seconds % 10,
+                              time.month_day / 10, time.month_day % 10,
+                              time.month / 10, time.month % 10,
                               time.year / 10, time.year % 10};
   uint32_t color;
   uint32_t transparency_color = xpm_transparency_color(img.type);
@@ -582,8 +582,15 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
         if (!colliding)
           bap->angle += bap->angular_speed;
         else {
-          if (bap->angle != 0)
+          if (bap->angle != 0) {
             bap->angle -= bap->angular_speed;
+            for (int i = 0; i < n_objs; i++) {
+              if (check_collision_sprite_at_angle(bap->bar_sprite, bap->angle + bap->angular_speed, objects_to_collide[i]->x, objects_to_collide[i]->y, objects_to_collide[i]->width, objects_to_collide[i]->height)) {
+                bap->angle += bap->angular_speed;
+                break;
+              }
+            }
+          }
         }
       }
     }
@@ -596,8 +603,15 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
         }
         if (!colliding)
           bap->angle -= bap->angular_speed;
-        else if (bap->angle != bap->final_angle)
+        else {
           bap->angle += bap->angular_speed;
+          for (int i = 0; i < n_objs; i++) {
+            if (check_collision_sprite_at_angle(bap->bar_sprite, bap->angle - bap->angular_speed, objects_to_collide[i]->x, objects_to_collide[i]->y, objects_to_collide[i]->width, objects_to_collide[i]->height)) {
+              bap->angle -= bap->angular_speed;
+              break;
+            }
+          }
+        }
       }
     }
 
@@ -724,7 +738,7 @@ void(handle_game_bar)(Game_bar *bap, Sprite *background, Sprite *objects_to_coll
  * @param firemi pointer to the firemi character (for allowing interaction with the lever)
  * @param waternix pointer to the waternix character (for allowing interaction with the lever)
  */
-void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet, Cursor * cursor, Sprite * firemi, Sprite * waternix) {
+void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet, Cursor *cursor, Sprite *firemi, Sprite *waternix) {
   int cursor_x = cursor->x;
   int cursor_y = cursor->y;
   int lever_x = lever->lever_sprite->x;
@@ -756,17 +770,23 @@ void(handle_game_lever)(Game_lever *lever, struct packet mouse_packet, Cursor * 
     if (cursor_y >= lever_y + 23) {
       lever->clicked = false;
     }
-    if (cursor_x == lever_x + 18) lever->angle = 90;
+    if (cursor_x == lever_x + 18)
+      lever->angle = 90;
     else {
-      lever->angle = atan((double) (lever_y + 23 - cursor_y) / (double) (cursor_x - (lever_x + 18)))*180 / M_PI;
-      if (lever->angle < 0) lever->angle += 180;
-      if (lever->angle > 140) lever->angle = 140;
-      else if (lever->angle < 40) lever->angle = 40;
+      lever->angle = atan((double) (lever_y + 23 - cursor_y) / (double) (cursor_x - (lever_x + 18))) * 180 / M_PI;
+      if (lever->angle < 0)
+        lever->angle += 180;
+      if (lever->angle > 140)
+        lever->angle = 140;
+      else if (lever->angle < 40)
+        lever->angle = 40;
     }
   }
   else {
-    if (lever->active) lever->angle = 40;
-    else lever->angle = 140;
+    if (lever->active)
+      lever->angle = 40;
+    else
+      lever->angle = 140;
   }
   draw_sprite_at_angle(lever->lever_sprite, lever->angle - 90, 18, 23);
   draw_sprite(lever->lever_base_sprite);
@@ -878,13 +898,16 @@ void(handle_game_box)(Sprite *firemi, Sprite *waternix, Sprite *game_box, Sprite
 
     //gravity
     if (!slope) {
+      game_box->y += 1;
       if (!check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
-        game_box->y += gravity;
+        game_box->y += gravity - 1;
         //not passing through the floor
         while (check_sprite_collision_by_color(game_box, 0x00, level_collisions->map, false)) {
           game_box->y -= 1;
         }
       }
+      else
+        game_box->y -= 1;
     }
   }
 
