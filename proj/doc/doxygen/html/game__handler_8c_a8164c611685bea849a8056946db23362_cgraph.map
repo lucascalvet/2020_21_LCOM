@@ -1,0 +1,10 @@
+<map id="handle_game_button" name="handle_game_button">
+<area shape="rect" id="node1" title="handles the movement the game button mechanics" alt="" coords="5,97,148,123"/>
+<area shape="rect" id="node2" href="$sprite_8c.html#aa440be3f04dc868a1f84c94e65c08522" title="checks collision between a sprite and rectangle" alt="" coords="196,71,323,98"/>
+<area shape="rect" id="node6" href="$sprite_8c.html#a812849734f8c18c703bed96e7f3685c6" title="draws Sprite &quot;objects&quot; in screen at their current coordinates" alt="" coords="215,122,303,149"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="371,71,524,98"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a39d7d5ae58a13ff5f3080c39424edf00" title="returns the color at a certain coordinate in a pixmap" alt="" coords="375,5,520,47"/>
+<area shape="rect" id="node5" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="572,122,672,149"/>
+<area shape="rect" id="node7" href="$video__gr_8c.html#a47857cdaf29fd7b5fb115ad3679eb5f8" title="Set the first scan line to be displayed." alt="" coords="389,122,506,149"/>
+<area shape="rect" id="node8" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="406,173,489,199"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="draw_rectangle_pattern" name="draw_rectangle_pattern">
+<area shape="rect" id="node1" title="draws a pattern with rectangles in screen, matrix of [no_rectangles x no_rectangles]" alt="" coords="5,5,161,32"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a99d2da2559e11200c6b40c469e9977ec" title="draws a rectangle in screen" alt="" coords="209,5,340,32"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a5e5b25bd525250f61f40b9e9f212d5e6" title="draws an horizontal line in screen" alt="" coords="388,5,492,32"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="540,5,623,32"/>
+<area shape="rect" id="node5" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="671,5,771,32"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="draw_level" name="draw_level">
+<area shape="rect" id="node1" title="Draw a game state." alt="" coords="5,107,88,133"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a8c49df51116014c9414075d8258b82fa" title="switch displayed frame buffer" alt="" coords="136,5,280,32"/>
+<area shape="rect" id="node3" href="$game__handler_8c.html#a0cc5817bc76fa8d7b2894acd28ed8b95" title="Draws the clock." alt="" coords="165,56,251,83"/>
+<area shape="rect" id="node8" href="$game__handler_8c.html#a3489ffd18080def3fd7e001c3f4692a0" title="Draws the cursor." alt="" coords="162,107,254,133"/>
+<area shape="rect" id="node9" href="$game__handler_8c.html#a53447129a22cbc4de8eb26f6120b8745" title=" " alt="" coords="167,208,249,235"/>
+<area shape="rect" id="node10" href="$sprite_8c.html#a812849734f8c18c703bed96e7f3685c6" title="draws Sprite &quot;objects&quot; in screen at their current coordinates" alt="" coords="164,157,252,184"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="529,157,629,184"/>
+<area shape="rect" id="node5" href="$video__gr_8c.html#a47857cdaf29fd7b5fb115ad3679eb5f8" title="Set the first scan line to be displayed." alt="" coords="346,132,463,159"/>
+<area shape="rect" id="node6" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="328,81,481,108"/>
+<area shape="rect" id="node7" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="363,183,446,209"/>
+</map>

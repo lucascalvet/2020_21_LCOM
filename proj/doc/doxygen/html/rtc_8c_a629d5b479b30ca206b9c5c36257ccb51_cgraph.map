@@ -1,0 +1,5 @@
+<map id="rtc_get_time" name="rtc_get_time">
+<area shape="rect" id="node1" title="Gets the RTC current time and saves it to a rtc_time struct, in binary and 24 hour format." alt="" coords="5,31,100,57"/>
+<area shape="rect" id="node2" href="$rtc_8c.html#a11c5ebcfccfdf554cccaca6f8805bf0b" title="Gets the RTC configuration and saves it to a rtc_conf struct." alt="" coords="148,5,252,32"/>
+<area shape="rect" id="node3" href="$utils_8c.html#a79a031a8611f5b2d6afa4158e92b0fb4" title="Call sys_inb with a uint8_t value." alt="" coords="300,31,391,57"/>
+</map>

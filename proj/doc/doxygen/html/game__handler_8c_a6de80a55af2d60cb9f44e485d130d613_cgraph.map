@@ -1,0 +1,4 @@
+<map id="create_game_lever" name="create_game_lever">
+<area shape="rect" id="node1" title="Creates a lever." alt="" coords="5,5,137,32"/>
+<area shape="rect" id="node2" href="$sprite_8c.html#a18d1f98510146b0995c2cbd28cc4ce2f" title="creates a Sprite" alt="" coords="185,5,283,32"/>
+</map>

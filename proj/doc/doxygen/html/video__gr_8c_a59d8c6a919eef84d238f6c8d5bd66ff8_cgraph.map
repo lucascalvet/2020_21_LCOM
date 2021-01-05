@@ -1,0 +1,4 @@
+<map id="draw_pixel" name="draw_pixel">
+<area shape="rect" id="node1" title="changes a pixel color in coordinates x and y of screen" alt="" coords="5,5,88,32"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="136,5,236,32"/>
+</map>

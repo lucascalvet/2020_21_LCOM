@@ -1,0 +1,4 @@
+<map id="color_assembler" name="color_assembler">
+<area shape="rect" id="node1" title="Set the first scan line to be displayed." alt="" coords="5,5,123,32"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="171,5,271,32"/>
+</map>

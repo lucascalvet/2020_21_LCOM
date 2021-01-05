@@ -1,0 +1,6 @@
+<map id="vg_draw_rectangle" name="vg_draw_rectangle">
+<area shape="rect" id="node1" title="draws a rectangle in screen" alt="" coords="5,5,136,32"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a5e5b25bd525250f61f40b9e9f212d5e6" title="draws an horizontal line in screen" alt="" coords="184,5,288,32"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="336,5,419,32"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="467,5,567,32"/>
+</map>

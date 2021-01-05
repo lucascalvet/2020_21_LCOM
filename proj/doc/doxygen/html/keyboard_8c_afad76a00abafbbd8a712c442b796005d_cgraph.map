@@ -1,0 +1,5 @@
+<map id="keyboard_ih" name="keyboard_ih">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,97,32"/>
+<area shape="rect" id="node2" href="$kbc_8c.html#a638e7f85ff3800aaf17c95cde1760865" title="reads data in the output buffer (0x60) of KBC" alt="" coords="145,5,252,32"/>
+<area shape="rect" id="node3" href="$utils_8c.html#a79a031a8611f5b2d6afa4158e92b0fb4" title="Call sys_inb with a uint8_t value." alt="" coords="300,5,391,32"/>
+</map>

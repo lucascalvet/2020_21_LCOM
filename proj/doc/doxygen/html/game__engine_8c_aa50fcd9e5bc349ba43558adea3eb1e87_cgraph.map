@@ -1,0 +1,9 @@
+<map id="delete_level" name="delete_level">
+<area shape="rect" id="node1" title="Delete all sprites from a state." alt="" coords="5,132,96,159"/>
+<area shape="rect" id="node2" href="$game__handler_8c.html#a700fce65f0828fcc7b631d9a0a0a106f" title="deletes a clock object" alt="" coords="166,5,261,32"/>
+<area shape="rect" id="node3" href="$game__handler_8c.html#a9d7b0ef66c0c1638ee6965be5dd97e4b" title="deletes a cursor object" alt="" coords="163,56,263,83"/>
+<area shape="rect" id="node4" href="$game__handler_8c.html#a8b99f0dd8092648dcc3db25a53f34eec" title="deletes game_bar sprite" alt="" coords="153,107,274,133"/>
+<area shape="rect" id="node5" href="$sprite_8c.html#a415771f8cad0a97f79dc0a594266f218" title="deletes Sprite pointed from sp" alt="" coords="331,183,427,209"/>
+<area shape="rect" id="node6" href="$game__handler_8c.html#ab24180031de75d00836f95044f876083" title="deletes game_button sprite" alt="" coords="144,208,283,235"/>
+<area shape="rect" id="node7" href="$game__handler_8c.html#ad6d48cd1bc3cc9584b70e20ce18a8717" title="deletes a Game_lever object" alt="" coords="148,259,279,285"/>
+</map>

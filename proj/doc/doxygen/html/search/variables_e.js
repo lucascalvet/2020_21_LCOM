@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['r1_5ffiremi_5fxpm_797',['r1_firemi_xpm',['../xpm__firemi_8h.html#a2c8851a9010411920f006808236d6746',1,'xpm_firemi.h']]],
+  ['r1_5fwaternix_5fxpm_798',['r1_waternix_xpm',['../xpm__waternix_8h.html#a33da0880ed4593da7d03a019b611190b',1,'xpm_waternix.h']]],
+  ['r2_5ffiremi_5fxpm_799',['r2_firemi_xpm',['../xpm__firemi_8h.html#ad36c73c1ab58c2eb95bd9bfefc1c3415',1,'xpm_firemi.h']]],
+  ['r2_5fwaternix_5fxpm_800',['r2_waternix_xpm',['../xpm__waternix_8h.html#a0c8a55f628919c863bff2d04f677636e',1,'xpm_waternix.h']]],
+  ['r3_5ffiremi_5fxpm_801',['r3_firemi_xpm',['../xpm__firemi_8h.html#a04d175daf7beccbc612c887968928418',1,'xpm_firemi.h']]],
+  ['r3_5fwaternix_5fxpm_802',['r3_waternix_xpm',['../xpm__waternix_8h.html#a17e80899b48eb5f20434911065b77035',1,'xpm_waternix.h']]],
+  ['red_5ffield_5fposition_803',['red_field_position',['../video__gr_8c.html#afc497968724a75eed820ccc36e402f3c',1,'video_gr.c']]],
+  ['red_5flava_804',['red_lava',['../game__engine_8c.html#a4c6c7e2f55699663aab70e8d6b1cddf2',1,'game_engine.c']]],
+  ['red_5flava2_805',['red_lava2',['../game__engine_8c.html#abbf48aaa54c5af9f138000fb9d7046a2',1,'game_engine.c']]],
+  ['red_5flava2_5fchange_806',['red_lava2_change',['../game__engine_8c.html#ae5a0fc7d0fbfc498d2ab367a1467564c',1,'game_engine.c']]],
+  ['red_5flava_5fchange_807',['red_lava_change',['../game__engine_8c.html#a78ce7cfa231330af0bb13935a9663da8',1,'game_engine.c']]],
+  ['red_5fmask_5fsize_808',['red_mask_size',['../video__gr_8c.html#a4328dbe2d7f76c3be699a60b9e546a1f',1,'video_gr.c']]],
+  ['reg_5fa_809',['reg_a',['../structrtc__conf.html#a66a6aefe7bf17397168466423f255382',1,'rtc_conf']]],
+  ['reg_5fb_810',['reg_b',['../structrtc__conf.html#a9deac35679ca7dca615b35532ad5670e',1,'rtc_conf']]],
+  ['reg_5fc_811',['reg_c',['../structrtc__conf.html#ab66d7f5eee9a5ce6af05da9b33839c32',1,'rtc_conf']]],
+  ['reg_5fd_812',['reg_d',['../structrtc__conf.html#aa2dab1510cd6dc21d1cd9a5333c81cab',1,'rtc_conf']]],
+  ['rules_5fbutton_813',['rules_button',['../game__engine_8c.html#a46727315b5830dce4843b68ae7e04808',1,'game_engine.c']]],
+  ['rules_5fletters_814',['rules_letters',['../game__engine_8c.html#afa09a3fa9e1d4c66c26befa4acdc13b1',1,'game_engine.c']]]
+];

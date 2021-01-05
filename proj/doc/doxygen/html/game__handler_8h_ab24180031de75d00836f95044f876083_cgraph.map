@@ -1,0 +1,4 @@
+<map id="delete_game_button" name="delete_game_button">
+<area shape="rect" id="node1" title="deletes game_button sprite" alt="" coords="5,5,144,32"/>
+<area shape="rect" id="node2" href="$sprite_8c.html#a415771f8cad0a97f79dc0a594266f218" title="deletes Sprite pointed from sp" alt="" coords="192,5,288,32"/>
+</map>

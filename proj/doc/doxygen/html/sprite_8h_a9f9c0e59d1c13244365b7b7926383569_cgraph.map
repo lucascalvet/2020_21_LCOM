@@ -1,0 +1,5 @@
+<map id="erase_sprite" name="erase_sprite">
+<area shape="rect" id="node1" title="erases sprite from screen according to xpm type transparency color" alt="" coords="5,5,99,32"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="147,5,229,32"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="277,5,377,32"/>
+</map>

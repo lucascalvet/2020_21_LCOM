@@ -1,0 +1,7 @@
+<map id="draw_sprite_at_angle" name="draw_sprite_at_angle">
+<area shape="rect" id="node1" title="draws Sprite &quot;objects&quot; in screen at an angle" alt="" coords="5,56,149,83"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a47857cdaf29fd7b5fb115ad3679eb5f8" title="Set the first scan line to be displayed." alt="" coords="215,5,333,32"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="197,56,351,83"/>
+<area shape="rect" id="node5" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="233,107,315,133"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="399,56,499,83"/>
+</map>

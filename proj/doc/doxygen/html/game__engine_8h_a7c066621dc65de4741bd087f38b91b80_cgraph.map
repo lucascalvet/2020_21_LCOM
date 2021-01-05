@@ -1,0 +1,48 @@
+<map id="handle_level" name="handle_level">
+<area shape="rect" id="node1" title="Handle all game states." alt="" coords="5,486,100,512"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a8c49df51116014c9414075d8258b82fa" title="switch displayed frame buffer" alt="" coords="587,292,731,319"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a92969b3f4aaf82c8c12450e842310f60" title="Copies a pixmap directly to the frame buffer, using memcpy." alt="" coords="177,1398,285,1424"/>
+<area shape="rect" id="node4" href="$game__engine_8c.html#aaba984d3a33f068798aecd02fc45fc75" title="Create a game state." alt="" coords="185,1068,277,1095"/>
+<area shape="rect" id="node8" href="$sprite_8c.html#a18d1f98510146b0995c2cbd28cc4ce2f" title="creates a Sprite" alt="" coords="610,1068,707,1095"/>
+<area shape="rect" id="node11" href="$game__engine_8c.html#aa50fcd9e5bc349ba43558adea3eb1e87" title="Delete all sprites from a state." alt="" coords="186,1347,277,1374"/>
+<area shape="rect" id="node18" href="$game__handler_8c.html#a0cc5817bc76fa8d7b2894acd28ed8b95" title="Draws the clock." alt="" coords="615,191,702,218"/>
+<area shape="rect" id="node23" href="$game__handler_8c.html#a3489ffd18080def3fd7e001c3f4692a0" title="Draws the cursor." alt="" coords="613,242,705,268"/>
+<area shape="rect" id="node24" href="$game__handler_8c.html#a53447129a22cbc4de8eb26f6120b8745" title=" " alt="" coords="618,140,699,167"/>
+<area shape="rect" id="node25" href="$game__engine_8c.html#ac3624a4643ac031a6c266c5234041970" title="Draw a game state." alt="" coords="398,106,481,132"/>
+<area shape="rect" id="node26" href="$sprite_8c.html#a812849734f8c18c703bed96e7f3685c6" title="draws Sprite &quot;objects&quot; in screen at their current coordinates" alt="" coords="615,444,703,471"/>
+<area shape="rect" id="node27" href="$game__handler_8c.html#a274fd1ec17fd17a70e0496db05b5bddb" title="handle a character&#39;s movement" alt="" coords="148,739,315,766"/>
+<area shape="rect" id="node34" href="$game__handler_8c.html#aab87f6df923aec989baaad4b4cc396fd" title="handles the movement of a game bar object, it can be either angular or linear" alt="" coords="377,511,501,538"/>
+<area shape="rect" id="node38" href="$game__handler_8c.html#aa71f82d4c10208cccd1494652725b34e" title="handles a game box movement, which are pushed by the characters" alt="" coords="376,714,503,740"/>
+<area shape="rect" id="node39" href="$game__handler_8c.html#a8164c611685bea849a8056946db23362" title="handles the movement the game button mechanics" alt="" coords="368,562,511,588"/>
+<area shape="rect" id="node40" href="$game__handler_8c.html#a3454dc3effd46694b4387eb5597cd2b2" title="Handles the lever game object." alt="" coords="372,308,507,335"/>
+<area shape="rect" id="node41" href="$game__handler_8c.html#ab36d12c487f2a84fd6946d931a2016ac" title="handles lava objects" alt="" coords="394,258,485,284"/>
+<area shape="rect" id="node43" href="$game__handler_8c.html#ac9cbbf1fd2c1785361bf1cc665cbdb12" title="handles when user loses a level" alt="" coords="395,866,483,892"/>
+<area shape="rect" id="node44" href="$game__handler_8c.html#a506a532219edfccbd1576fd59acb7aee" title="Handle the movement of a slider." alt="" coords="371,612,508,639"/>
+<area shape="rect" id="node45" href="$game__handler_8c.html#a6615e5b989b22e3bf34b3ac6dda2bb40" title="handles when user wins a level" alt="" coords="396,410,483,436"/>
+<area shape="rect" id="node46" href="$game__handler_8c.html#ad312b7aaba50bb4475318a9adac10af5" title="handles wind object" alt="" coords="185,460,278,487"/>
+<area shape="rect" id="node5" href="$game__handler_8c.html#aed7a94c4f23f32cd46a25784589d148a" title="Creates a minutes:seconds clock." alt="" coords="391,967,487,994"/>
+<area shape="rect" id="node6" href="$game__handler_8c.html#a9510926cd5a6f25adff98945aa96170b" title="Creates a cursor." alt="" coords="389,1068,490,1095"/>
+<area shape="rect" id="node7" href="$game__handler_8c.html#afe0e20b76fe7a0c004982ce46dfefaaa" title="creates a bar sprite for the game board" alt="" coords="378,1170,501,1196"/>
+<area shape="rect" id="node9" href="$game__handler_8c.html#a8b2b2e824f118265255c5dfa8f9ed49e" title="creates a button sprite for the game board" alt="" coords="369,1220,509,1247"/>
+<area shape="rect" id="node10" href="$game__handler_8c.html#a6de80a55af2d60cb9f44e485d130d613" title="Creates a lever." alt="" coords="373,1018,505,1044"/>
+<area shape="rect" id="node12" href="$game__handler_8c.html#a700fce65f0828fcc7b631d9a0a0a106f" title="deletes a clock object" alt="" coords="392,1271,487,1298"/>
+<area shape="rect" id="node13" href="$game__handler_8c.html#a9d7b0ef66c0c1638ee6965be5dd97e4b" title="deletes a cursor object" alt="" coords="389,1322,489,1348"/>
+<area shape="rect" id="node14" href="$game__handler_8c.html#a8b99f0dd8092648dcc3db25a53f34eec" title="deletes game_bar sprite" alt="" coords="379,1372,500,1399"/>
+<area shape="rect" id="node15" href="$sprite_8c.html#a415771f8cad0a97f79dc0a594266f218" title="deletes Sprite pointed from sp" alt="" coords="611,1423,707,1450"/>
+<area shape="rect" id="node16" href="$game__handler_8c.html#ab24180031de75d00836f95044f876083" title="deletes game_button sprite" alt="" coords="370,1423,509,1450"/>
+<area shape="rect" id="node17" href="$game__handler_8c.html#ad6d48cd1bc3cc9584b70e20ce18a8717" title="deletes a Game_lever object" alt="" coords="374,1474,505,1500"/>
+<area shape="rect" id="node19" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="1056,318,1156,344"/>
+<area shape="rect" id="node20" href="$video__gr_8c.html#a47857cdaf29fd7b5fb115ad3679eb5f8" title="Set the first scan line to be displayed." alt="" coords="846,343,963,370"/>
+<area shape="rect" id="node21" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="828,419,981,446"/>
+<area shape="rect" id="node22" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="863,292,946,319"/>
+<area shape="rect" id="node28" href="$game__handler_8c.html#a79e2cb95c15347bfcffb3eff599d216a" title="checks if characters are in lava or not" alt="" coords="395,764,483,791"/>
+<area shape="rect" id="node32" href="$sprite_8c.html#a418420bc35f60ad08c3fa9802c3c77b5" title="handles a sprite movement using keyboard and a set of 4 keys" alt="" coords="363,815,516,842"/>
+<area shape="rect" id="node29" href="$sprite_8c.html#a2c1300d9ee2e1984bad7671e6bc1535d" title="check collisions of sprite against a certain color in the frame buffer and/or a pixmap" alt="" coords="583,673,734,714"/>
+<area shape="rect" id="node30" href="$video__gr_8c.html#a39d7d5ae58a13ff5f3080c39424edf00" title="returns the color at a certain coordinate in a pixmap" alt="" coords="832,614,977,656"/>
+<area shape="rect" id="node31" href="$video__gr_8c.html#a2f5f24e4a60a4c5f30055aef8206c0cc" title="returns the color at a certain address in the vram (by providing the coordinates)" alt="" coords="801,680,1008,707"/>
+<area shape="rect" id="node33" href="$sprite_8c.html#a603ec7dbcd3d186c14eaa5b83ce5c642" title="check collisions of sprite&#39;s first xpm against a certain color in the frame buffer and/or a pixmap" alt="" coords="564,738,753,780"/>
+<area shape="rect" id="node35" href="$sprite_8c.html#a81047bd5cefc2a7a334ca2951c5a062c" title="checks collisions of sprite at angle to a rectangle" alt="" coords="583,496,734,537"/>
+<area shape="rect" id="node36" href="$sprite_8c.html#aa440be3f04dc868a1f84c94e65c08522" title="checks collision between a sprite and rectangle" alt="" coords="595,562,722,588"/>
+<area shape="rect" id="node37" href="$sprite_8c.html#aee6c093dca4279ca73d80cc9410e2e42" title="draws Sprite &quot;objects&quot; in screen at an angle" alt="" coords="587,394,731,420"/>
+<area shape="rect" id="node42" href="$sprite_8c.html#a92cee8f7efd473ec1f04327143e31161" title="restores the background at a given rectangle to avoid overprocessing" alt="" coords="591,343,727,370"/>
+</map>

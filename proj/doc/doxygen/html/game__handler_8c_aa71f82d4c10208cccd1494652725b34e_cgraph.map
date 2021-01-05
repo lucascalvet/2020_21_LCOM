@@ -1,0 +1,12 @@
+<map id="handle_game_box" name="handle_game_box">
+<area shape="rect" id="node1" title="handles a game box movement, which are pushed by the characters" alt="" coords="5,136,132,163"/>
+<area shape="rect" id="node2" href="$sprite_8c.html#a2c1300d9ee2e1984bad7671e6bc1535d" title="check collisions of sprite against a certain color in the frame buffer and/or a pixmap" alt="" coords="180,158,331,199"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a39d7d5ae58a13ff5f3080c39424edf00" title="returns the color at a certain coordinate in a pixmap" alt="" coords="409,158,555,199"/>
+<area shape="rect" id="node7" href="$sprite_8c.html#aa440be3f04dc868a1f84c94e65c08522" title="checks collision between a sprite and rectangle" alt="" coords="192,107,319,133"/>
+<area shape="rect" id="node8" href="$sprite_8c.html#a812849734f8c18c703bed96e7f3685c6" title="draws Sprite &quot;objects&quot; in screen at their current coordinates" alt="" coords="211,56,299,83"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="405,107,559,133"/>
+<area shape="rect" id="node6" href="$video__gr_8c.html#a2f5f24e4a60a4c5f30055aef8206c0cc" title="returns the color at a certain address in the vram (by providing the coordinates)" alt="" coords="379,224,585,251"/>
+<area shape="rect" id="node5" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="633,111,733,137"/>
+<area shape="rect" id="node9" href="$video__gr_8c.html#a47857cdaf29fd7b5fb115ad3679eb5f8" title="Set the first scan line to be displayed." alt="" coords="423,5,541,32"/>
+<area shape="rect" id="node10" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="441,56,523,83"/>
+</map>

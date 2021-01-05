@@ -1,0 +1,9 @@
+<map id="sprite_keyboard_move" name="sprite_keyboard_move">
+<area shape="rect" id="node1" title="handles a sprite movement using keyboard and a set of 4 keys" alt="" coords="5,78,159,105"/>
+<area shape="rect" id="node2" href="$sprite_8c.html#a2c1300d9ee2e1984bad7671e6bc1535d" title="check collisions of sprite against a certain color in the frame buffer and/or a pixmap" alt="" coords="226,71,377,112"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a39d7d5ae58a13ff5f3080c39424edf00" title="returns the color at a certain coordinate in a pixmap" alt="" coords="475,115,620,156"/>
+<area shape="rect" id="node7" href="$sprite_8c.html#a603ec7dbcd3d186c14eaa5b83ce5c642" title="check collisions of sprite&#39;s first xpm against a certain color in the frame buffer and/or a pixmap" alt="" coords="207,5,396,47"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="471,63,624,90"/>
+<area shape="rect" id="node6" href="$video__gr_8c.html#a2f5f24e4a60a4c5f30055aef8206c0cc" title="returns the color at a certain address in the vram (by providing the coordinates)" alt="" coords="444,13,651,39"/>
+<area shape="rect" id="node5" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="699,67,799,94"/>
+</map>

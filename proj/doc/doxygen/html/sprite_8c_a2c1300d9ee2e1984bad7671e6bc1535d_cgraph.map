@@ -1,0 +1,7 @@
+<map id="check_sprite_collision_by_color" name="check_sprite_collision_by_color">
+<area shape="rect" id="node1" title="check collisions of sprite against a certain color in the frame buffer and/or a pixmap" alt="" coords="5,57,156,98"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="231,5,384,32"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a39d7d5ae58a13ff5f3080c39424edf00" title="returns the color at a certain coordinate in a pixmap" alt="" coords="235,57,380,98"/>
+<area shape="rect" id="node5" href="$video__gr_8c.html#a2f5f24e4a60a4c5f30055aef8206c0cc" title="returns the color at a certain address in the vram (by providing the coordinates)" alt="" coords="204,123,411,149"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="459,93,559,120"/>
+</map>

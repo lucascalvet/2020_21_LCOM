@@ -1,0 +1,5 @@
+<map id="output_buff_flush" name="output_buff_flush">
+<area shape="rect" id="node1" title="cleans data from output buffer of KBC" alt="" coords="5,5,128,32"/>
+<area shape="rect" id="node2" href="$kbc_8c.html#a638e7f85ff3800aaf17c95cde1760865" title="reads data in the output buffer (0x60) of KBC" alt="" coords="176,5,283,32"/>
+<area shape="rect" id="node3" href="$utils_8c.html#a79a031a8611f5b2d6afa4158e92b0fb4" title="Call sys_inb with a uint8_t value." alt="" coords="331,5,421,32"/>
+</map>

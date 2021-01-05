@@ -1,0 +1,8 @@
+<map id="mouse_enable_data_report" name="mouse_enable_data_report">
+<area shape="rect" id="node1" title="enables data reporting on mouse" alt="" coords="5,56,184,83"/>
+<area shape="rect" id="node2" href="$mouse_8c.html#a4ac184bf62ca20a038f3af6b36e571a0" title="writes command to mouse (KBC_WRITE_TO_MOUSE KBC command argument) and prints in console mouse acknowl..." alt="" coords="232,56,359,83"/>
+<area shape="rect" id="node3" href="$kbc_8c.html#a638e7f85ff3800aaf17c95cde1760865" title="reads data in the output buffer (0x60) of KBC" alt="" coords="408,5,515,32"/>
+<area shape="rect" id="node5" href="$kbc_8c.html#aff4e89633ea83263390ed9f4dbc36127" title="writes argument to KBC input buffer 0x60" alt="" coords="410,56,513,83"/>
+<area shape="rect" id="node6" href="$kbc_8c.html#a8decfc9a9762e3de212c91f9daa1e0ae" title="writes command to KBC control register 0x64" alt="" coords="407,107,516,133"/>
+<area shape="rect" id="node4" href="$utils_8c.html#a79a031a8611f5b2d6afa4158e92b0fb4" title="Call sys_inb with a uint8_t value." alt="" coords="564,56,655,83"/>
+</map>

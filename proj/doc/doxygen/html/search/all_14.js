@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['v_5fres_413',['V_RES',['../game__handler_8h.html#aac2466862bcfc18231c38fe1eacc22e3',1,'V_RES():&#160;game_handler.h'],['../video__gr_8c.html#a5bda1b499253a8fbf3cab646f8760391',1,'v_res():&#160;video_gr.c']]],
+  ['v_5fstep_414',['V_STEP',['../sprite_8h.html#a2b0b6e6ba96d86a80185af3440a3d2ed',1,'sprite.h']]],
+  ['vbe_5fdirect_5f1152_5fmode_415',['VBE_DIRECT_1152_MODE',['../video__gr_8h.html#ae6e92538de8c965fca98856728ad054b',1,'video_gr.h']]],
+  ['vbe_5fdirect_5f1280_5fmode_416',['VBE_DIRECT_1280_MODE',['../video__gr_8h.html#af83575b05007e185561d1376c92adc08',1,'video_gr.h']]],
+  ['vbe_5fdirect_5f640_5fmode_417',['VBE_DIRECT_640_MODE',['../video__gr_8h.html#a99a06c580f3bb7d6e9fcbb1e18d30c57',1,'video_gr.h']]],
+  ['vbe_5fdirect_5f800_5fmode_418',['VBE_DIRECT_800_MODE',['../video__gr_8h.html#a394986808f4a541964d1c35b6ad2c90a',1,'video_gr.h']]],
+  ['vbe_5fget_5fcontroller_5finfo_5ffunction_419',['VBE_GET_CONTROLLER_INFO_FUNCTION',['../video__gr_8h.html#ac2ab5fa3d6a7d695dbdcae093b58ae30',1,'video_gr.h']]],
+  ['vbe_5fget_5fcurrent_5fmode_5ffunction_420',['VBE_GET_CURRENT_MODE_FUNCTION',['../video__gr_8h.html#adbfac349433d3f595b530b8783533b37',1,'video_gr.h']]],
+  ['vbe_5fget_5fmode_5finfo_5ffunction_421',['VBE_GET_MODE_INFO_FUNCTION',['../video__gr_8h.html#a284622e8ff8b84cf542dcadee37bb1b9',1,'video_gr.h']]],
+  ['vbe_5findexed_5f1024_5fmode_422',['VBE_INDEXED_1024_MODE',['../video__gr_8h.html#a34acae3435f6f6650fc66cffccfd4f80',1,'video_gr.h']]],
+  ['vbe_5finterrupt_5finstruction_423',['VBE_INTERRUPT_INSTRUCTION',['../video__gr_8h.html#a323de8f2e703084e1f60cd8ce05bbf30',1,'video_gr.h']]],
+  ['vbe_5flinear_5factivate_424',['VBE_LINEAR_ACTIVATE',['../video__gr_8h.html#ad6f214ed9b5fafb4a9f1376a023f395d',1,'video_gr.h']]],
+  ['vbe_5fmode_5finfo_5fvariables_5finit_425',['vbe_mode_info_variables_init',['../video__gr_8c.html#a4bc95e811caeab8855d1c4a58d4f4343',1,'vbe_mode_info_variables_init(vbe_mode_info_t *mode_info):&#160;video_gr.c'],['../video__gr_8h.html#a4bc95e811caeab8855d1c4a58d4f4343',1,'vbe_mode_info_variables_init(vbe_mode_info_t *mode_info):&#160;video_gr.c']]],
+  ['vbe_5fset_5fdisplay_5fstart_5ffunction_426',['VBE_SET_DISPLAY_START_FUNCTION',['../video__gr_8h.html#ad120de9c6d0dea1c191b89e90c05510b',1,'video_gr.h']]],
+  ['vbe_5fset_5fmode_5ffunction_427',['VBE_SET_MODE_FUNCTION',['../video__gr_8h.html#aa24890dbfcf95e353930f62864f7f2f3',1,'video_gr.h']]],
+  ['vbe_5ftext_5fmode_428',['VBE_TEXT_MODE',['../video__gr_8h.html#a09f03f69a76c779fb7070e0357a64cdb',1,'video_gr.h']]],
+  ['vg_5fdraw_5fcircle_429',['vg_draw_circle',['../video__gr_8c.html#a288815f9708d97528844603812bbfbcd',1,'vg_draw_circle(uint16_t left_corner_x, uint16_t left_corner_y, uint16_t radius, uint32_t color):&#160;video_gr.c'],['../video__gr_8h.html#a288815f9708d97528844603812bbfbcd',1,'vg_draw_circle(uint16_t left_corner_x, uint16_t left_corner_y, uint16_t radius, uint32_t color):&#160;video_gr.c']]],
+  ['vg_5fdraw_5fhline_430',['vg_draw_hline',['../video__gr_8c.html#a5e5b25bd525250f61f40b9e9f212d5e6',1,'video_gr.c']]],
+  ['vg_5fdraw_5frectangle_431',['vg_draw_rectangle',['../video__gr_8c.html#a99d2da2559e11200c6b40c469e9977ec',1,'video_gr.c']]],
+  ['vg_5finit_432',['vg_init',['../video__gr_8c.html#aa6c1ff5024cd4d15e476bce487584daa',1,'vg_init(uint16_t mode):&#160;video_gr.c'],['../video__gr_8h.html#aa6c1ff5024cd4d15e476bce487584daa',1,'vg_init(uint16_t mode):&#160;video_gr.c']]],
+  ['video_5fgr_2ec_433',['video_gr.c',['../video__gr_8c.html',1,'']]],
+  ['video_5fgr_2eh_434',['video_gr.h',['../video__gr_8h.html',1,'']]],
+  ['video_5fmem_435',['video_mem',['../video__gr_8c.html#a51ca412bef7e65e7fb0a170abe47b36b',1,'video_gr.c']]],
+  ['vram_5fget_5fcolor_5fby_5fcoordinates_436',['vram_get_color_by_coordinates',['../video__gr_8c.html#a2f5f24e4a60a4c5f30055aef8206c0cc',1,'vram_get_color_by_coordinates(uint16_t x, uint16_t y):&#160;video_gr.c'],['../video__gr_8h.html#a2f5f24e4a60a4c5f30055aef8206c0cc',1,'vram_get_color_by_coordinates(uint16_t x, uint16_t y):&#160;video_gr.c']]],
+  ['vram_5fsize_437',['vram_size',['../video__gr_8c.html#a17b12b87c65aaa04215d9bdb7e9e84dd',1,'video_gr.c']]]
+];

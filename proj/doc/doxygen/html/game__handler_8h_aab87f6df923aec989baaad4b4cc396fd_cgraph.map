@@ -1,0 +1,12 @@
+<map id="handle_game_bar" name="handle_game_bar">
+<area shape="rect" id="node1" title="handles the movement of a game bar object, it can be either angular or linear" alt="" coords="5,99,129,126"/>
+<area shape="rect" id="node2" href="$sprite_8c.html#a81047bd5cefc2a7a334ca2951c5a062c" title="checks collisions of sprite at angle to a rectangle" alt="" coords="177,63,328,104"/>
+<area shape="rect" id="node6" href="$sprite_8c.html#aa440be3f04dc868a1f84c94e65c08522" title="checks collision between a sprite and rectangle" alt="" coords="189,11,316,38"/>
+<area shape="rect" id="node8" href="$sprite_8c.html#a812849734f8c18c703bed96e7f3685c6" title="draws Sprite &quot;objects&quot; in screen at their current coordinates" alt="" coords="209,129,297,155"/>
+<area shape="rect" id="node10" href="$sprite_8c.html#aee6c093dca4279ca73d80cc9410e2e42" title="draws Sprite &quot;objects&quot; in screen at an angle" alt="" coords="181,179,325,206"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a47857cdaf29fd7b5fb115ad3679eb5f8" title="Set the first scan line to be displayed." alt="" coords="394,125,511,151"/>
+<area shape="rect" id="node5" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="376,73,529,99"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="577,125,677,151"/>
+<area shape="rect" id="node7" href="$video__gr_8c.html#a39d7d5ae58a13ff5f3080c39424edf00" title="returns the color at a certain coordinate in a pixmap" alt="" coords="380,5,525,47"/>
+<area shape="rect" id="node9" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="411,175,494,202"/>
+</map>

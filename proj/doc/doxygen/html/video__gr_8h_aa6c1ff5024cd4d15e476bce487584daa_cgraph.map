@@ -1,0 +1,6 @@
+<map id="vg_init" name="vg_init">
+<area shape="rect" id="node1" title="initiates the graphical controller with a video mode, using vbe" alt="" coords="5,56,65,83"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a2b421390fb7465ec5b2e92a647a412d5" title="gets the information about vbe mode given" alt="" coords="143,5,277,32"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a07b3a50499a0b120f78ede9729fe0a35" title="print errors that may happen in sys_int86 call" alt="" coords="355,31,505,57"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a4bc95e811caeab8855d1c4a58d4f4343" title="initializes static mode dependet variables with respetive values after a vbe get mode info call" alt="" coords="113,107,307,133"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="delete_game_lever" name="delete_game_lever">
+<area shape="rect" id="node1" title="deletes a Game_lever object" alt="" coords="5,5,136,32"/>
+<area shape="rect" id="node2" href="$sprite_8c.html#a415771f8cad0a97f79dc0a594266f218" title="deletes Sprite pointed from sp" alt="" coords="184,5,280,32"/>
+</map>

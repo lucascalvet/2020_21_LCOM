@@ -1,0 +1,6 @@
+<map id="draw_snow" name="draw_snow">
+<area shape="rect" id="node1" title="draws a random snow pattern" alt="" coords="5,5,92,32"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a288815f9708d97528844603812bbfbcd" title="draws a circle in screen at determinated coordinates and specifified color" alt="" coords="140,5,248,32"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="296,5,379,32"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="427,5,527,32"/>
+</map>

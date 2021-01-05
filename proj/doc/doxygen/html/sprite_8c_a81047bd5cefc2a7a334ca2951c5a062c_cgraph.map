@@ -1,0 +1,6 @@
+<map id="check_collision_sprite_at_angle" name="check_collision_sprite_at_angle">
+<area shape="rect" id="node1" title="checks collisions of sprite at angle to a rectangle" alt="" coords="5,23,156,65"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a47857cdaf29fd7b5fb115ad3679eb5f8" title="Set the first scan line to be displayed." alt="" coords="222,5,339,32"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="204,56,357,83"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="405,5,505,32"/>
+</map>

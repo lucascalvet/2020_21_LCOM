@@ -1,0 +1,5 @@
+<map id="vg_draw_circle" name="vg_draw_circle">
+<area shape="rect" id="node1" title="draws a circle in screen at determinated coordinates and specifified color" alt="" coords="5,5,113,32"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a59d8c6a919eef84d238f6c8d5bd66ff8" title="changes a pixel color in coordinates x and y of screen" alt="" coords="161,5,244,32"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="292,5,392,32"/>
+</map>

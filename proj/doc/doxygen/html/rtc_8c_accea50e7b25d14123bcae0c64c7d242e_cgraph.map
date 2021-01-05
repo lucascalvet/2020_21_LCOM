@@ -1,0 +1,4 @@
+<map id="rtc_enable_update_int" name="rtc_enable_update_int">
+<area shape="rect" id="node1" title="Enable rtc update&#45;ended interrupts." alt="" coords="5,5,155,32"/>
+<area shape="rect" id="node2" href="$utils_8c.html#a79a031a8611f5b2d6afa4158e92b0fb4" title="Call sys_inb with a uint8_t value." alt="" coords="203,5,293,32"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="collision_one_rect" name="collision_one_rect">
+<area shape="rect" id="node1" title="checks collision between a sprite and rectangle" alt="" coords="5,35,132,61"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a31cb2d5eaa496d9baefe6c320eab531f" title="changes the place of red and blue, because of the image converter format wich is BGR" alt="" coords="180,5,333,32"/>
+<area shape="rect" id="node3" href="$video__gr_8c.html#a39d7d5ae58a13ff5f3080c39424edf00" title="returns the color at a certain coordinate in a pixmap" alt="" coords="184,57,329,98"/>
+<area shape="rect" id="node4" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="381,64,481,91"/>
+</map>

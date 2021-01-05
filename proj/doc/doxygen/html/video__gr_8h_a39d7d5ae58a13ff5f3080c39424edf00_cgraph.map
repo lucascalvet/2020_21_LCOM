@@ -1,0 +1,4 @@
+<map id="pixmap_get_color_by_coordinates" name="pixmap_get_color_by_coordinates">
+<area shape="rect" id="node1" title="returns the color at a certain coordinate in a pixmap" alt="" coords="5,5,151,47"/>
+<area shape="rect" id="node2" href="$video__gr_8c.html#a1b451887660a65259ccab669b4b41a0a" title="converts number of bits to it&#39;s correspondant number of bytes" alt="" coords="199,13,299,39"/>
+</map>

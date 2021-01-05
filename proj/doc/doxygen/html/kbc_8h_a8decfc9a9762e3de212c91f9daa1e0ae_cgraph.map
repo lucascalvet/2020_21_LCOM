@@ -1,0 +1,4 @@
+<map id="kbc_write_cmd" name="kbc_write_cmd">
+<area shape="rect" id="node1" title="writes command to KBC control register 0x64" alt="" coords="5,5,115,32"/>
+<area shape="rect" id="node2" href="$utils_8c.html#a79a031a8611f5b2d6afa4158e92b0fb4" title="Call sys_inb with a uint8_t value." alt="" coords="163,5,253,32"/>
+</map>
